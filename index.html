@@ -4,9 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#f5f6fa">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<link rel="icon" href="./icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="운동루틴">
+<link rel="manifest" href="/workout-app/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="192x192" href="/workout-app/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/workout-app/icon-192.png">
 <title>운동 루틴 · Light</title>
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
@@ -3230,9 +3234,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('./sw.js').catch(function (err) {
-        console.warn('서비스워커 등록 실패:', err);
-      });
+      navigator.serviceWorker
+        .register('/workout-app/sw.js', {
+          scope: '/workout-app/',
+          updateViaCache: 'none'
+        })
+        .then(function (registration) {
+          registration.update();
+          console.log('서비스워커 등록 완료:', registration.scope);
+        })
+        .catch(function (err) {
+          console.error('서비스워커 등록 실패:', err);
+        });
     });
   }
 </script>

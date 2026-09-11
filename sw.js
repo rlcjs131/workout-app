@@ -1,16 +1,12 @@
-const CACHE_NAME = 'workout-routine-pwa-v2';
-const ASSET_CACHE = 'workout-routine-assets-v2';
+const CACHE_NAME = 'workout-routine-pwa-v3';
 
 const APP_SHELL = [
-  './',
-  './index.html'
+  '/workout-app/',
+  '/workout-app/index.html',
+  '/workout-app/manifest.webmanifest',
+  '/workout-app/icon-192.png',
+  '/workout-app/icon-512.png'
 ];
-
-const FRESH_ASSETS = new Set([
-  './manifest.webmanifest',
-  './icon-192.png',
-  './icon-512.png'
-]);
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -24,12 +20,11 @@ self.addEventListener('activate', event => {
     caches.keys().then(keys =>
       Promise.all(
         keys
-          .filter(key => key !== CACHE_NAME && key !== ASSET_CACHE)
+          .filter(key => key !== CACHE_NAME)
           .map(key => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
@@ -37,52 +32,60 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(event.request.url);
 
-  // manifest와 앱 아이콘은 항상 네트워크에서 최신 파일을 먼저 가져온다.
-  if (url.origin === self.location.origin) {
-    const relativePath = './' + url.pathname.split('/').pop();
-
-    if (FRESH_ASSETS.has(relativePath)) {
-      event.respondWith(
-        fetch(event.request, { cache: 'no-store' })
-          .then(response => {
-            if (response && response.ok) {
-              const copy = response.clone();
-              caches.open(ASSET_CACHE).then(cache => cache.put(event.request, copy));
-            }
-            return response;
-          })
-          .catch(() => caches.match(event.request))
-      );
-      return;
-    }
+  if (
+    url.origin !== self.location.origin ||
+    !url.pathname.startsWith('/workout-app/')
+  ) {
+    return;
   }
 
-  // 화면 자체도 온라인일 때 최신 버전을 우선 사용한다.
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request, { cache: 'no-store' })
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache =>
+              cache.put('/workout-app/index.html', copy)
+            );
+          }
           return response;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() =>
+          caches.match('/workout-app/index.html')
+            .then(r => r || caches.match('/workout-app/'))
+        )
     );
     return;
   }
 
-  // 그 외 정적 파일은 캐시 우선.
+  if (
+    url.pathname.endsWith('/manifest.webmanifest') ||
+    url.pathname.endsWith('/icon-192.png') ||
+    url.pathname.endsWith('/icon-512.png')
+  ) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then(response => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
-
       return fetch(event.request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') {
-          return response;
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         }
-
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         return response;
       });
     })
