@@ -31,6 +31,7 @@
     --m-legs: #A78BFA;
     --m-tri: #5B9EFF;
     --m-bi: #FF7AC6;
+    --m-abs: #F4D35E;
 
     --ui: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', sans-serif;
     --num: 'Archivo', 'Pretendard', system-ui, sans-serif;
@@ -515,7 +516,7 @@
  --line:#e3e7ef; --line-strong:#aebbd4; --ink:#19233b; --muted:#58657b; --faint:#69758a;
  --primary:#315bea; --on-primary:#ffffff; --gain:#137454; --drop:#c43f57; --warn:#926016;
  --r-lg:24px; --r-md:14px; --r-sm:10px;
- --m-chest:#be5841; --m-back:#187f78; --m-shoulder:#926016; --m-legs:#7956b4; --m-tri:#315bea; --m-bi:#ad467c;
+ --m-chest:#be5841; --m-back:#187f78; --m-shoulder:#926016; --m-legs:#7956b4; --m-tri:#315bea; --m-bi:#ad467c; --m-abs:#8a7412;
 }
 html,body {background:var(--void);color-scheme:light;}
 body {background:radial-gradient(ellipse at 85% 0%,#e7ecff 0%,transparent 45%),var(--void);background-attachment:fixed;}
@@ -790,11 +791,6 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 @media(prefers-reduced-motion:reduce){.app-toast{transition:none;}}
 @media(max-width:400px){.bulk-app .routine-mode-note{font-size:12px;}.bulk-app .exercise-name-read{font-size:16px;}}
 </style>
-<link rel="manifest" href="./manifest.webmanifest">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="./icon-192.png">
 </head>
 <body>
 <div id="appToast" class="app-toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -882,13 +878,13 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <button class="btn-reset" id="btnRecordToday" type="button">오늘</button>
       </div>
       <div class="day-panel" id="dayPanel"></div>
-      <p class="save-hint routine-edit-only" id="routineSaveHint" role="status" aria-live="polite"></p>
+      <p class="save-hint" id="routineSaveHint" role="status" aria-live="polite"></p>
       <p class="save-hint" id="saveHint" role="status" aria-live="polite"></p>
 
       <div id="principles"></div>
 
       <div class="reset-row">
-        <button class="btn-reset btn-save-now routine-edit-only" id="btnSaveNow" type="button" hidden>루틴 저장</button>
+        <button class="btn-reset btn-save-now" id="btnSaveNow" type="button">루틴 저장</button>
         <button class="btn-reset routine-edit-only" id="btnClearDay" type="button">운동 초기화</button>
         <button class="btn-reset routine-edit-only" id="btnReset" type="button">기본 루틴 적용</button>
       </div>
@@ -933,14 +929,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
 <script>
 (function () {
-  var MUSCLES = ['가슴', '등', '어깨', '하체', '삼두', '이두'];
+  var MUSCLES = ['가슴', '등', '어깨', '하체', '삼두', '이두', '복근'];
+  var VOLUME_MUSCLES = ['가슴', '등', '어깨', '하체', '삼두', '이두'];
   var MUSCLE_COLOR = {
     '가슴': 'var(--m-chest)',
     '등': 'var(--m-back)',
     '어깨': 'var(--m-shoulder)',
     '하체': 'var(--m-legs)',
     '삼두': 'var(--m-tri)',
-    '이두': 'var(--m-bi)'
+    '이두': 'var(--m-bi)',
+    '복근': 'var(--m-abs)'
   };
   var MEV = 14, MRV = 22;
   var recordDataLocked = false, recordDataWarning = '';
@@ -1252,6 +1250,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     "리버스 컬(EZ바)",
     "크로스 바디 해머 컬",
     "조트맨 컬"
+  ],
+  "복근": [
+    "크런치",
+    "케이블 크런치",
+    "행잉 레그레이즈",
+    "라잉 레그레이즈",
+    "행잉 니레이즈",
+    "러시안 트위스트",
+    "케이블 우드촙",
+    "앱 롤아웃",
+    "바이시클 크런치",
+    "디클라인 싯업"
   ]
 };
     var result = {};
@@ -1260,6 +1270,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var p = {n:n,s:3,r:'8~12',rir:'1~2'};
         if (/플라이|레터럴|리어 델트|프론트 레이즈|스트레이트 암|레그 익스텐션|레그 컬|카프|티비얼리스|어브덕션|어덕션|킥백|페이스 풀/.test(n)) {p.r='12~15';p.rir='1~2';}
         if (m === '삼두' || m === '이두') {p.r='10~15';p.rir='1~2';}
+        if (m === '복근') {p.r='15~20';p.rir='1~2';}
+        if (n === '앱 롤아웃') {p.s=3;p.r='8~12';p.rir='1~2';}
         if (/백 스쿼트|프론트 스쿼트|벤치 프레스.*바벨|스탠딩 오버헤드 프레스|펜들레이 로우/.test(n)) {p.r='6~10';p.rir='2';}
         if (/루마니안 데드리프트|스티프 레그 데드리프트|굿모닝/.test(n)) {p.r='8~10';p.rir='2';}
         if (/컨벤셔널 데드리프트|스모 데드리프트|트랩바 데드리프트|랙 풀/.test(n)) {p.s=2;p.r='5~8';p.rir='2~3';}
@@ -1579,8 +1591,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     button.setAttribute('aria-pressed', String(routineEditing));
     document.getElementById('routineModeNote').textContent = routineEditing
       ? '종목·목표·순서 변경은 루틴 저장을 눌러야 확정됩니다.'
-      : (routineOrderPending ? '미저장 변경사항이 있어요. 루틴 편집에서 저장해주세요.' : '목표를 확인하고 운동 기록을 추가하세요.');
-    document.getElementById('btnSaveNow').hidden = !routineEditing;
+      : '목표를 확인하고 운동 기록을 추가하세요.';
+    document.getElementById('btnSaveNow').hidden = !routineEditing && !routineOrderPending;
     document.getElementById('btnSaveNow').classList.toggle('pending-save',routineOrderPending);
     var hint=document.getElementById('routineSaveHint');
     if(routineOrderPending && !hint.textContent)hint.textContent='임시 보관된 변경사항 · 루틴 저장을 눌러 확정하세요.';
@@ -1636,17 +1648,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
   function save(explicit) {
     ensureRoutineIds(days);
-    if(explicit!==true){routineOrderPending=true;showPendingOrder();return;}
+    if(explicit!==true){routineOrderPending=true;showPendingOrder();return false;}
     var hint=document.getElementById('routineSaveHint');
     if(!storageTransaction([{key:STORAGE_KEY,value:days},{key:routinePendingKey(),remove:true}])){
       routineOrderPending=true;updateRoutineMode();
       hint.textContent='루틴 저장 실패 · 변경사항은 유지됩니다. 다시 시도하세요.';
-      hint.className='save-hint save-error';showToast(hint.textContent,'error');return;
+      hint.className='save-hint save-error';showToast(hint.textContent,'error');return false;
     }
     routineOrderPending=false;updateRoutineMode();
     hint.textContent='루틴 저장됨';hint.className='save-hint on';
     showToast('루틴 저장 완료');
     clearTimeout(save._t);save._t=setTimeout(function(){hint.textContent='';hint.className='save-hint';},2000);
+    return true;
   }
 
   function dayTotal(d) {
@@ -2183,7 +2196,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
   function weeklyVolume() {
     var out = {};
-    MUSCLES.forEach(function (m) { out[m] = 0; });
+    VOLUME_MUSCLES.forEach(function (m) { out[m] = 0; });
     days.forEach(function (d) {
       d.ex.forEach(function (e) {
         var s = parseInt(e.s, 10) || 0;
@@ -2218,7 +2231,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
 
   function volumeBarsHtml(vol) {
-    return MUSCLES.map(function (m) {
+    return VOLUME_MUSCLES.map(function (m) {
       var v = vol[m];
       var pct = Math.min(100, (v / MRV) * 100);
       var mevPct = (MEV / MRV) * 100;
@@ -2834,7 +2847,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
 
   document.getElementById('btnSaveNow').addEventListener('click', function () {
-    save(true);
+    var ok = save(true);
+    if (ok && routineEditing) {
+      routineEditing = false;
+      renderPanel();
+    }
   });
 
   document.getElementById('btnCatalogSave').addEventListener('click', function () {
@@ -2899,7 +2916,6 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   var resetBtn = document.getElementById('btnReset');
   resetBtn.addEventListener('click', function () {
       clearConfirmation();
-      routineEditing = true;
       days = defaults();
       save();
       renderTabs();
@@ -2907,6 +2923,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       renderPrinciples();
       showToast('기본 루틴 불러옴 · 루틴 저장 필요','pending');
       var saveButton=document.getElementById('btnSaveNow');
+      saveButton.hidden=false;
       saveButton.focus({preventScroll:true});
       saveButton.scrollIntoView({block:'nearest'});
   });
@@ -3207,14 +3224,5 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 })();
 </script>
 
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function (err) {
-      console.error('Service worker registration failed:', err);
-    });
-  });
-}
-</script>
 </body>
 </html>
