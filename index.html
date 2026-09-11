@@ -489,14 +489,11 @@
   }
   .bulk-app .profile-add-row button:hover { background: #454C86; }
 
-  .bulk-app .backup-note { font-size: 11.5px; color: var(--muted); margin: 0 0 14px; line-height: 1.7; }
-  .bulk-app .backup-warn b { color: var(--drop); font-weight: 600; }
-  .bulk-app .backup-actions { display: flex; gap: 6px; }
-  .bulk-app .backup-textarea {
+  .bulk-app .record-export-note { font-size: 11.5px; color: var(--muted); margin: 0 0 14px; line-height: 1.7; }
+  .bulk-app .record-export-text-base {
     width: 100%; display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 10.5px; line-height: 1.6; margin-bottom: 8px; resize: vertical;
   }
-  .bulk-app #backupTextWrap { margin-top: 12px; }
 
   @media (max-width: 360px) {
     .mode-btn { font-size: 9.5px; }
@@ -570,11 +567,11 @@ body {background:radial-gradient(ellipse at 85% 0%,#e7ecff 0%,transparent 45%),v
 .bulk-app .btn-reset,.bulk-app .rec-preset-btn {font-size:14px;min-height:44px;padding:11px 8px;}
 .bulk-app .settings-card,.bulk-app .rep-summary,.bulk-app .rep-day,.bulk-app .rec-filter {padding:22px;}
 .bulk-app .settings-head,.bulk-app .rep-summary h2 {font-size:14px;color:var(--muted);margin:8px 0 12px;}
-.bulk-app .backup-note,.bulk-app .rec-empty,.bulk-app .cat-empty,.bulk-app .empty-note {font-size:14px;}
+.bulk-app .record-export-note,.bulk-app .rec-empty,.bulk-app .cat-empty,.bulk-app .empty-note {font-size:14px;}
 .bulk-app .rec-group {margin-bottom:12px;}.bulk-app .rec-group summary {padding:20px;}.bulk-app .rec-title {font-size:17px;}.bulk-app .rec-count {font-size:12px;}.bulk-app .rec-body {padding:0 20px 20px;}
 .bulk-app .cat-name,.bulk-app .profile-select,.bulk-app .rec-ex-name {font-size:16px;}.bulk-app .cat-item {padding:16px 0;}.bulk-app .cat-item-specs {gap:10px;}.bulk-app .cat-add-specs {flex-wrap:wrap;}.bulk-app .cat-add-btn {min-height:44px;font-size:14px;}
 .bulk-app .rep-day-title,.bulk-app .rep-ex-list li {font-size:15px;}.bulk-app .rep-ex-spec,.bulk-app .rep-note,.bulk-app .rec-when,.bulk-app .rec-set {font-size:12px;}.bulk-app .rep-day-letter {color:var(--primary);font-size:20px;}
-.bulk-app .rec-filter-row input[type=date] {font-size:14px;}.bulk-app .backup-textarea {font-size:13px;}
+.bulk-app .rec-filter-row input[type=date] {font-size:14px;}.bulk-app .record-export-text-base {font-size:13px;}
 .tab-bar {max-width:712px;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom));border:1px solid #dce2ed;background:#ffffffef;border-radius:24px;padding:7px;box-shadow:0 14px 40px #2838571a;backdrop-filter:blur(24px);}
 .mode-btn {font-size:12px;padding:11px 5px;gap:6px;min-height:62px;border-radius:17px;color:#69758a;}
 .mode-btn svg {width:22px;height:22px;}.mode-btn[aria-selected=true] {background:#e7ecff;color:#315bea;}
@@ -608,6 +605,82 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
 .bulk-app .reorder-active{outline:2px solid var(--primary);box-shadow:0 12px 28px #315bea28;z-index:2;}
 .bulk-app .reorder-active .reorder-handle{cursor:grabbing;background:var(--primary);color:#fff;}
 .bulk-app .pending-save{background:var(--primary);color:#fff;border-color:var(--primary);}
+.bulk-app .record-export-open{width:100%;background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-size:15px;}
+.bulk-app #recordExportWrap{margin-top:14px;}
+.bulk-app .record-export-text{min-height:260px;margin-bottom:10px;line-height:1.75;background:var(--sunken);color:var(--ink);white-space:pre-wrap;}
+/* Mobile and installed-app layout */
+html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+.bulk-app .drop-before {box-shadow:0 -4px 0 var(--primary)!important;}
+.bulk-app .drop-after {box-shadow:0 4px 0 var(--primary)!important;}
+.bulk-app .reorder-handle {width:40px;z-index:3;}
+.bulk-app .ex-row,.bulk-app .ex-row:last-child {padding-left:46px!important;}
+.bulk-app .reorder-active {opacity:.75;}
+@media(max-width:700px),(pointer:coarse){
+ .bulk-app {width:100%;max-width:620px;min-height:100dvh;padding:calc(20px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(118px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));}
+ .bulk-app .exercise-list {grid-template-columns:minmax(0,1fr);}
+ .bulk-app .ex-row,.bulk-app .ex-row:last-child {min-width:0;padding:16px 12px 16px 46px!important;}
+ .bulk-app .ex-top {gap:7px;}.bulk-app .ex-num{width:25px;height:28px;flex-shrink:0;}
+ .bulk-app select.in-name{font-size:16px;min-width:0;width:0;}
+ .bulk-app .ex-fields {display:grid;grid-template-columns:1.25fr 1fr 1.2fr 1fr;gap:6px;margin:14px 0 0;align-items:end;}
+ .bulk-app .ex-fields .field{min-width:0;display:flex;flex-direction:column;align-items:stretch;}
+ .bulk-app .ex-fields input,.bulk-app .ex-fields select{width:100%;min-width:0;padding:8px 4px;font-size:16px;}
+ .bulk-app .log-fields {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;margin:14px 0 0;align-items:end;}
+ .bulk-app .log-fields .field{display:flex;flex-direction:column;align-items:stretch;min-width:0;}
+ .bulk-app .log-fields input{width:100%;min-width:0;min-height:44px;padding:9px 5px;font-size:16px;}
+ .bulk-app .btn-record-one{min-height:44px;padding:9px 10px;}
+ .bulk-app .prev-hint{margin-left:0;overflow-wrap:anywhere;}
+ .bulk-app .day-tabs{max-width:none;}.bulk-app .masthead h1{font-size:26px;}
+ .bulk-app .stamp-row{padding:18px 16px;}.bulk-app .in-stamp{font-size:20px;}
+ .bulk-app .set-total{font-size:34px;}.bulk-app .masthead-actions{gap:4px;}
+ .bulk-app .rec-filter-row input[type=date]{min-width:0;width:0;font-size:16px;}
+ .bulk-app .cat-item-specs{flex-wrap:wrap;}.bulk-app .cat-add-specs{flex-wrap:wrap;}
+ .bulk-app .rep-ex-list li{flex-wrap:wrap;}
+ .tab-bar{width:auto;max-width:596px;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));}
+}
+.bulk-app #principles {background:transparent;border:0;overflow:visible;display:grid;gap:12px;}
+.bulk-app #principles > .principle {background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+.bulk-app .memo-body {white-space:pre-wrap;overflow-wrap:anywhere;}
+.bulk-app .memo-card summary {overflow-wrap:anywhere;}
+.bulk-app #principles > .fixed-guide {background:#f0f4ff;border:1px solid #c4d1f5;border-top:4px solid var(--primary);box-shadow:0 4px 16px #315bea0a;}
+.bulk-app .fixed-guide summary {align-items:center;}
+.bulk-app .fixed-guide-heading {display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;}
+.bulk-app .fixed-guide-badge {display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:6px;background:#dde6ff;color:#294db5;font-size:12px;font-weight:700;}
+.bulk-app .fixed-guide-badge svg {width:13px;height:13px;}
+.bulk-app .memo-editor-card {padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:16px;}
+.bulk-app .memo-editor-card label {display:block;font-size:14px;color:var(--muted);margin-bottom:12px;}
+.bulk-app .memo-editor-card input,.bulk-app .memo-editor-card textarea {display:block;width:100%;margin-top:6px;font-size:16px;}
+.bulk-app .memo-editor-card textarea {resize:vertical;line-height:1.6;}
+.memo-delete-overlay{position:fixed;inset:0;z-index:1000;background:#15213c80;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;font-family:var(--ui);}
+.memo-delete-dialog{box-sizing:border-box;width:100%;max-width:380px;max-height:85dvh;overflow:auto;background:#fff;color:var(--ink);padding:24px;border-radius:22px;box-shadow:0 20px 60px #0003;}
+.memo-delete-dialog h2{font-size:20px;margin:0 0 12px;}.memo-delete-dialog p{font-size:15px;line-height:1.65;overflow-wrap:anywhere;color:var(--muted);}
+.memo-delete-actions{display:flex;gap:10px;margin-top:22px;}.memo-delete-actions button{flex:1;min-height:48px;border:0;border-radius:12px;background:var(--raised);color:var(--ink);font:600 16px var(--ui);cursor:pointer;}
+.memo-delete-actions .memo-delete-confirm{background:#c43f57;color:#fff;}
+.bulk-app .exercise-record-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;}
+.bulk-app .exercise-record-head{display:flex;align-items:center;gap:12px;justify-content:space-between;}
+.bulk-app .exercise-record-head h3{margin:0;font-size:17px;overflow-wrap:anywhere;}
+.bulk-app .exercise-record-delete{flex:0 0 auto;color:var(--drop);}
+.bulk-app .record-card-count{font-size:12px;color:var(--muted);margin:8px 0 12px;}
+.bulk-app .record-card-date{font-size:12px;color:var(--muted);flex-shrink:0;}
+.bulk-app .record-card-value{flex:1;font-size:15px;font-weight:600;overflow-wrap:anywhere;}
+.bulk-app .record-muscle-group .exercise-record-card{background:var(--sunken);padding:14px;margin:0 0 10px;border-radius:14px;}
+.bulk-app .record-muscle-group > summary{display:grid;grid-template-columns:minmax(0,1fr) auto 8px;align-items:center;gap:16px;}
+.bulk-app .record-muscle-group > summary > .rec-count{text-align:right;justify-self:end;}
+.bulk-app .record-muscle-group .exercise-record-head{padding:0;list-style:none;cursor:pointer;gap:8px;}
+.bulk-app .exercise-record-head::-webkit-details-marker{display:none;}
+.bulk-app .exercise-record-head h3{flex:1;font-size:15px;}
+.bulk-app .exercise-record-chevron{width:7px;height:7px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg);flex-shrink:0;margin:0 3px;}
+.bulk-app .exercise-record-card[open] > summary .exercise-record-chevron{transform:rotate(225deg);}
+.bulk-app .record-count-badge{flex-shrink:0;white-space:nowrap;font-size:12px;font-weight:600;color:var(--primary);background:#e7ecff;padding:4px 8px;border-radius:8px;}
+.bulk-app .record-delete-footer{border-top:1px solid var(--line);margin-top:14px;padding-top:14px;display:flex;justify-content:flex-end;}
+.bulk-app .record-delete-footer .exercise-record-delete{font-size:13px;min-height:44px;background:transparent;}
+.exercise-search-dialog{max-width:500px;max-height:80dvh;display:flex;flex-direction:column;overflow:hidden;padding:20px;}
+.exercise-search-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;}.exercise-search-header h2{margin:0;}
+.exercise-search-header button{border:0;border-radius:10px;background:var(--raised);color:var(--ink);padding:12px;font:600 14px var(--ui);cursor:pointer;}
+.exercise-search-dialog input{box-sizing:border-box;width:100%;min-height:48px;padding:12px;border:1px solid var(--line-strong);border-radius:12px;background:var(--sunken);color:var(--ink);font:16px var(--ui);flex-shrink:0;}
+.exercise-search-dialog .exercise-search-count{margin:12px 0;font-size:13px;}
+.exercise-search-results{overflow-y:auto;overscroll-behavior:contain;min-height:0;}
+.exercise-search-result{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;color:var(--ink);font:600 16px var(--ui);cursor:pointer;}
+.exercise-search-result small{font-size:12px;font-weight:400;color:var(--muted);}.exercise-search-result:hover{background:#edf1ff;}
 </style>
 </head>
 <body>
@@ -639,25 +712,23 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       </div>
     </div>
 
-    <div class="settings-head" style="margin-top:18px;">백업</div>
+    <div class="settings-head" style="margin-top:18px;">운동 메모 관리</div>
     <div class="settings-card">
-      <p class="backup-note">모든 프로필의 루틴 · 종목 · 운동 기록을 통째로 저장해둘 수 있어요. 브라우저 데이터가 지워지면 이 백업으로만 복구할 수 있으니, 가끔씩 받아두는 걸 추천해요.</p>
-      <div class="backup-actions">
-        <button class="btn-reset" id="btnBackupDownload" type="button">백업 파일 다운로드</button>
-        <button class="btn-reset" id="btnBackupShowText" type="button">텍스트로 보기</button>
-      </div>
-      <div id="backupTextWrap" hidden>
-        <textarea id="backupText" class="backup-textarea" readonly rows="6"></textarea>
-        <button class="btn-reset" id="btnBackupCopy" type="button">복사</button>
-      </div>
+      <p class="record-export-note">오늘 탭에 표시할 안내와 메모를 편집하세요. 메모 내용은 운동 추천 계산에 영향을 주지 않아요.</p>
+      <div id="memoEditor"></div>
+      <button class="btn-reset" id="btnMemoAdd" type="button">+ 항목 추가</button>
+      <button class="btn-reset btn-save-now" id="btnMemoSave" type="button">메모 저장</button>
+      <p class="save-hint" id="memoSaveHint" role="status" aria-live="polite"></p>
     </div>
-
-    <div class="settings-head" style="margin-top:18px;">복원</div>
+    <div class="settings-head" style="margin-top:18px;">운동기록</div>
     <div class="settings-card">
-      <p class="backup-note backup-warn">백업 텍스트를 붙여넣고 복원하면 <b>이 기기의 모든 프로필 데이터가 지금 붙여넣은 내용으로 덮어써져요.</b> 되돌릴 수 없으니 신중하게 눌러주세요.</p>
-      <textarea id="restoreText" class="backup-textarea" rows="6" placeholder="백업 텍스트를 여기에 붙여넣으세요"></textarea>
-      <button class="btn-reset" id="btnRestore" type="button">복원하기</button>
-      <p class="save-hint" id="restoreHint"></p>
+      <p class="record-export-note">현재 프로필에 저장된 운동기록을 텍스트로 확인하고 복사할 수 있어요.</p>
+      <button class="btn-reset btn-save-now record-export-open" id="btnRecordExport" type="button">운동기록 저장</button>
+      <div id="recordExportWrap" hidden>
+        <textarea id="recordExportText" class="record-export-text-base record-export-text" readonly rows="12" aria-label="저장된 운동기록 텍스트"></textarea>
+        <button class="btn-reset" id="btnRecordCopy" type="button">텍스트 복사</button>
+        <p class="save-hint" id="recordExportHint" role="status" aria-live="polite"></p>
+      </div>
     </div>
   </div>
 
@@ -682,7 +753,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       <div class="cat-toolbar">
         <div class="cat-toolbar-row">
           <button class="btn-reset btn-save-now" id="btnCatalogSave" type="button">지금 저장</button>
-          <button class="btn-reset" id="btnCatalogReset" type="button">처음 목록으로 되돌리기</button>
+          <button class="btn-reset" id="btnCatalogReset" type="button">기본 종목으로 초기화</button>
         </div>
         <p class="save-hint" id="catalogSaveHint"></p>
       </div>
@@ -754,57 +825,36 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
 
   var STORAGE_KEY, CATALOG_KEY, LOG_KEY, DRAFT_KEY;
   function applyProfileKeys() {
-    STORAGE_KEY = keyFor('bulk-routine-v4', activeProfile);
-    CATALOG_KEY = keyFor('bulk-routine-catalog-v2', activeProfile);
+    STORAGE_KEY = keyFor('bulk-routine-v9', activeProfile);
+    CATALOG_KEY = keyFor('bulk-routine-catalog-v3', activeProfile);
     LOG_KEY = keyFor('bulk-routine-log-v1', activeProfile);
-    DRAFT_KEY = keyFor('bulk-routine-draft-v1', activeProfile);
+    DRAFT_KEY = keyFor('bulk-routine-draft-v2', activeProfile);
   }
   applyProfileKeys();
 
   function defaults() {
-    return [
-      { key:'mon', letter:'월', title:'가슴 · 삼두', cardio:true, ex:[
-        { n:'플랫 바벨 벤치프레스', m:'가슴', s:4, r:'6~8', rir:'1~2' },
-        { n:'인클라인 덤벨 프레스', m:'가슴', s:3, r:'8~10', rir:'1~2' },
-        { n:'케이블 플라이', m:'가슴', s:3, r:'12~15', rir:'1' },
-        { n:'스컬크러셔 (EZ바)', m:'삼두', s:3, r:'8~10', rir:'1~2' },
-        { n:'로프 푸시다운', m:'삼두', s:3, r:'12~15', rir:'0~1' }
-      ]},
-      { key:'tue', letter:'화', title:'등 · 이두', cardio:false, ex:[
-        { n:'풀업', m:'등', s:3, r:'6~10', rir:'1~2' },
-        { n:'랫풀다운', m:'등', s:3, r:'8~10', rir:'1~2' },
-        { n:'시티드 로우', m:'등', s:3, r:'8~10', rir:'1~2' },
-        { n:'암풀다운', m:'등', s:2, r:'12~15', rir:'0~1' },
-        { n:'바벨 컬', m:'이두', s:3, r:'8~10', rir:'1' },
-        { n:'인클라인 덤벨 컬', m:'이두', s:2, r:'10~12', rir:'0~1' }
-      ]},
-      { key:'wed', letter:'수', title:'하체', cardio:false, ex:[
-        { n:'백스쿼트', m:'하체', s:4, r:'6~8', rir:'1~2' },
-        { n:'루마니안 데드리프트', m:'하체', s:3, r:'8~10', rir:'1~2' },
-        { n:'레그 익스텐션', m:'하체', s:3, r:'10~15', rir:'0~1' },
-        { n:'레그 컬', m:'하체', s:3, r:'10~15', rir:'0~1' }
-      ]},
-      { key:'thu', letter:'목', title:'어깨 · 삼두', cardio:true,
-        ex:[
-        { n:'오버헤드 프레스', m:'어깨', s:4, r:'6~8', rir:'1~2' },
-        { n:'사이드 레터럴 레이즈', m:'어깨', s:5, r:'12~20', rir:'0~1' },
-        { n:'리어델트 플라이', m:'어깨', s:4, r:'12~20', rir:'0~1' },
-        { n:'오버헤드 케이블 익스텐션', m:'삼두', s:2, r:'10~15', rir:'1' }
-      ]},
-      { key:'fri', letter:'금', title:'가슴 · 등', cardio:false, ex:[
-        { n:'인클라인 벤치프레스', m:'가슴', s:3, r:'6~10', rir:'1~2' },
-        { n:'케이블 크로스오버', m:'가슴', s:3, r:'12~15', rir:'0~1' },
-        { n:'바벨 · 덤벨 로우', m:'등', s:3, r:'6~10', rir:'1~2' },
-        { n:'시티드 케이블 로우', m:'등', s:3, r:'10~12', rir:'1' }
-      ]},
-      { key:'sat', letter:'토', title:'하체(간단) · 어깨 · 이두', cardio:false, ex:[
-        { n:'레그프레스', m:'하체', s:4, r:'10~15', rir:'1' },
-        { n:'레그 컬', m:'하체', s:3, r:'10~15', rir:'0~1' },
-        { n:'사이드 레터럴 레이즈', m:'어깨', s:3, r:'12~20', rir:'0~1' },
-        { n:'리어델트 플라이', m:'어깨', s:2, r:'12~20', rir:'0~1' },
-        { n:'케이블 해머컬', m:'이두', s:3, r:'10~15', rir:'0~1' }
-      ]}
+    var plan = [
+      {key:'mon',letter:'월',title:'가슴 · 삼두',items:[
+        ['가슴','체스트 프레스(머신)'],['가슴','플랫 벤치 프레스(스미스)'],['가슴','인클라인 벤치 프레스(덤벨)'],['가슴','머신 플라이'],['가슴','가슴 딥스'],['삼두','오버헤드 케이블 익스텐션'],['삼두','로프 푸시다운']]},
+      {key:'tue',letter:'화',title:'등 · 이두',items:[
+        ['등','랫풀다운(와이드 그립)'],['등','랫풀다운(뉴트럴 그립)'],['등','시티드 로우(와이드 그립)'],['등','시티드 로우(뉴트럴 그립)'],['등','스트레이트 암 풀다운'],['이두','EZ바 프리처 컬'],['이두','케이블 해머 컬(로프)']]},
+      {key:'wed',letter:'수',title:'하체',items:[
+        ['하체','레그 컬'],['하체','레그 익스텐션'],['하체','컨벤셔널 데드리프트'],['하체','백 스쿼트'],['하체','힙 쓰러스트'],['하체','불가리안 스플릿 스쿼트']]},
+      {key:'thu',letter:'목',title:'어깨 · 삼두',items:[
+        ['어깨','시티드 오버헤드 프레스(바벨)'],['어깨','시티드 오버헤드 프레스(덤벨)'],['어깨','머신 숄더 프레스(뉴트럴 그립)'],['어깨','사이드 레터럴 레이즈(케이블)'],['어깨','리어 델트 플라이'],['삼두','스컬 크러셔'],['삼두','케이블 V바 푸시다운']]},
+      {key:'fri',letter:'금',title:'가슴 · 등',items:[
+        ['가슴','체스트 프레스(머신)'],['가슴','플랫 벤치 프레스(스미스)'],['가슴','케이블 플라이'],['등','풀업'],['등','랫풀다운(뉴트럴 그립)'],['등','시티드 로우(와이드 그립)']]},
+      {key:'sat',letter:'토',title:'하체 · 어깨 · 이두',items:[
+        ['하체','레그 프레스'],['하체','루마니안 데드리프트'],['하체','카프 레이즈'],['어깨','사이드 레터럴 레이즈(덤벨)'],['어깨','리어 델트 플라이'],['이두','EZ바 컬'],['이두','인클라인 덤벨 컬']]}
     ];
+    var seed = defaultCatalog();
+    return plan.map(function(day) {
+      return {key:day.key,letter:day.letter,title:day.title,cardio:false,ex:day.items.map(function(item) {
+        var preset = (seed[item[0]] || []).find(function(ex) { return ex.n === item[1]; }) || {r:'',rir:''};
+        var sets = day.key === 'sat' && (item[1] === '사이드 레터럴 레이즈(덤벨)' || item[1] === '리어 델트 플라이') ? 3 : 2;
+        return {n:item[1],m:item[0],s:sets,r:preset.r,rir:preset.rir};
+      })};
+    });
   }
 
   var memoryOnly = false;
@@ -831,63 +881,194 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
 
   // 각 항목은 { n: 이름, s: 세트, r: 반복수, rir: RIR } — 종목 관리에서 직접 등록/수정 가능
   function defaultCatalog() {
-    function E(n, s, r, rir) { return { n: n, s: s, r: r, rir: rir }; }
-    return {
-      '가슴': [
-        E('플랫 바벨 벤치프레스', 4, '6~8', '1~2'),
-        E('인클라인 덤벨 프레스', 3, '8~10', '1~2'),
-        E('케이블 플라이', 3, '12~15', '1'),
-        E('인클라인 벤치프레스', 3, '6~10', '1~2'),
-        E('케이블 크로스오버', 3, '12~15', '0~1'),
-        E('디클라인 바벨 벤치프레스', 3, '8~10', '1~2'),
-        E('펙덱 플라이', 3, '12~15', '0~1'),
-        E('머신 체스트프레스', 3, '8~12', '1~2')
-      ],
-      '등': [
-        E('풀업', 3, '6~10', '1~2'),
-        E('랫풀다운', 3, '8~10', '1~2'),
-        E('시티드 로우', 3, '8~10', '1~2'),
-        E('암풀다운', 2, '12~15', '0~1'),
-        E('바벨 · 덤벨 로우', 3, '6~10', '1~2'),
-        E('시티드 케이블 로우', 3, '10~12', '1'),
-        E('티바 로우', 3, '8~10', '1~2'),
-        E('원암 덤벨 로우', 3, '8~10', '1~2')
-      ],
-      '어깨': [
-        E('오버헤드 프레스', 4, '6~8', '1~2'),
-        E('사이드 레터럴 레이즈', 4, '12~20', '0~1'),
-        E('리어델트 플라이', 3, '12~20', '0~1'),
-        E('덤벨 숄더프레스', 3, '8~10', '1~2'),
-        E('케이블 레터럴 레이즈', 3, '12~15', '0~1'),
-        E('페이스풀', 3, '12~15', '0~1'),
-        E('프론트 레이즈', 2, '12~15', '0~1'),
-        E('아놀드 프레스', 3, '8~10', '1~2')
-      ],
-      '하체': [
-        E('백스쿼트', 4, '6~8', '1~2'),
-        E('루마니안 데드리프트', 3, '8~10', '1~2'),
-        E('레그 익스텐션', 3, '10~15', '0~1'),
-        E('레그 컬', 3, '10~15', '0~1'),
-        E('레그프레스', 4, '10~15', '1'),
-        E('런지', 3, '8~12', '1~2'),
-        E('힙 쓰러스트', 3, '8~12', '1~2'),
-        E('카프레이즈', 4, '12~15', '0~1')
-      ],
-      '삼두': [
-        E('스컬크러셔 (EZ바)', 3, '8~10', '1~2'),
-        E('로프 푸시다운', 3, '12~15', '0~1'),
-        E('오버헤드 케이블 익스텐션', 2, '10~15', '1'),
-        E('딥스', 3, '8~10', '1~2'),
-        E('클로즈그립 벤치프레스', 3, '6~10', '1~2')
-      ],
-      '이두': [
-        E('바벨 컬', 3, '8~10', '1'),
-        E('인클라인 덤벨 컬', 2, '10~12', '0~1'),
-        E('케이블 해머컬', 3, '10~15', '0~1'),
-        E('프리처 컬', 3, '8~10', '1'),
-        E('컨센트레이션 컬', 2, '10~12', '0~1')
-      ]
-    };
+    var names = {
+  "가슴": [
+    "체스트 프레스(머신)",
+    "인클라인 벤치 프레스(바벨)",
+    "인클라인 벤치 프레스(덤벨)",
+    "인클라인 벤치 프레스(스미스)",
+    "플랫 벤치 프레스(바벨)",
+    "플랫 벤치 프레스(덤벨)",
+    "플랫 벤치 프레스(스미스)",
+    "케이블 플라이",
+    "머신 플라이",
+    "가슴 딥스",
+    "디클라인 벤치 프레스(바벨)",
+    "디클라인 벤치 프레스(덤벨)",
+    "디클라인 벤치 프레스(스미스)",
+    "인클라인 체스트 프레스(머신)",
+    "디클라인 체스트 프레스(머신)",
+    "푸시업",
+    "인클라인 푸시업",
+    "디클라인 푸시업",
+    "덤벨 플라이(플랫)",
+    "덤벨 플라이(인클라인)",
+    "케이블 플라이(로우 투 하이)",
+    "케이블 플라이(하이 투 로우)",
+    "케이블 플라이(미들)",
+    "펙덱 플라이",
+    "덤벨 풀오버"
+  ],
+  "등": [
+    "풀업",
+    "랫풀다운(와이드 그립)",
+    "랫풀다운(뉴트럴 그립)",
+    "시티드 로우(와이드 그립)",
+    "시티드 로우(뉴트럴 그립)",
+    "스트레이트 암 풀다운",
+    "친업",
+    "어시스트 풀업",
+    "바벨 로우",
+    "펜들레이 로우",
+    "T바 로우",
+    "체스트 서포티드 로우(덤벨)",
+    "체스트 서포티드 로우(머신)",
+    "원암 덤벨 로우",
+    "원암 케이블 로우",
+    "시티드 케이블 로우",
+    "머신 로우",
+    "하이 로우(머신)",
+    "랫풀다운(언더 그립)",
+    "랫풀다운(클로즈 그립)",
+    "원암 랫풀다운",
+    "스트레이트 암 풀다운(로프)",
+    "랙 풀",
+    "백 익스텐션",
+    "슈러그(바벨)",
+    "슈러그(덤벨)"
+  ],
+  "어깨": [
+    "스탠딩 오버헤드 프레스(바벨)",
+    "스탠딩 오버헤드 프레스(덤벨)",
+    "시티드 오버헤드 프레스(바벨)",
+    "시티드 오버헤드 프레스(덤벨)",
+    "머신 숄더 프레스(뉴트럴 그립)",
+    "머신 숄더 프레스(와이드 그립)",
+    "사이드 레터럴 레이즈(덤벨)",
+    "사이드 레터럴 레이즈(케이블)",
+    "리어 델트 플라이",
+    "아놀드 프레스",
+    "비하인드 넥 프레스",
+    "숄더 프레스(스미스)",
+    "원암 숄더 프레스(덤벨)",
+    "랜드마인 프레스",
+    "프론트 레이즈(덤벨)",
+    "프론트 레이즈(케이블)",
+    "프론트 레이즈(플레이트)",
+    "업라이트 로우(EZ바)",
+    "업라이트 로우(케이블)",
+    "사이드 레터럴 레이즈(머신)",
+    "벤트오버 레터럴 레이즈(덤벨)",
+    "리버스 펙덱 플라이",
+    "페이스 풀",
+    "케이블 리어 델트 플라이",
+    "리어 델트 로우"
+  ],
+  "하체": [
+    "백 스쿼트",
+    "루마니안 데드리프트",
+    "컨벤셔널 데드리프트",
+    "레그 익스텐션",
+    "레그 컬",
+    "레그 프레스",
+    "런지",
+    "불가리안 스플릿 스쿼트",
+    "힙 쓰러스트",
+    "카프 레이즈",
+    "프론트 스쿼트",
+    "핵 스쿼트",
+    "스미스 스쿼트",
+    "고블릿 스쿼트",
+    "벨트 스쿼트",
+    "스모 데드리프트",
+    "스티프 레그 데드리프트",
+    "트랩바 데드리프트",
+    "워킹 런지",
+    "리버스 런지",
+    "사이드 런지",
+    "스텝업",
+    "싱글 레그 프레스",
+    "싱글 레그 익스텐션",
+    "싱글 레그 컬",
+    "시티드 레그 컬",
+    "라잉 레그 컬",
+    "노르딕 햄스트링 컬",
+    "글루트 킥백(케이블)",
+    "힙 어브덕션(머신)",
+    "힙 어덕션(머신)",
+    "글루트 브리지",
+    "굿모닝",
+    "백 익스텐션(둔근)",
+    "스탠딩 카프 레이즈",
+    "시티드 카프 레이즈",
+    "레그 프레스 카프 레이즈",
+    "티비얼리스 레이즈"
+  ],
+  "삼두": [
+    "스컬 크러셔",
+    "로프 푸시다운",
+    "오버헤드 케이블 익스텐션",
+    "케이블 V바 푸시다운",
+    "덤벨 오버헤드 트라이셉스 익스텐션",
+    "덤벨 킥백",
+    "라잉 덤벨 트라이셉스 익스텐션",
+    "클로즈 그립 벤치 프레스",
+    "클로즈 그립 벤치 프레스(스미스)",
+    "벤치 딥스",
+    "어시스트 딥스",
+    "스트레이트바 푸시다운",
+    "원암 케이블 푸시다운",
+    "리버스 그립 푸시다운",
+    "원암 오버헤드 케이블 익스텐션",
+    "EZ바 오버헤드 트라이셉스 익스텐션",
+    "EZ바 라잉 트라이셉스 익스텐션",
+    "케이블 킥백",
+    "JM 프레스"
+  ],
+  "이두": [
+    "EZ바 컬",
+    "EZ바 프리처 컬",
+    "인클라인 덤벨 컬",
+    "컨센트레이션 컬",
+    "덤벨 해머 컬",
+    "케이블 컬(스탠딩)",
+    "케이블 해머 컬(로프)",
+    "바벨 컬",
+    "덤벨 컬(스탠딩)",
+    "얼터네이팅 덤벨 컬",
+    "시티드 덤벨 컬",
+    "프리처 컬(머신)",
+    "프리처 컬(덤벨)",
+    "스파이더 컬(EZ바)",
+    "스파이더 컬(덤벨)",
+    "베이지안 케이블 컬",
+    "원암 케이블 컬",
+    "하이 케이블 컬",
+    "드래그 컬",
+    "리버스 컬(EZ바)",
+    "크로스 바디 해머 컬",
+    "조트맨 컬"
+  ]
+};
+    var result = {};
+    Object.keys(names).forEach(function(m) {
+      result[m] = names[m].map(function(n) {
+        var p = {n:n,s:3,r:'8~12',rir:'1~2'};
+        if (/플라이|레터럴|리어 델트|프론트 레이즈|스트레이트 암|레그 익스텐션|레그 컬|카프|티비얼리스|어브덕션|어덕션|킥백|페이스 풀/.test(n)) {p.r='12~15';p.rir='1~2';}
+        if (m === '삼두' || m === '이두') {p.r='10~15';p.rir='1~2';}
+        if (/백 스쿼트|프론트 스쿼트|벤치 프레스.*바벨|스탠딩 오버헤드 프레스|펜들레이 로우/.test(n)) {p.r='6~10';p.rir='2';}
+        if (/루마니안 데드리프트|스티프 레그 데드리프트|굿모닝/.test(n)) {p.r='8~10';p.rir='2';}
+        if (/컨벤셔널 데드리프트|스모 데드리프트|트랩바 데드리프트|랙 풀/.test(n)) {p.s=2;p.r='5~8';p.rir='2~3';}
+        if (/런지|스텝업|불가리안 스플릿 스쿼트/.test(n)) {p.r='10~12';p.rir='2';}
+        if (/푸시업|딥스|친업|풀업|노르딕/.test(n)) {p.s=3;p.r='6~12';p.rir='1~2';}
+        if (/슈러그/.test(n)) {p.r='10~15';p.rir='1~2';}
+        if (n === '비하인드 넥 프레스') {p.s=2;p.r='10~12';p.rir='3';}
+        if (n === '업라이트 로우(EZ바)' || n === '업라이트 로우(케이블)') {p.s=2;p.r='10~15';p.rir='2~3';}
+        if (n === 'JM 프레스') {p.s=2;p.r='8~12';p.rir='2';}
+        return p;
+      });
+    });
+    return result;
   }
 
   function catalogEntry(muscle, name) {
@@ -897,7 +1078,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
   }
   function recommendFor(muscle, name) {
     var e = catalogEntry(muscle, name);
-    return e ? { s: e.s, r: e.r, rir: e.rir } : { s: 3, r: '8~12', rir: '1~2' };
+    return e ? { s: e.s, r: e.r, rir: e.rir } : { s: 1, r: '', rir: '' };
   }
 
   function parseRepRange(r) {
@@ -964,8 +1145,8 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
             return {
               n: item.n,
               s: item.s != null ? item.s : 3,
-              r: item.r || '8~12',
-              rir: item.rir || '1~2'
+              r: item.r != null ? item.r : '',
+              rir: item.rir != null ? item.rir : ''
             };
           }
           migrated = true;
@@ -978,9 +1159,56 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     return cat;
   }
   var catalog = loadCatalog();
+  applyHypertrophyDefaults();
+  ensureCatalogAdditions();
+  function applyHypertrophyDefaults() {
+    var marker = keyFor('bulk-catalog-hypertrophy-v1', activeProfile);
+    if (readJSON(marker, false)) return;
+    var seed = defaultCatalog();
+    MUSCLES.forEach(function(m) {
+      catalog[m] = (catalog[m] || []).map(function(e) {
+        var preset = seed[m].find(function(p){return p.n===e.n;});
+        return preset ? Object.assign({},e,{s:preset.s,r:preset.r,rir:preset.rir}) : e;
+      });
+    });
+    if (writeJSON(CATALOG_KEY,catalog)) writeJSON(marker,true);
+  }
+  function ensureCatalogAdditions() {
+    var marker = keyFor('bulk-catalog-expand-all-v2', activeProfile);
+    if (readJSON(marker, false)) return;
+    var seed = defaultCatalog();
+    MUSCLES.forEach(function(m) {
+      var existing = {};
+      (catalog[m] || []).forEach(function(e) { existing[e.n] = true; });
+      (seed[m] || []).forEach(function(e) {
+        if (!existing[e.n]) catalog[m].push({n:e.n,s:e.s,r:e.r,rir:e.rir});
+      });
+    });
+    if (writeJSON(CATALOG_KEY, catalog)) writeJSON(marker, true);
+  }
 
   function genId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+  function requireSecondClick(button, confirmText, action) {
+    if (button.dataset.deleteArmed === 'true') {
+      clearTimeout(button._deleteTimer);
+      action();
+      return;
+    }
+    var originalText = button.textContent;
+    var originalLabel = button.getAttribute('aria-label') || originalText;
+    button.dataset.deleteArmed = 'true';
+    button.classList.add('confirming');
+    button.textContent = confirmText || '삭제 확인';
+    button.setAttribute('aria-label', originalLabel + ' — 한 번 더 누르면 삭제');
+    button._deleteTimer = setTimeout(function () {
+      if (!button.isConnected) return;
+      button.dataset.deleteArmed = '';
+      button.classList.remove('confirming');
+      button.textContent = originalText;
+      button.setAttribute('aria-label', originalLabel);
+    }, 4000);
   }
   function loadLogs() {
     var L = readJSON(LOG_KEY, []);
@@ -1060,7 +1288,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
   };
   function renderModeToggle() {
     modeToggleEl.innerHTML = '';
-    [['day', '오늘'], ['catalog', '운동'], ['records', '기록'], ['report', '통계']].forEach(function (pair) {
+    [['day', '오늘'], ['catalog', '운동 관리'], ['records', '기록'], ['report', '통계']].forEach(function (pair) {
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'mode-btn';
@@ -1200,7 +1428,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     handle.setAttribute('aria-label', '운동 순서 이동: 길게 누르고 드래그 또는 Alt와 방향키');
     row.appendChild(handle);
     var timer = null, active = false, pointer = null, startX = 0, startY = 0;
-    var lastX = 0, lastY = 0, frame = 0;
+    var lastX = 0, lastY = 0, frame = 0, target = null, insertAfter = false;
     function moveAt(x, y) {
       var candidates = Array.from(list.children).filter(function (el) { return el !== row; });
       var closest = null, distance = Infinity;
@@ -1212,9 +1440,11 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
         if (score < distance) { closest=el; distance=score; }
       });
       if (!closest) return;
+      if (target) target.classList.remove('drop-before','drop-after');
+      target = closest;
       var rect = closest.getBoundingClientRect();
-      if (y < rect.top + rect.height/2) list.insertBefore(row, closest);
-      else list.insertBefore(row, closest.nextSibling);
+      insertAfter = y >= rect.top + rect.height/2;
+      closest.classList.add(insertAfter ? 'drop-after' : 'drop-before');
     }
     function scrollFrame() {
       if (!active) return;
@@ -1227,10 +1457,17 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       var wasActive=active; active=false;
       cancelAnimationFrame(frame);
       row.classList.remove('reorder-active');handle.classList.remove('holding');
+      if (target) target.classList.remove('drop-before','drop-after');
       handle.setAttribute('aria-pressed','false');
-      if (pointer !== null && handle.hasPointerCapture(pointer)) handle.releasePointerCapture(pointer);
+      var oldPointer = pointer;
       pointer=null;
+      if (oldPointer !== null && handle.hasPointerCapture(oldPointer)) handle.releasePointerCapture(oldPointer);
+      document.removeEventListener('touchmove',touchMove);
+      document.removeEventListener('touchend',touchEnd);
+      document.removeEventListener('touchcancel',touchCancel);
       if (!wasActive) return;
+      if (!cancelled && target) list.insertBefore(row, insertAfter ? target.nextSibling : target);
+      target = null;
       var reordered=Array.from(list.children).map(function(el){return el._exercise;});
       if (!cancelled && reordered.some(function(ex,i){return ex !== day.ex[i];})) {
         day.ex=reordered;
@@ -1239,24 +1476,50 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       renderPanel();
       if (routineOrderPending) showPendingOrder();
     }
+    function activate() {
+      active=true;row.classList.add('reorder-active');handle.classList.remove('holding');
+      handle.setAttribute('aria-pressed','true');
+      if (navigator.vibrate) navigator.vibrate(25);
+      frame=requestAnimationFrame(scrollFrame);
+    }
+    function touchMove(e) {
+      var t=Array.from(e.touches).find(function(t){return t.identifier===pointer;});
+      if (!t) return;
+      if(e.cancelable)e.preventDefault();
+      lastX=t.clientX;lastY=t.clientY;
+      if(active)moveAt(lastX,lastY);
+      else if(Math.hypot(lastX-startX,lastY-startY)>24)finish(true);
+    }
+    function touchEnd(e) {
+      if(Array.from(e.changedTouches).some(function(t){return t.identifier===pointer;})) finish(false);
+    }
+    function touchCancel(){finish(true);}
+    handle.addEventListener('touchstart',function(e){
+      if(pointer!==null || e.touches.length!==1)return;
+      if(e.cancelable)e.preventDefault();
+      var t=e.changedTouches[0];pointer=t.identifier;
+      startX=lastX=t.clientX;startY=lastY=t.clientY;
+      handle.classList.add('holding');timer=setTimeout(activate,1200);
+      document.addEventListener('touchmove',touchMove,{passive:false});
+      document.addEventListener('touchend',touchEnd);
+      document.addEventListener('touchcancel',touchCancel);
+    },{passive:false});
     handle.addEventListener('pointerdown',function(e){
+      if(e.pointerType==='touch')return;
       if (e.button !== 0 || pointer !== null) return;
       pointer=e.pointerId;startX=lastX=e.clientX;startY=lastY=e.clientY;
       handle.setPointerCapture(pointer);handle.classList.add('holding');
-      timer=setTimeout(function(){
-        active=true;row.classList.add('reorder-active');handle.classList.remove('holding');
-        handle.setAttribute('aria-pressed','true');
-        frame=requestAnimationFrame(scrollFrame);
-      },1200);
+      timer=setTimeout(activate,1200);
     });
     handle.addEventListener('pointermove',function(e){
+      if(e.pointerType==='touch')return;
       if(e.pointerId !== pointer)return;
       lastX=e.clientX;lastY=e.clientY;
       if(!active){if(Math.hypot(lastX-startX,lastY-startY)>12) finish(true);return;}
       e.preventDefault();moveAt(lastX,lastY);
     });
-    handle.addEventListener('pointerup',function(e){if(e.pointerId===pointer)finish(false);});
-    handle.addEventListener('pointercancel',function(e){if(e.pointerId===pointer)finish(true);});
+    handle.addEventListener('pointerup',function(e){if(e.pointerType!=='touch' && e.pointerId===pointer)finish(false);});
+    handle.addEventListener('pointercancel',function(e){if(e.pointerType!=='touch' && e.pointerId===pointer)finish(true);});
     handle.addEventListener('lostpointercapture',function(){if(pointer!==null)finish(true);});
     handle.addEventListener('contextmenu',function(e){e.preventDefault();});
     handle.addEventListener('keydown',function(e){
@@ -1268,6 +1531,58 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       routineOrderPending=true;renderPanel();showPendingOrder();
       panelEl.querySelectorAll('.reorder-handle')[j].focus();
     });
+  }
+
+  function searchExerciseCatalog(query) {
+    var terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+    var results = [];
+    MUSCLES.forEach(function(m) {
+      (catalog[m] || []).forEach(function(ex) {
+        var name = ex.n.toLocaleLowerCase().replace(/\s+/g,'');
+        if (terms.every(function(term){return name.indexOf(term)!==-1;})) results.push({muscle:m,exercise:ex});
+      });
+    });
+    return results;
+  }
+  function openExerciseSearch(day, trigger) {
+    if (document.getElementById('exerciseSearchOverlay')) return;
+    var overlay=document.createElement('div');overlay.id='exerciseSearchOverlay';overlay.className='memo-delete-overlay';
+    var dialog=document.createElement('div');dialog.className='memo-delete-dialog exercise-search-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','exerciseSearchTitle');
+    var header=document.createElement('div');header.className='exercise-search-header';
+    var title=document.createElement('h2');title.id='exerciseSearchTitle';title.textContent='운동 종목 검색';
+    var closeBtn=document.createElement('button');closeBtn.type='button';closeBtn.textContent='닫기';
+    header.appendChild(title);header.appendChild(closeBtn);
+    var input=document.createElement('input');input.type='search';input.placeholder='운동 이름 검색 · 예: 프레스, 덤벨';input.setAttribute('aria-label','운동 이름 검색');
+    var count=document.createElement('p');count.className='exercise-search-count';count.setAttribute('role','status');count.setAttribute('aria-live','polite');
+    var results=document.createElement('div');results.className='exercise-search-results';
+    dialog.appendChild(header);dialog.appendChild(input);dialog.appendChild(count);dialog.appendChild(results);overlay.appendChild(dialog);
+    var app=document.getElementById('bulkApp'),previousInert=app.inert,previousOverflow=document.body.style.overflow;
+    function close() {overlay.remove();document.removeEventListener('keydown',keydown);app.inert=previousInert;document.body.style.overflow=previousOverflow;if(trigger.isConnected)trigger.focus();}
+    function keydown(e) {
+      if(e.key==='Escape'){e.preventDefault();close();}
+      if(e.key==='Tab'){
+        var focusables=Array.from(dialog.querySelectorAll('button,input'));var first=focusables[0],last=focusables[focusables.length-1];
+        if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
+        else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
+      }
+    }
+    function renderResults() {
+      results.replaceChildren();var matches=searchExerciseCatalog(input.value);count.textContent=matches.length+'개 종목';
+      if(!matches.length){var empty=document.createElement('p');empty.textContent='일치하는 종목이 없어요. 다른 이름으로 검색하거나 운동 탭에서 종목을 등록해주세요.';results.appendChild(empty);}
+      matches.forEach(function(match){
+        var button=document.createElement('button');button.type='button';button.className='exercise-search-result';
+        var name=document.createElement('span');name.textContent=match.exercise.n;
+        var meta=document.createElement('small');meta.textContent=match.muscle+' · '+match.exercise.s+'세트'+(match.exercise.r?' · '+match.exercise.r+'회':'')+(match.exercise.rir?' · RIR '+match.exercise.rir:'');
+        button.appendChild(name);button.appendChild(meta);
+        button.addEventListener('click',function(){
+          var ex=match.exercise;day.ex.push({n:ex.n,m:match.muscle,s:ex.s,r:ex.r,rir:ex.rir});
+          close();save();renderPanel();renderPrinciples();
+          var handles=panelEl.querySelectorAll('.in-name');if(handles.length)handles[handles.length-1].focus();
+        });results.appendChild(button);
+      });
+    }
+    input.addEventListener('input',renderResults);closeBtn.addEventListener('click',close);overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+    app.inert=true;document.body.style.overflow='hidden';document.body.appendChild(overlay);document.addEventListener('keydown',keydown);renderResults();input.focus();
   }
 
   function renderPanel() {
@@ -1360,10 +1675,12 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       del.textContent = '×';
       del.setAttribute('aria-label', '이 종목 삭제');
       del.addEventListener('click', function () {
-        d.ex.splice(idx, 1);
-        save();
-        renderPanel();
-        renderPrinciples();
+        requireSecondClick(del, '확인', function () {
+          d.ex.splice(idx, 1);
+          save();
+          renderPanel();
+          renderPrinciples();
+        });
       });
 
       top.appendChild(num);
@@ -1474,17 +1791,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     addBtn.type = 'button';
     addBtn.textContent = '+ 종목 추가';
     addBtn.addEventListener('click', function () {
-      var firstMuscle = MUSCLES[0];
-      var avail = catalog[firstMuscle] || [];
-      var first = avail.length ? avail[0] : null;
-      var firstName = first ? first.n : '';
-      var rec = recommendFor(firstMuscle, firstName);
-      d.ex.push({ n: firstName, m: firstMuscle, s: rec.s, r: rec.r, rir: rec.rir });
-      save();
-      renderPanel();
-      renderPrinciples();
-      var sels = panelEl.querySelectorAll('.in-name');
-      if (sels.length) sels[sels.length - 1].focus();
+      openExerciseSearch(d, addBtn);
     });
 
     var cardioBtn = document.createElement('button');
@@ -1653,7 +1960,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     }).join('');
   }
 
-  function renderPrinciples() {
+  function renderPrinciplesBase() {
     var vol = weeklyVolume();
     var openStates = {};
     document.querySelectorAll('#principles .principle').forEach(function (el, i) { openStates[i] = el.open; });
@@ -1661,13 +1968,13 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     var barsHtml = volumeBarsHtml(vol);
 
     document.getElementById('principles').innerHTML =
-      '<details class="principle"' + (openStates[0] !== false ? ' open' : '') + '>' +
-        '<summary>주간 볼륨 · 세트 수 늘리기<span class="chev"></span></summary>' +
+      '<details class="principle fixed-guide"' + (openStates[0] !== false ? ' open' : '') + '>' +
+        '<summary>주간볼륨<span class="chev"></span></summary>' +
         '<div class="principle-body">' +
           '<div class="bars">' + barsHtml + '</div>' +
-          '<p class="bar-legend">막대는 MRV(22) 기준 · 빨간 선은 MEV(14) 지점 · 회색은 부족, 빨강은 초과</p>' +
-          '<p style="margin-top:12px">17세트는 MEV(최소효과볼륨) 14와 MRV(최대회복가능볼륨) 22의 중간값이에요. 22는 목표치가 아니라 <b>그 이상 넘기면 회복이 못 따라가는 상한선</b>이에요.</p>' +
-          '<p>2~3주 지켜보고 무게가 오르고 다음 세션 전 완전히 회복되면 부위별로 1~2세트씩만 늘리세요. 근육통이 오래 가는 부위는 그대로 두거나 줄이세요.</p>' +
+          '<p class="bar-legend">루틴에 입력한 부위별 주간 직접 세트 합계 · 빨간 선은 참고 하한 14세트 · 막대 끝은 참고 상한 22세트</p>' +
+          '<p style="margin-top:12px">이 그래프는 <b>계획한 직접 세트 수</b>를 보여줘요. 실제 완료 여부, 운동 강도, 가슴·등 운동에서 이두·삼두가 받는 간접 자극은 포함하지 않아요.</p>' +
+          '<p>14~22세트는 모든 사람과 부위에 똑같이 적용되는 절대 기준이 아니라 비교를 위한 참고 범위예요. 2~3주간 수행 기록과 회복 상태를 확인하고, 무게나 반복수가 오르면서 다음 운동 전 충분히 회복된다면 필요한 부위만 1~2세트 늘리세요. 수행이 떨어지거나 통증·피로가 오래가면 유지하거나 줄이세요.</p>' +
         '</div>' +
       '</details>' +
       '<details class="principle"' + (openStates[1] ? ' open' : '') + '>' +
@@ -1699,10 +2006,110 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       '</details>';
   }
 
+  var memoDefaults = null, memoDraft = [], memoEditingProfile = null;
+  function memoKey() { return keyFor('bulk-routine-memos-v1', activeProfile); }
+  function getMemos() {
+    var stored = readJSON(memoKey(), null);
+    return Array.isArray(stored) ? stored.filter(function (m) {
+      return m && typeof m.title === 'string' && typeof m.body === 'string';
+    }) : (memoDefaults || []).map(function (m) { return Object.assign({}, m); });
+  }
+  function renderPrinciples() {
+    var root = document.getElementById('principles'), opened = {};
+    root.querySelectorAll('[data-memo-id]').forEach(function (el) { opened[el.dataset.memoId] = el.open; });
+    renderPrinciplesBase();
+    var cards = Array.from(root.querySelectorAll('.principle'));
+    if (!memoDefaults) memoDefaults = cards.slice(1).map(function (card, i) {
+      return { id: 'default-' + i, title: card.querySelector('summary').textContent.trim(),
+        body: Array.from(card.querySelectorAll('.principle-body p, .principle-body li')).map(function (el) { return el.textContent.trim(); }).join('\n\n') };
+    });
+    cards.slice(1).forEach(function (card) { card.remove(); });
+    getMemos().forEach(function (memo, i) {
+      var card = document.createElement('details');card.className = 'principle memo-card';
+      card.dataset.memoId = memo.id || String(i);card.open = !!opened[card.dataset.memoId];
+      var summary = document.createElement('summary');summary.textContent = memo.title || '제목 없는 메모';
+      var chev = document.createElement('span');chev.className = 'chev';summary.appendChild(chev);
+      var body = document.createElement('div');body.className = 'principle-body memo-body';body.textContent = memo.body;
+      card.appendChild(summary);card.appendChild(body);root.appendChild(card);
+    });
+  }
+  function renderMemoEditor() {
+    var root = document.getElementById('memoEditor');root.replaceChildren();
+    if (!memoDraft.length) {
+      var empty = document.createElement('p');empty.className = 'record-export-note';empty.textContent = '등록된 메모가 없어요. 항목을 추가해보세요.';root.appendChild(empty);
+    }
+    memoDraft.forEach(function (memo, i) {
+      var card = document.createElement('div');card.className = 'memo-editor-card';
+      var titleLabel = document.createElement('label');titleLabel.textContent = '제목';
+      var title = document.createElement('input');title.type = 'text';title.value = memo.title;title.placeholder = '메모 제목';
+      title.addEventListener('input', function () { memo.title = title.value; });titleLabel.appendChild(title);
+      var bodyLabel = document.createElement('label');bodyLabel.textContent = '내용';
+      var body = document.createElement('textarea');body.rows = 5;body.value = memo.body;body.placeholder = '안내 또는 메모를 입력하세요';
+      body.addEventListener('input', function () { memo.body = body.value; });bodyLabel.appendChild(body);
+      var del = document.createElement('button');del.type = 'button';del.className = 'btn-reset';del.textContent = '항목 삭제';
+      del.addEventListener('click', function () {
+        requireSecondClick(del, '한 번 더 눌러 삭제', function () {
+          var index = memoDraft.indexOf(memo);if (index !== -1) memoDraft.splice(index,1);
+          renderMemoEditor();document.getElementById('memoSaveHint').textContent = '메모 저장을 누르면 삭제가 반영됩니다.';
+          document.getElementById('btnMemoSave').focus();
+        });
+      });
+      card.appendChild(titleLabel);card.appendChild(bodyLabel);card.appendChild(del);root.appendChild(card);
+    });
+  }
+  function confirmMemoDelete(memo, trigger, recordAction) {
+    if (document.getElementById('memoDeleteOverlay')) return;
+    var overlay = document.createElement('div');overlay.id = 'memoDeleteOverlay';overlay.className = 'memo-delete-overlay';
+    var dialog = document.createElement('div');dialog.className = 'memo-delete-dialog';
+    dialog.setAttribute('role','alertdialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','memoDeleteTitle');dialog.setAttribute('aria-describedby','memoDeleteDescription');
+    var heading = document.createElement('h2');heading.id = 'memoDeleteTitle';heading.textContent = '메모를 삭제할까요?';
+    var description = document.createElement('p');description.id = 'memoDeleteDescription';description.textContent = '“' + (memo.title.trim() || '제목 없는 메모') + '” 항목을 삭제합니다. 메모 저장을 눌러야 최종 반영됩니다.';
+    if (recordAction) { heading.textContent = '운동기록을 삭제할까요?';description.textContent = recordAction.message; }
+    var actions = document.createElement('div');actions.className = 'memo-delete-actions';
+    var cancel = document.createElement('button');cancel.type = 'button';cancel.textContent = '취소';
+    var remove = document.createElement('button');remove.type = 'button';remove.className = 'memo-delete-confirm';remove.textContent = '삭제';
+    var previousOverflow = document.body.style.overflow;
+    var app = document.getElementById('bulkApp');var previousInert = app.inert;app.inert = true;
+    function close() {
+      document.removeEventListener('keydown', keydown);overlay.remove();document.body.style.overflow = previousOverflow;app.inert = previousInert;
+      if (trigger.isConnected) trigger.focus();
+    }
+    function keydown(e) {
+      if (e.key === 'Escape') {e.preventDefault();close();}
+      if (e.key === 'Tab') {e.preventDefault();(document.activeElement === cancel ? remove : cancel).focus();}
+    }
+    cancel.addEventListener('click',close);
+    remove.addEventListener('click',function () {
+      if (recordAction) { close();recordAction.run();return; }
+      var index = memoDraft.indexOf(memo);if (index !== -1) memoDraft.splice(index,1);
+      close();renderMemoEditor();document.getElementById('memoSaveHint').textContent = '메모 저장을 누르면 삭제가 반영됩니다.';
+      document.getElementById('btnMemoSave').focus();
+    });
+    overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+    actions.appendChild(cancel);actions.appendChild(remove);dialog.appendChild(heading);dialog.appendChild(description);dialog.appendChild(actions);overlay.appendChild(dialog);
+    document.body.appendChild(overlay);document.body.style.overflow = 'hidden';document.addEventListener('keydown',keydown);cancel.focus();
+  }
+  function loadMemoEditor() {
+    memoEditingProfile = activeProfile;memoDraft = getMemos().map(function (m) { return Object.assign({}, m); });
+    renderMemoEditor();document.getElementById('memoSaveHint').textContent = '';
+  }
+  document.getElementById('btnMemoAdd').addEventListener('click', function () {
+    memoDraft.push({id: genId(),title:'',body:''});renderMemoEditor();
+    var inputs = document.querySelectorAll('#memoEditor input');inputs[inputs.length-1].focus();
+  });
+  document.getElementById('btnMemoSave').addEventListener('click', function () {
+    var hint = document.getElementById('memoSaveHint');
+    if (memoEditingProfile !== activeProfile) { loadMemoEditor();return; }
+    if (memoDraft.some(function (m) { return !m.title.trim(); })) { hint.textContent = '각 항목의 제목을 입력해주세요.';return; }
+    var ok = writeJSON(memoKey(), memoDraft);
+    hint.textContent = ok ? '메모 저장됨 · 오늘 탭에 반영했어요' : '저장하지 못했어요. 다시 시도해주세요.';
+    if (ok) renderPrinciples();
+  });
+
   var recPendingDel = null;
   var recFilterFrom = '';
   var recFilterTo = '';
-  function renderRecords() {
+  function renderRecordsLegacy() {
     var openStates = {};
     document.querySelectorAll('#recordsView .rec-group').forEach(function (el, i) { openStates[i] = el.open; });
     var filterActive = !!(recFilterFrom || recFilterTo);
@@ -1743,7 +2150,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
             '<span class="rec-set">' + r.setNum + '세트</span>' +
             '<span class="rec-val">' + r.w + '<span class="unit">kg×' + r.reps + '회</span>' + mark + '</span>' +
             '<button class="btn-hist-del' + (confirming ? ' confirming' : '') + '" type="button" data-id="' + r.id +
-              '" aria-label="이 기록 삭제">' + (confirming ? '삭제?' : '×') + '</button>' +
+              '" aria-label="이 기록 삭제">' + (confirming ? '확인' : '×') + '</button>' +
           '</div>';
         }).join('');
         exHtml += '<div class="rec-ex"><div class="rec-ex-name">' + name + '</div>' + rows + '</div>';
@@ -1785,6 +2192,80 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     });
   }
 
+  function renderRecords() {
+    var opened = {};
+    recordsListEl.querySelectorAll('details[data-record-key]').forEach(function(el){opened[el.dataset.recordKey]=el.open;});
+    recordsListEl.replaceChildren();
+    function muscleFor(entry) {
+      return entry.m || MUSCLES.find(function(m){return (catalog[m] || []).some(function(c){return c.n===entry.n;});}) || '기타';
+    }
+    var sections = new Map();
+    MUSCLES.concat(['기타']).forEach(function(m){
+      var section=document.createElement('details');section.className='rec-group record-muscle-group';section.dataset.recordKey='muscle:'+m;section.open=!!opened[section.dataset.recordKey];
+      var summary=document.createElement('summary');var label=document.createElement('span');label.className='rec-title';label.textContent=m;label.style.color=MUSCLE_COLOR[m] || 'var(--muted)';
+      var count=document.createElement('span');count.className='rec-count';
+      var arrow=document.createElement('span');arrow.className='rec-chev';summary.appendChild(label);summary.appendChild(count);summary.appendChild(arrow);
+      var body=document.createElement('div');body.className='rec-body';section.appendChild(summary);section.appendChild(body);
+      sections.set(m,{section:section,body:body,count:count});
+    });
+    var groups = new Map();
+    logs.forEach(function (record) {
+      (record.entries || []).forEach(function (entry) {
+        var key=JSON.stringify([muscleFor(entry),entry.n]);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(Object.assign({}, entry, {date:record.date}));
+      });
+    });
+    function deleteRecords(test) {
+      var next = logs.map(function (record) {
+        return Object.assign({}, record, {entries:(record.entries || []).filter(function (entry) { return !test(entry); })});
+      }).filter(function (record) { return record.entries.length; });
+      if (!writeJSON(LOG_KEY,next)) {
+        var error = document.createElement('p');error.className = 'save-hint save-error';error.setAttribute('role','alert');error.textContent = '삭제를 저장하지 못했어요. 다시 시도해주세요.';recordsListEl.prepend(error);return;
+      }
+      logs = next;renderRecords();
+    }
+    groups.forEach(function (all, key) {
+      var pair=JSON.parse(key),muscle=pair[0],name=pair[1];
+      var visible = all.filter(function (entry) {
+        return (!recFilterFrom || entry.date >= recFilterFrom) && (!recFilterTo || entry.date <= recFilterTo);
+      }).sort(function (a,b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+      if (!visible.length) return;
+      var card = document.createElement('details');card.className = 'exercise-record-card';card.dataset.recordKey='exercise:'+key;card.open=!!opened[card.dataset.recordKey];
+      var head = document.createElement('summary');head.className = 'exercise-record-head';
+      var title = document.createElement('h3');title.textContent = name;
+      var del = document.createElement('button');del.type = 'button';del.className = 'btn-reset exercise-record-delete';del.textContent = '이 종목 기록 전체 삭제';del.setAttribute('aria-label',name + ' 전체 기록 삭제');
+      del.addEventListener('click',function (event) {
+        event.preventDefault();event.stopPropagation();
+        requireSecondClick(del, '전체 기록 삭제 확인', function () {
+          deleteRecords(function(entry){return entry.n===name && muscleFor(entry)===muscle;});
+        });
+      });
+      var arrow=document.createElement('span');arrow.className='exercise-record-chevron';
+      var count = document.createElement('span');count.className = 'record-count-badge';count.textContent = visible.length === all.length ? all.length + '건' : visible.length + ' / ' + all.length + '건';
+      count.setAttribute('aria-label','현재 조회 ' + visible.length + '건, 전체 ' + all.length + '건');
+      head.appendChild(title);head.appendChild(count);head.appendChild(arrow);card.appendChild(head);
+      visible.forEach(function(entry){
+        var row=document.createElement('div');row.className='rec-item';
+        var date=document.createElement('span');date.className='record-card-date';date.textContent=entry.date;
+        var value=document.createElement('span');value.className='record-card-value';value.textContent=(entry.w === '-' ? '무게 미입력' : entry.w + 'kg') + ' × ' + (entry.reps === '-' ? '횟수 미입력' : entry.reps + '회');
+        var remove=document.createElement('button');remove.type='button';remove.className='btn-hist-del';remove.textContent='×';remove.setAttribute('aria-label',name+' '+entry.date+' 기록 삭제');
+        remove.addEventListener('click',function(){requireSecondClick(remove,'확인',function(){deleteRecords(function(e){return e.id===entry.id;});});});
+        row.appendChild(date);row.appendChild(value);row.appendChild(remove);card.appendChild(row);
+      });
+      var footer=document.createElement('div');footer.className='record-delete-footer';footer.appendChild(del);card.appendChild(footer);
+      (sections.get(muscle) || sections.get('기타')).body.appendChild(card);
+    });
+    sections.forEach(function(group,muscle){
+      var count=group.body.children.length;
+      if(muscle==='기타' && !count)return;
+      group.count.textContent=count ? count+'개 종목' : '기록 없음';
+      if(!count){var empty=document.createElement('p');empty.className='rec-empty';empty.textContent='표시할 운동기록이 없어요.';group.body.appendChild(empty);}
+      recordsListEl.appendChild(group.section);
+    });
+    if (!recordsListEl.children.length) {var empty=document.createElement('p');empty.className='rec-empty';empty.textContent=recFilterFrom||recFilterTo?'선택한 기간에는 기록이 없어요.':'아직 저장된 운동기록이 없어요.';recordsListEl.appendChild(empty);}
+  }
+
   var catPendingDel = null;
   function renderCatalog() {
     var openStates = {};
@@ -1800,7 +2281,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
           '<div class="cat-item-top">' +
             '<span class="cat-name">' + c.n + '</span>' +
             '<button class="btn-hist-del' + (confirming ? ' confirming' : '') + '" type="button" data-muscle="' + m +
-              '" data-name="' + String(c.n).replace(/"/g, '&quot;') + '" aria-label="삭제">' + (confirming ? '삭제?' : '×') + '</button>' +
+              '" data-name="' + String(c.n).replace(/"/g, '&quot;') + '" aria-label="삭제">' + (confirming ? '확인' : '×') + '</button>' +
           '</div>' +
           '<div class="cat-item-specs">' +
             '<span class="field"><input type="number" class="in-sets cat-edit" data-muscle="' + m + '" data-idx="' + ci +
@@ -1866,13 +2347,14 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       var setsInput = catalogListEl.querySelector('.cat-add-sets[data-muscle="' + m + '"]');
       var repsInput = catalogListEl.querySelector('.cat-add-reps[data-muscle="' + m + '"]');
       var rirInput = catalogListEl.querySelector('.cat-add-rir[data-muscle="' + m + '"]');
+      setsInput.value = '1';
       function doAdd() {
         var v = nameInput.value.trim();
         if (!v) return;
         if (catalog[m].some(function (c) { return c.n === v; })) { nameInput.value = ''; return; }
-        var s = clampNumber(setsInput.value, 1, 20, 3);
-        var r = repsInput.value.trim() || '8~12';
-        var rir = rirInput.value.trim() || '1~2';
+        var s = clampNumber(setsInput.value, 1, 20, 1);
+        var r = repsInput.value.trim();
+        var rir = rirInput.value.trim();
         catalog[m].push({ n: v, s: s, r: r, rir: rir });
         writeJSON(CATALOG_KEY, catalog);
         renderCatalog();
@@ -1926,7 +2408,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       '<div class="rep-summary">' +
         '<h2>주간 부위별 볼륨</h2>' +
         '<div class="bars">' + barsHtml + '</div>' +
-        '<p class="bar-legend">막대는 MRV(22) 기준 · 빨간 선은 MEV(14) 지점 · 회색은 부족, 빨강은 초과</p>' +
+        '<p class="bar-legend">루틴에 입력한 부위별 주간 직접 세트 합계 · 빨간 선은 참고 하한 14세트 · 막대 끝은 참고 상한 22세트</p>' +
       '</div>' +
       daysHtml;
   }
@@ -1945,9 +2427,12 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
   });
 
   document.getElementById('btnCatalogReset').addEventListener('click', function () {
-    catalog = defaultCatalog();
-    writeJSON(CATALOG_KEY, catalog);
-    renderCatalog();
+    var btn = this;
+    requireSecondClick(btn, '초기화 확인', function () {
+      catalog = defaultCatalog();
+      writeJSON(CATALOG_KEY, catalog);
+      renderCatalog();
+    });
   });
 
   (function () {
@@ -1981,7 +2466,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     btn.addEventListener('click', function () {
       if (!armed) {
         armed = true;
-        btn.textContent = '한 번 더 누르면 전체 삭제돼요';
+        btn.textContent = '전체 삭제 확인';
         btn.style.color = '#c1432a';
         btn.style.borderColor = '#c1432a';
         clearTimeout(timer);
@@ -1997,22 +2482,27 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
   })();
 
   document.getElementById('btnClearDay').addEventListener('click', function () {
-    var d = days[activeIndex];
-    d.ex = [];
-    d.title = '';
-    d.cardio = false;
-    delete d.note;
-    renderPanel();
-    renderPrinciples();
+    var btn = this;
+    requireSecondClick(btn, '운동 초기화 확인', function () {
+      var d = days[activeIndex];
+      d.ex = [];
+      d.title = '';
+      d.cardio = false;
+      delete d.note;
+      renderPanel();
+      renderPrinciples();
+    });
   });
 
   var resetBtn = document.getElementById('btnReset');
   resetBtn.addEventListener('click', function () {
-    days = defaults();
-    save();
-    renderTabs();
-    renderPanel();
-    renderPrinciples();
+    requireSecondClick(resetBtn, '루틴 초기화 확인', function () {
+      days = defaults();
+      save();
+      renderTabs();
+      renderPanel();
+      renderPrinciples();
+    });
   });
 
   var profileTagEl = document.getElementById('profileTag');
@@ -2029,7 +2519,7 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
       var confirming = catDelPendingProfile === name;
       var delBtn = canDelete
         ? '<button class="btn-hist-del' + (confirming ? ' confirming' : '') + '" type="button" data-name="' +
-          String(name).replace(/"/g, '&quot;') + '" aria-label="프로필 삭제">' + (confirming ? '삭제?' : '×') + '</button>'
+          String(name).replace(/"/g, '&quot;') + '" aria-label="프로필 삭제">' + (confirming ? '확인' : '×') + '</button>'
         : '';
       return '<div class="profile-row">' +
         '<button class="profile-select" type="button" data-name="' + String(name).replace(/"/g, '&quot;') +
@@ -2059,9 +2549,16 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
         writeJSON(PROFILES_KEY, profiles);
         [
           keyFor('bulk-routine-v4', name),
+          keyFor('bulk-routine-v5', name),
+          keyFor('bulk-routine-v6', name),
+          keyFor('bulk-routine-v7', name),
+          keyFor('bulk-routine-v8', name),
+          keyFor('bulk-routine-v9', name),
           keyFor('bulk-routine-catalog-v2', name),
+          keyFor('bulk-routine-catalog-v3', name),
           keyFor('bulk-routine-log-v1', name),
-          keyFor('bulk-routine-draft-v1', name)
+          keyFor('bulk-routine-draft-v1', name),
+          keyFor('bulk-routine-draft-v2', name)
         ].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
         renderProfileList();
       });
@@ -2076,8 +2573,11 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     routineOrderPending = false;
     document.getElementById('btnSaveNow').classList.remove('pending-save');
     catalog = loadCatalog();
+    applyHypertrophyDefaults();
+    ensureCatalogAdditions();
     logs = loadLogs();
     draft = readJSON(DRAFT_KEY, {});
+    loadMemoEditor();
     recFilterFrom = '';
     recFilterTo = '';
     var fromInput = document.getElementById('recFilterFrom');
@@ -2099,12 +2599,15 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     mainViewsEl.hidden = true;
     settingsViewEl.hidden = false;
     backBtnInlineEl.hidden = false;
+    modeToggleEl.hidden = true;
+    loadMemoEditor();
     renderProfileList();
   });
   backBtnInlineEl.addEventListener('click', function () {
     settingsViewEl.hidden = true;
     mainViewsEl.hidden = false;
     backBtnInlineEl.hidden = true;
+    modeToggleEl.hidden = false;
   });
 
   document.getElementById('btnAddProfile').addEventListener('click', function () {
@@ -2121,110 +2624,51 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
     if (ev.key === 'Enter') { ev.preventDefault(); document.getElementById('btnAddProfile').click(); }
   });
 
-  function collectAllData() {
-    var data = {};
-    profiles.forEach(function (p) {
-      data[p] = {
-        days: readJSON(keyFor('bulk-routine-v4', p), null),
-        catalog: readJSON(keyFor('bulk-routine-catalog-v2', p), null),
-        logs: readJSON(keyFor('bulk-routine-log-v1', p), null),
-        draft: readJSON(keyFor('bulk-routine-draft-v1', p), null)
-      };
+  function workoutRecordsText() {
+    if (!logs.length) return activeProfile + ' 운동기록\n\n저장된 운동기록이 없습니다.';
+    var sorted = logs.slice().sort(function (a, b) {
+      return a.date < b.date ? 1 : (a.date > b.date ? -1 : 0);
     });
-    return {
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      profiles: profiles,
-      activeProfile: activeProfile,
-      data: data
-    };
+    var lines = [activeProfile + ' 운동기록', ''];
+    sorted.forEach(function (rec) {
+      var day = days.filter(function (d) { return d.key === rec.dayKey; })[0];
+      lines.push('[' + rec.date + ']' + (day && day.title ? ' ' + day.title : ''));
+      (rec.entries || []).forEach(function (entry) {
+        var value = [];
+        if (entry.w != null && entry.w !== '' && entry.w !== '-') value.push(entry.w + 'kg');
+        if (entry.reps != null && entry.reps !== '' && entry.reps !== '-') value.push(entry.reps + '회');
+        lines.push('• ' + entry.n + (value.length ? ' · ' + value.join(' × ') : ''));
+      });
+      lines.push('');
+    });
+    return lines.join('\n').trim();
   }
 
-  document.getElementById('btnBackupDownload').addEventListener('click', function () {
-    var json = JSON.stringify(collectAllData(), null, 2);
-    var blob = new Blob([json], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = '운동루틴-백업-' + todayStr() + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-  });
-
-  var backupTextWrapEl = document.getElementById('backupTextWrap');
-  document.getElementById('btnBackupShowText').addEventListener('click', function () {
-    backupTextWrapEl.hidden = !backupTextWrapEl.hidden;
-    if (!backupTextWrapEl.hidden) {
-      document.getElementById('backupText').value = JSON.stringify(collectAllData(), null, 2);
+  var recordExportWrapEl = document.getElementById('recordExportWrap');
+  document.getElementById('btnRecordExport').addEventListener('click', function () {
+    recordExportWrapEl.hidden = !recordExportWrapEl.hidden;
+    this.textContent = recordExportWrapEl.hidden ? '운동기록 저장' : '운동기록 닫기';
+    if (!recordExportWrapEl.hidden) {
+      document.getElementById('recordExportText').value = workoutRecordsText();
+      document.getElementById('recordExportHint').textContent = logs.length ? logs.length + '일의 기록' : '';
     }
   });
 
-  document.getElementById('btnBackupCopy').addEventListener('click', function (ev) {
-    var ta = document.getElementById('backupText');
-    ta.focus();
-    ta.select();
-    var ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
-    var btn = ev.currentTarget;
-    var original = btn.textContent;
-    btn.textContent = ok ? '복사됨' : '복사 실패 · 직접 선택해 복사하세요';
-    setTimeout(function () { btn.textContent = original; }, 1500);
-  });
-
-  document.getElementById('btnRestore').addEventListener('click', function () {
-    var hint = document.getElementById('restoreHint');
-    var raw = document.getElementById('restoreText').value.trim();
-    if (!raw) {
-      hint.textContent = '백업 텍스트를 먼저 붙여넣어주세요';
-      hint.className = 'save-hint';
-      return;
+  document.getElementById('btnRecordCopy').addEventListener('click', function () {
+    var ta = document.getElementById('recordExportText');
+    var btn = this;
+    function result(ok) {
+      btn.textContent = ok ? '복사됨' : '복사 실패 · 직접 선택해 복사하세요';
+      setTimeout(function () { btn.textContent = '텍스트 복사'; }, 1600);
     }
-    var parsed;
-    try { parsed = JSON.parse(raw); } catch (e) {
-      hint.textContent = '올바른 백업 텍스트가 아니에요';
-      hint.className = 'save-hint';
-      return;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(ta.value).then(function () { result(true); }, function () { result(false); });
+    } else {
+      ta.focus(); ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      result(ok);
     }
-    if (!parsed || typeof parsed !== 'object' || !parsed.data || !Array.isArray(parsed.profiles) || parsed.profiles.length === 0) {
-      hint.textContent = '올바른 백업 텍스트가 아니에요';
-      hint.className = 'save-hint';
-      return;
-    }
-
-    parsed.profiles.forEach(function (p) {
-      var pd = parsed.data[p] || {};
-      if (pd.days) writeJSON(keyFor('bulk-routine-v4', p), pd.days);
-      if (pd.catalog) writeJSON(keyFor('bulk-routine-catalog-v2', p), pd.catalog);
-      if (pd.logs) writeJSON(keyFor('bulk-routine-log-v1', p), pd.logs);
-      if (pd.draft) writeJSON(keyFor('bulk-routine-draft-v1', p), pd.draft);
-    });
-    writeJSON(PROFILES_KEY, parsed.profiles);
-    var newActive = (parsed.activeProfile && parsed.profiles.indexOf(parsed.activeProfile) !== -1)
-      ? parsed.activeProfile : parsed.profiles[0];
-    writeJSON(ACTIVE_PROFILE_KEY, newActive);
-
-    profiles = parsed.profiles;
-    activeProfile = newActive;
-    applyProfileKeys();
-    days = load();
-    routineOrderPending = false;
-    document.getElementById('btnSaveNow').classList.remove('pending-save');
-    catalog = loadCatalog();
-    logs = loadLogs();
-    draft = readJSON(DRAFT_KEY, {});
-    activeIndex = todayIndex !== null ? todayIndex : 0;
-
-    updateProfileLabel();
-    renderProfileList();
-    renderTabs();
-    renderPanel();
-    renderPrinciples();
-
-    hint.textContent = '복원 완료';
-    hint.className = 'save-hint on';
-    document.getElementById('restoreText').value = '';
   });
 
   (function () {
