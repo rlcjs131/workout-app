@@ -3,15 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#101820">
-<title>운동 루틴</title>
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<meta name="application-name" content="운동 루틴">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="운동 루틴">
-<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5f6fa">
+<title>운동 루틴 · Light</title>
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
   @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap');
@@ -518,1616 +511,103 @@
   }
 
 
-  /* ===== 2026 Modern Fitness App Redesign ===== */
-  :root {
-    --void: #0B0D10;
-    --panel: #12151A;
-    --raised: #1A1E24;
-    --sunken: #0F1216;
-    --line: rgba(255, 255, 255, 0.07);
-    --line-strong: rgba(255, 255, 255, 0.14);
-    --ink: #F4F5F2;
-    --muted: #A4A9B0;
-    --faint: #6F757D;
-    --gain: #B7EA73;
-    --drop: #F07A86;
-    --warn: #E8BE67;
-    --primary: #C8F36A;
-    --on-primary: #0C0E10;
 
-    --m-chest: #D89086;
-    --m-back: #7FB8AE;
-    --m-shoulder: #D3AF69;
-    --m-legs: #A69BC5;
-    --m-tri: #829FBF;
-    --m-bi: #BF90AB;
-
-    --r-lg: 22px;
-    --r-md: 14px;
-    --r-sm: 11px;
-  }
-
-  html, body {
-    background: #0B0D10;
-    color-scheme: dark;
-  }
-
-  body {
-    background:
-      radial-gradient(circle at 50% -18%, rgba(200, 243, 106, 0.055), transparent 34%),
-      #0B0D10;
-  }
-
-  .bulk-app {
-    max-width: 480px;
-    padding: 20px 16px calc(108px + env(safe-area-inset-bottom, 0px));
-    font-size: 14px;
-    letter-spacing: -0.01em;
-  }
-
-  .bulk-app .masthead {
-    margin-bottom: 20px;
-    padding: 5px 2px 2px;
-  }
-
-  .bulk-app .masthead h1 {
-    font-family: var(--ui);
-    font-size: 25px;
-    font-weight: 800;
-    letter-spacing: -0.045em;
-    line-height: 1.08;
-  }
-
-  .bulk-app .masthead p {
-    margin-top: 7px;
-    color: var(--faint);
-    font-size: 12.5px;
-    font-weight: 500;
-  }
-
-  .bulk-app .profile-tag {
-    margin-left: 9px;
-    padding: 4px 9px;
-    color: #C9CDD2;
-    background: #181C21;
-    border: 1px solid var(--line);
-    font-size: 10.5px;
-    font-weight: 700;
-  }
-
-  .bulk-app .gear-btn,
-  .bulk-app .back-btn-inline {
-    background: #161A1F;
-    border: 1px solid var(--line);
-    box-shadow: 0 8px 28px rgba(0,0,0,.18);
-  }
-
-  .bulk-app .gear-btn {
-    width: 39px;
-    height: 39px;
-    padding: 10px;
-    color: #C8CCD1;
-  }
-
-  .bulk-app .gear-btn:hover,
-  .bulk-app .back-btn-inline:hover {
-    background: #1D2229;
-    color: #FFFFFF;
-  }
-
-  /* Week selector: flatter, less dashboard-like */
-  .bulk-app .day-tabs {
-    gap: 4px;
-    padding: 4px;
-    margin-bottom: 14px;
-    background: #111419;
-    border: 1px solid var(--line);
-    border-radius: 17px;
-  }
-
-  .bulk-app .day-tab {
-    background: transparent;
-    border: 0;
-    color: #737981;
-    padding: 10px 0;
-    border-radius: 12px;
-    font-family: var(--ui);
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .bulk-app .day-tab:hover {
-    color: #D5D8DC;
-    background: rgba(255,255,255,.03);
-  }
-
-  .bulk-app .day-tab[aria-selected="true"] {
-    background: #F0F2EC;
-    color: #0D0F11;
-    box-shadow: 0 5px 18px rgba(0,0,0,.2);
-  }
-
-  .bulk-app .day-tab .today-dot {
-    top: 7px;
-    right: 7px;
-    width: 4px;
-    height: 4px;
-    background: var(--primary);
-    box-shadow: 0 0 0 2px rgba(200,243,106,.08);
-  }
-
-  .bulk-app .day-tab[aria-selected="true"] .today-dot { background: #6F941F; }
-  .bulk-app .rest-note { margin: -4px 2px 14px; color: #8E949C; }
-
-  /* Surfaces */
-  .bulk-app .day-panel,
-  .bulk-app .settings-card,
-  .bulk-app .rec-filter,
-  .bulk-app .rep-summary,
-  .bulk-app .rep-day,
-  #principles,
-  .bulk-app .rec-group {
-    background: rgba(18, 21, 26, .95);
-    border: 1px solid rgba(255,255,255,.065);
-    box-shadow: 0 14px 40px rgba(0,0,0,.13);
-  }
-
-  .bulk-app .day-panel {
-    padding: 19px 17px 16px;
-    margin-bottom: 12px;
-    border-radius: 24px;
-  }
-
-  .bulk-app .stamp-row {
-    align-items: center;
-    padding-bottom: 17px;
-    border-bottom-color: rgba(255,255,255,.06);
-  }
-
-  .bulk-app .in-stamp {
-    font-size: 18px;
-    font-weight: 760;
-    letter-spacing: -0.035em;
-  }
-
-  .bulk-app .set-total {
-    font-size: 36px;
-    font-weight: 760;
-    letter-spacing: -0.045em;
-  }
-
-  .bulk-app .set-total span {
-    color: #737982;
-    font-size: 10.5px;
-    font-weight: 650;
-  }
-
-  .bulk-app .exercise-list { margin-top: 6px; }
-
-  .bulk-app .ex-row {
-    position: relative;
-    padding: 16px 0 !important;
-    border-left: 0 !important;
-    border-bottom-color: rgba(255,255,255,.055);
-  }
-
-  .bulk-app .ex-row:last-child { padding-bottom: 6px !important; }
-
-  .bulk-app .ex-top { gap: 9px; }
-
-  .bulk-app .ex-num {
-    width: 25px;
-    height: 25px;
-    background: #1B1F25;
-    border: 1px solid rgba(255,255,255,.055);
-    border-radius: 8px;
-    color: #9BA1A8;
-    font-size: 10.5px;
-  }
-
-  .bulk-app select.in-name {
-    color: #F4F5F2;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-  }
-
-  .bulk-app input,
-  .bulk-app select,
-  .bulk-app textarea {
-    background: #0F1216;
-    border: 1px solid rgba(255,255,255,.075);
-    color: #F4F5F2;
-    border-radius: 11px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.015);
-  }
-
-  .bulk-app input:focus,
-  .bulk-app select:focus,
-  .bulk-app textarea:focus {
-    background: #11151A;
-    border-color: rgba(200,243,106,.42);
-    box-shadow: 0 0 0 3px rgba(200,243,106,.07);
-  }
-
-  .bulk-app select.in-name:focus {
-    background: #101318;
-    border-color: rgba(200,243,106,.28);
-  }
-
-  .bulk-app .ex-fields,
-  .bulk-app .log-fields {
-    margin-left: 34px;
-    gap: 7px;
-  }
-
-  .bulk-app .field label {
-    color: #656B73;
-    font-size: 10px;
-    font-weight: 600;
-  }
-
-  .bulk-app .log-fields {
-    padding-top: 12px;
-    border-top: 1px dashed rgba(255,255,255,.07);
-  }
-
-  .bulk-app .log-fields .field label { color: #8C929A; }
-
-  .bulk-app .prev-hint {
-    margin-left: 34px;
-    color: #70767E;
-    font-size: 10.8px;
-  }
-
-  .bulk-app .prev-hint b { color: #A8ADB4; }
-
-  .bulk-app .btn-del,
-  .bulk-app .btn-hist-del {
-    background: #14181D;
-    border-color: rgba(255,255,255,.06);
-    color: #6F757D;
-  }
-
-  .bulk-app .btn-del:hover,
-  .bulk-app .btn-hist-del:hover {
-    color: #F08B96;
-    border-color: rgba(240,122,134,.35);
-    background: rgba(240,122,134,.06);
-  }
-
-  .bulk-app .panel-actions { gap: 8px; margin-top: 17px; }
-
-  .bulk-app .btn {
-    background: #1A1E24;
-    color: #E9ECE7;
-    padding: 12px 10px;
-    border-radius: 13px;
-    font-size: 12.5px;
-    font-weight: 700;
-    border: 1px solid rgba(255,255,255,.055);
-  }
-
-  .bulk-app .btn:hover { background: #20252C; }
-
-  .bulk-app .btn-cardio[aria-pressed="true"] {
-    color: #C8F36A;
-    background: rgba(200,243,106,.07);
-    border-color: rgba(200,243,106,.14);
-  }
-
-  .bulk-app .btn-log {
-    background: #C8F36A;
-    color: #0C0E10;
-    border-color: transparent;
-    padding: 13px 10px;
-    box-shadow: 0 10px 28px rgba(200,243,106,.12);
-  }
-
-  .bulk-app .btn-log:hover {
-    background: #D2FA7D;
-    transform: translateY(-1px);
-  }
-
-  .bulk-app .cardio-tag {
-    color: #8D949B;
-    border-top-color: rgba(255,255,255,.055);
-  }
-
-  .bulk-app .save-hint.on { color: #B7EA73; }
-
-  /* Information accordions */
-  #principles {
-    border-radius: 20px;
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-
-  .bulk-app .principle { border-bottom-color: rgba(255,255,255,.055); }
-  .bulk-app .principle summary {
-    padding: 16px 17px;
-    font-size: 13px;
-    font-weight: 680;
-    color: #D9DDD8;
-  }
-
-  .bulk-app .principle .principle-body {
-    padding: 0 17px 17px;
-    color: #8D939A;
-  }
-
-  .bulk-app .principle .principle-body b { color: #D8DCD7; }
-  .bulk-app .chev, .bulk-app .rec-chev { border-color: #626870; }
-
-  /* Volume bars */
-  .bulk-app .bar-row { margin-bottom: 10px; }
-  .bulk-app .bar-track {
-    height: 7px;
-    background: #0D1014;
-    border: 1px solid rgba(255,255,255,.035);
-  }
-  .bulk-app .bar-mark { background: rgba(255,255,255,.16); }
-  .bulk-app .bar-val { color: #9298A0; }
-  .bulk-app .bar-legend { color: #686E76; }
-
-  /* Lower utility buttons */
-  .bulk-app .reset-row { gap: 7px; margin-top: 16px; }
-  .bulk-app .btn-reset {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,.07);
-    color: #737A82;
-    border-radius: 12px;
-    padding: 10px 10px;
-  }
-  .bulk-app .btn-reset:hover {
-    color: #D8DCD7;
-    border-color: rgba(255,255,255,.14);
-    background: rgba(255,255,255,.025);
-  }
-  .bulk-app .btn-save-now {
-    background: #181C21;
-    color: #C9CDD2;
-  }
-  .bulk-app .btn-save-now:hover { background: #20252B; }
-
-  /* Catalog / records / report */
-  .bulk-app .rec-filter,
-  .bulk-app .rep-summary,
-  .bulk-app .rep-day,
-  .bulk-app .rec-group,
-  .bulk-app .settings-card {
-    border-radius: 20px;
-  }
-
-  .bulk-app .rec-filter { padding: 14px; }
-  .bulk-app .rec-preset-btn {
-    border-color: rgba(255,255,255,.07);
-    background: #15191E;
-    color: #898F97;
-    border-radius: 10px;
-  }
-  .bulk-app .rec-preset-btn:hover {
-    color: #E1E4DF;
-    background: #1B2026;
-  }
-
-  .bulk-app .rec-group summary { padding: 16px; }
-  .bulk-app .rec-title { font-size: 14px; }
-  .bulk-app .rec-count { color: #71777F; }
-  .bulk-app .rec-val { font-size: 20px; }
-  .bulk-app .rec-val .unit { color: #777D85; }
-  .bulk-app .cat-name { color: #E8EAE6; }
-
-  .bulk-app .rep-summary h2,
-  .bulk-app .settings-head {
-    color: #70767E;
-    font-size: 10.5px;
-    font-weight: 750;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-  }
-
-  .bulk-app .rep-day-head { margin-bottom: 12px; }
-  .bulk-app .rep-day-letter {
-    color: #C8F36A;
-    font-family: var(--ui);
-    font-weight: 800;
-  }
-  .bulk-app .rep-day-title { color: #E3E6E1; }
-  .bulk-app .rep-day-total { color: #F4F5F2; }
-
-  /* Settings */
-  .bulk-app .settings-view { padding-top: 3px; }
-  .bulk-app .settings-card { padding: 17px; margin-bottom: 18px; }
-  .bulk-app .profile-row { border-top-color: rgba(255,255,255,.055); }
-  .bulk-app .profile-select { color: #949AA2; }
-  .bulk-app .profile-select[aria-pressed="true"] { color: #F3F5F0; }
-  .bulk-app .profile-select .current-tag {
-    color: #0E1012;
-    background: #C8F36A;
-  }
-  .bulk-app .profile-add-row button,
-  .bulk-app .cat-add-btn {
-    background: #C8F36A;
-    color: #0D0F11;
-    border-radius: 11px;
-    font-weight: 750;
-  }
-  .bulk-app .profile-add-row button:hover,
-  .bulk-app .cat-add-btn:hover { background: #D2FA7D; }
-  .bulk-app .backup-note { color: #858B93; }
-
-  /* Floating bottom navigation */
-  .tab-bar {
-    left: 12px;
-    right: 12px;
-    bottom: 10px;
-    width: auto;
-    max-width: 456px;
-    padding: 6px 7px calc(6px + env(safe-area-inset-bottom, 0px));
-    background: rgba(18, 21, 26, .88);
-    border: 1px solid rgba(255,255,255,.085);
-    border-radius: 22px;
-    box-shadow: 0 18px 55px rgba(0,0,0,.34);
-    -webkit-backdrop-filter: blur(26px) saturate(130%);
-    backdrop-filter: blur(26px) saturate(130%);
-  }
-
-  .mode-btn {
-    min-height: 54px;
-    gap: 4px;
-    color: #666C74;
-    border-radius: 16px;
-    font-size: 10px;
-    font-weight: 700;
-  }
-  .mode-btn svg { width: 20px; height: 20px; }
-  .mode-btn[aria-selected="true"] {
-    color: #D9FCA0;
-    background: rgba(200,243,106,.075);
-  }
-
-  /* Tiny motion polish */
-  .bulk-app .btn,
-  .bulk-app .btn-reset,
-  .bulk-app .gear-btn,
-  .bulk-app .day-tab,
-  .mode-btn {
-    transition: background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease;
-  }
-
-  @media (max-width: 360px) {
-    .bulk-app { padding-left: 12px; padding-right: 12px; }
-    .tab-bar { left: 8px; right: 8px; }
-    .bulk-app .masthead h1 { font-size: 23px; }
-    .bulk-app .set-total { font-size: 32px; }
-  }
-
-  /* ===== Premium Athletic UI Refinement ===== */
-  :root {
-    --void: #0F1011;
-    --panel: #151617;
-    --raised: #1C1D1F;
-    --sunken: #111213;
-    --line: rgba(245, 245, 238, 0.08);
-    --line-strong: rgba(245, 245, 238, 0.18);
-    --ink: #F5F5EF;
-    --muted: #A0A19B;
-    --faint: #696A66;
-    --gain: #D6FF4B;
-    --drop: #FF6B6B;
-    --warn: #D5B66A;
-    --primary: #D6FF4B;
-    --on-primary: #11120E;
-    --m-chest: #D6FF4B;
-    --m-back: #D6FF4B;
-    --m-shoulder: #D6FF4B;
-    --m-legs: #D6FF4B;
-    --m-tri: #D6FF4B;
-    --m-bi: #D6FF4B;
-    --r-lg: 12px;
-    --r-md: 10px;
-    --r-sm: 9px;
-  }
-
-  html, body {
-    background: var(--void);
-  }
-
-  body {
-    background: var(--void);
-  }
-
-  .bulk-app {
-    max-width: 440px;
-    padding: 18px 18px calc(92px + env(safe-area-inset-bottom, 0px));
-    letter-spacing: -0.012em;
-  }
-
-  .bulk-app .masthead {
-    margin-bottom: 18px;
-    padding: 4px 0 0;
-  }
-
-  .bulk-app .masthead h1 {
-    font-family: var(--ui);
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-  }
-
-  .bulk-app .masthead p {
-    margin-top: 5px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .bulk-app .profile-tag {
-    margin-left: 9px;
-    padding: 0;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    color: var(--faint);
-    font-size: 10.5px;
-    font-weight: 650;
-  }
-
-  .bulk-app .gear-btn,
-  .bulk-app .back-btn-inline {
-    background: transparent;
-    border: 1px solid var(--line);
-    box-shadow: none;
-    border-radius: 10px;
-  }
-
-  .bulk-app .gear-btn {
-    width: 38px;
-    height: 38px;
-    padding: 9px;
-    color: var(--muted);
-  }
-
-  .bulk-app .gear-btn:hover,
-  .bulk-app .back-btn-inline:hover {
-    background: var(--raised);
-    color: var(--ink);
-  }
-
-  /* Week selector: lightweight tabs with a single active indicator */
-  .bulk-app .day-tabs {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 0;
-    padding: 0;
-    margin: 0 0 20px;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-  }
-
-  .bulk-app .day-tab {
-    min-height: 44px;
-    padding: 8px 0 11px;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    color: var(--faint);
-    font-family: var(--ui);
-    font-size: 13px;
-    font-weight: 700;
-    box-shadow: none;
-  }
-
-  .bulk-app .day-tab::after {
-    content: '';
-    position: absolute;
-    left: 27%;
-    right: 27%;
-    bottom: -1px;
-    height: 2px;
-    background: transparent;
-    border-radius: 2px 2px 0 0;
-  }
-
-  .bulk-app .day-tab:hover {
-    background: transparent;
-    color: var(--ink);
-  }
-
-  .bulk-app .day-tab[aria-selected="true"] {
-    background: transparent;
-    color: var(--ink);
-    box-shadow: none;
-  }
-
-  .bulk-app .day-tab[aria-selected="true"]::after {
-    background: var(--primary);
-  }
-
-  .bulk-app .day-tab .today-dot {
-    top: 7px;
-    right: 12px;
-    width: 4px;
-    height: 4px;
-    background: var(--primary);
-    box-shadow: none;
-  }
-
-  .bulk-app .day-tab[aria-selected="true"] .today-dot {
-    background: var(--primary);
-  }
-
-  /* Strip away dashboard-card styling from the main flow */
-  .bulk-app .day-panel,
-  #principles,
-  .bulk-app .rec-filter,
-  .bulk-app .rep-summary,
-  .bulk-app .rep-day,
-  .bulk-app .rec-group {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .bulk-app .day-panel {
-    padding: 0;
-    margin-bottom: 18px;
-  }
-
-  .bulk-app .stamp-row {
-    align-items: flex-end;
-    padding: 0 0 18px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .in-stamp {
-    font-size: 20px;
-    font-weight: 780;
-    letter-spacing: -0.04em;
-  }
-
-  .bulk-app .set-total {
-    font-size: 34px;
-    font-weight: 760;
-    line-height: .92;
-    color: var(--ink);
-  }
-
-  .bulk-app .set-total span {
-    font-size: 10px;
-    color: var(--faint);
-  }
-
-  .bulk-app .exercise-list {
-    margin-top: 0;
-  }
-
-  .bulk-app .ex-row {
-    padding: 20px 0 !important;
-    border-left: 0 !important;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .ex-row:last-child {
-    padding-bottom: 18px !important;
-  }
-
-  .bulk-app .ex-top {
-    align-items: center;
-    gap: 8px;
-  }
-
-  .bulk-app .ex-num {
-    width: 26px;
-    height: 26px;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    color: var(--faint);
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  .bulk-app select.in-name {
-    min-height: 38px;
-    color: var(--ink);
-    font-size: 15px;
-    font-weight: 730;
-    letter-spacing: -0.03em;
-    padding: 4px 0;
-  }
-
-  .bulk-app select.in-name:focus {
-    padding: 4px 8px;
-  }
-
-  .bulk-app .btn-del,
-  .bulk-app .btn-hist-del {
-    background: transparent;
-    border-color: transparent;
-    color: var(--faint);
-    box-shadow: none;
-  }
-
-  .bulk-app .btn-del:hover,
-  .bulk-app .btn-hist-del:hover {
-    background: rgba(255, 107, 107, 0.07);
-    border-color: transparent;
-    color: var(--drop);
-  }
-
-  .bulk-app input,
-  .bulk-app select,
-  .bulk-app textarea {
-    background: var(--sunken);
-    border: 1px solid var(--line);
-    border-radius: var(--r-sm);
-    box-shadow: none;
-  }
-
-  .bulk-app input:focus,
-  .bulk-app select:focus,
-  .bulk-app textarea:focus {
-    background: #131415;
-    border-color: rgba(214, 255, 75, 0.42);
-    box-shadow: 0 0 0 2px rgba(214, 255, 75, 0.07);
-  }
-
-  .bulk-app .ex-fields {
-    display: flex;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 11px 0 0 34px;
-  }
-
-  .bulk-app .ex-fields .field {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .bulk-app .ex-fields .field label {
-    order: -1;
-    color: var(--faint);
-    font-size: 9.5px;
-    font-weight: 650;
-  }
-
-  .bulk-app .ex-fields input,
-  .bulk-app .ex-fields select {
-    min-height: 40px;
-  }
-
-  .bulk-app .in-muscle {
-    min-height: 40px;
-    padding: 8px 10px;
-    color: var(--muted);
-  }
-
-  .bulk-app .in-sets { width: 58px; }
-  .bulk-app .in-reps { width: 72px; }
-  .bulk-app .in-rir { width: 62px; }
-
-  /* Workout logging is the primary action: larger numbers, fewer visual distractions */
-  .bulk-app .log-fields {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin: 14px 0 0 34px;
-    padding-top: 14px;
-    border-top: 0;
-  }
-
-  .bulk-app .log-fields .field {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-  }
-
-  .bulk-app .log-fields .field label {
-    order: -1;
-    color: var(--faint);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .01em;
-  }
-
-  .bulk-app .log-fields input {
-    width: 100%;
-    height: 56px;
-    padding: 8px 12px;
-    text-align: left;
-    font-family: var(--num);
-    font-size: 23px;
-    font-weight: 720;
-    letter-spacing: -0.025em;
-    background: #161719;
-    border-color: rgba(245, 245, 238, 0.09);
-  }
-
-  .bulk-app .log-fields input::placeholder {
-    color: #4F504D;
-  }
-
-  .bulk-app .prev-hint {
-    margin: 11px 0 0 34px;
-    color: var(--faint);
-    font-size: 11px;
-    line-height: 1.45;
-  }
-
-  .bulk-app .prev-hint b {
-    color: var(--muted);
-    font-weight: 650;
-  }
-
-  .bulk-app .suggest-hint {
-    margin-top: 5px;
-    padding-left: 0;
-  }
-
-  .bulk-app .suggest-hint.suggest-up,
-  .bulk-app .prev-hint .up {
-    color: var(--primary);
-  }
-
-  .bulk-app .panel-actions {
-    gap: 8px;
-    margin-top: 20px;
-  }
-
-  .bulk-app .btn {
-    min-height: 44px;
-    padding: 11px 12px;
-    background: transparent;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    color: var(--muted);
-    font-size: 12px;
-    font-weight: 700;
-    box-shadow: none;
-  }
-
-  .bulk-app .btn:hover {
-    background: var(--raised);
-    color: var(--ink);
-  }
-
-  .bulk-app .btn-cardio[aria-pressed="true"] {
-    background: transparent;
-    border-color: rgba(214, 255, 75, .28);
-    color: var(--primary);
-  }
-
-  .bulk-app .btn-log {
-    min-height: 52px;
-    margin-top: 2px;
-    background: var(--primary);
-    border-color: var(--primary);
-    color: var(--on-primary);
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 800;
-    box-shadow: none;
-  }
-
-  .bulk-app .btn-log:hover {
-    background: #DEFF69;
-    transform: none;
-  }
-
-  .bulk-app .cardio-tag {
-    margin-top: 14px;
-    padding-top: 13px;
-    border-top: 1px solid var(--line);
-    color: var(--faint);
-  }
-
-  /* Guidance is secondary content, so it behaves like a quiet settings list */
-  #principles {
-    margin: 8px 0 14px;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .principle {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .principle:last-of-type {
-    border-bottom: 0;
-  }
-
-  .bulk-app .principle summary {
-    padding: 15px 2px;
-    color: var(--muted);
-    font-size: 12.5px;
-    font-weight: 650;
-  }
-
-  .bulk-app .principle .principle-body {
-    padding: 0 2px 16px;
-    color: #858681;
-    font-size: 12px;
-  }
-
-  .bulk-app .principle .principle-body b {
-    color: #C9CAC4;
-  }
-
-  .bulk-app .chev,
-  .bulk-app .rec-chev {
-    border-color: var(--faint);
-  }
-
-  /* One visual language for volume instead of a rainbow of body-part colors */
-  .bulk-app .bar-label {
-    color: var(--muted) !important;
-  }
-
-  .bulk-app .bar-fill {
-    background: var(--primary) !important;
-  }
-
-  .bulk-app .bar-fill.under {
-    background: #5F615D !important;
-  }
-
-  .bulk-app .bar-fill.over {
-    background: var(--drop) !important;
-  }
-
-  .bulk-app .bar-track {
-    height: 6px;
-    background: #191A1C;
-    border: 0;
-  }
-
-  .bulk-app .bar-mark {
-    background: rgba(245, 245, 238, .22);
-  }
-
-  .bulk-app .bar-val {
-    color: var(--muted);
-  }
-
-  /* Utility actions stay quiet and visually separate from training actions */
-  .bulk-app .reset-row {
-    gap: 8px;
-    margin-top: 18px;
-  }
-
-  .bulk-app .btn-reset {
-    min-height: 40px;
-    padding: 9px 10px;
-    background: transparent;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    color: var(--faint);
-    box-shadow: none;
-  }
-
-  .bulk-app .btn-reset:hover {
-    background: var(--raised);
-    border-color: var(--line-strong);
-    color: var(--muted);
-  }
-
-  .bulk-app .btn-save-now {
-    background: transparent;
-    border-color: var(--line);
-    color: var(--muted);
-  }
-
-  /* Records, catalog and report use dividers rather than stacked cards */
-  .bulk-app .rec-filter {
-    padding: 0 0 16px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .rec-filter-row input[type="date"] {
-    min-height: 42px;
-    background: #151617;
-  }
-
-  .bulk-app .rec-filter-presets {
-    gap: 6px;
-    margin-top: 8px;
-  }
-
-  .bulk-app .rec-preset-btn {
-    min-height: 36px;
-    background: transparent;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    color: var(--faint);
-  }
-
-  .bulk-app .rec-preset-btn:hover {
-    background: var(--raised);
-    color: var(--muted);
-  }
-
-  .bulk-app .rec-group {
-    margin: 0;
-    border-left: 0 !important;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .rec-group summary {
-    padding: 17px 0;
-  }
-
-  .bulk-app .rec-body {
-    padding: 0 0 17px;
-  }
-
-  .bulk-app .rec-title {
-    color: var(--ink) !important;
-    font-size: 14px;
-    font-weight: 720;
-  }
-
-  .bulk-app .rec-count {
-    color: var(--faint);
-  }
-
-  .bulk-app .rec-item {
-    border-top-color: var(--line);
-  }
-
-  .bulk-app .rec-val {
-    font-size: 21px;
-    color: var(--ink);
-  }
-
-  .bulk-app .rec-val .unit {
-    color: var(--faint);
-  }
-
-  .bulk-app .cat-item {
-    border-top-color: var(--line);
-  }
-
-  .bulk-app .cat-item-specs input {
-    min-height: 40px;
-  }
-
-  .bulk-app .cat-add-row {
-    border-top-color: var(--line);
-  }
-
-  .bulk-app .cat-add-btn,
-  .bulk-app .profile-add-row button {
-    background: var(--primary);
-    border-radius: 9px;
-    color: var(--on-primary);
-    box-shadow: none;
-  }
-
-  .bulk-app .cat-add-btn:hover,
-  .bulk-app .profile-add-row button:hover {
-    background: #DEFF69;
-  }
-
-  .bulk-app .rep-summary {
-    padding: 0 0 19px;
-    margin-bottom: 6px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .rep-day {
-    padding: 18px 0;
-    margin: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .bulk-app .rep-summary h2,
-  .bulk-app .settings-head {
-    color: var(--faint);
-    font-size: 10px;
-    font-weight: 750;
-    letter-spacing: .055em;
-  }
-
-  .bulk-app .rep-day-letter {
-    color: var(--primary);
-  }
-
-  /* Settings retain grouped surfaces because they contain destructive backup/restore actions */
-  .bulk-app .settings-card {
-    padding: 14px;
-    margin-bottom: 18px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 11px;
-    box-shadow: none;
-  }
-
-  .bulk-app .profile-row {
-    border-top-color: var(--line);
-  }
-
-  .bulk-app .profile-select .current-tag {
-    background: var(--primary);
-    color: var(--on-primary);
-    border-radius: 6px;
-  }
-
-  /* Conventional mobile bottom navigation: fixed, flat and quiet */
-  .tab-bar {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-width: 440px;
-    margin: 0 auto;
-    padding: 5px 8px calc(5px + env(safe-area-inset-bottom, 0px));
-    background: rgba(15, 16, 17, .97);
-    border: 0;
-    border-top: 1px solid var(--line);
-    border-radius: 0;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .mode-btn {
-    min-height: 58px;
-    padding: 7px 2px 5px;
-    gap: 3px;
-    background: transparent;
-    border-radius: 0;
-    color: var(--faint);
-    font-size: 10px;
-    font-weight: 650;
-  }
-
-  .mode-btn svg {
-    width: 21px;
-    height: 21px;
-  }
-
-  .mode-btn[aria-selected="true"] {
-    background: transparent;
-    color: var(--primary);
-  }
-
-  /* Small, purposeful interactions only */
-  .bulk-app .btn,
-  .bulk-app .btn-reset,
-  .bulk-app .gear-btn,
-  .bulk-app .day-tab,
-  .mode-btn,
-  .bulk-app input,
-  .bulk-app select {
-    transition: background-color .15s ease, color .15s ease, border-color .15s ease, opacity .15s ease;
-  }
-
-  .bulk-app button:active,
-  .mode-btn:active {
-    opacity: .72;
-  }
-
-  @media (max-width: 380px) {
-    .bulk-app {
-      padding-left: 14px;
-      padding-right: 14px;
-    }
-    .bulk-app .log-fields,
-    .bulk-app .ex-fields,
-    .bulk-app .prev-hint {
-      margin-left: 30px;
-    }
-    .bulk-app .in-muscle { max-width: 82px; }
-    .bulk-app .in-sets { width: 54px; }
-    .bulk-app .in-reps { width: 66px; }
-    .bulk-app .in-rir { width: 58px; }
-  }
-
-
-  /* ===== Slate / Mint Athletic Color System ===== */
-  :root {
-    --void: #101820;
-    --panel: #192630;
-    --raised: #233440;
-    --sunken: #14212A;
-    --line: rgba(177, 205, 219, 0.11);
-    --line-strong: rgba(177, 205, 219, 0.24);
-    --ink: #F4F0E8;
-    --muted: #A8BBC5;
-    --faint: #748A96;
-    --gain: #75DDB9;
-    --drop: #F08A7A;
-    --warn: #E6B36C;
-    --primary: #71D7B4;
-    --on-primary: #0D2A22;
-    --surface-blue: #1D2C37;
-    --surface-input: #223541;
-    --surface-quiet: #16232C;
-    --surface-warm: #2A2924;
-  }
-
-  html, body {
-    background: var(--void);
-  }
-
-  body {
-    background: var(--void);
-  }
-
-  .bulk-app {
-    color: var(--ink);
-  }
-
-  .bulk-app .masthead p {
-    color: #88A0AC;
-  }
-
-  .bulk-app .profile-tag {
-    color: var(--primary);
-  }
-
-  .bulk-app .gear-btn,
-  .bulk-app .back-btn-inline {
-    background: #1A2731;
-    border-color: var(--line);
-    color: var(--muted);
-  }
-
-  .bulk-app .gear-btn:hover,
-  .bulk-app .back-btn-inline:hover {
-    background: var(--raised);
-    border-color: var(--line-strong);
-  }
-
-  /* Week navigation gets a soft mint selection instead of stark white-on-black. */
-  .bulk-app .day-tabs {
-    border-bottom-color: rgba(177, 205, 219, 0.13);
-  }
-
-  .bulk-app .day-tab {
-    color: #78909C;
-  }
-
-  .bulk-app .day-tab:hover {
-    color: var(--muted);
-  }
-
-  .bulk-app .day-tab[aria-selected="true"] {
-    color: var(--primary);
-    background: rgba(113, 215, 180, 0.07);
-    border-radius: 9px 9px 0 0;
-  }
-
-  .bulk-app .day-tab[aria-selected="true"]::after {
-    background: var(--primary);
-  }
-
-  /* The current workout becomes the main colored surface. */
-  .bulk-app .day-panel {
-    padding: 18px 16px 16px;
-    margin-bottom: 16px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-  }
-
-  .bulk-app .stamp-row {
-    border-bottom-color: rgba(177, 205, 219, 0.12);
-  }
-
-  .bulk-app .set-total {
-    color: #DDF7EC;
-  }
-
-  .bulk-app .set-total span {
-    color: #7F98A4;
-  }
-
-  .bulk-app .ex-row {
-    border-bottom-color: rgba(177, 205, 219, 0.105);
-  }
-
-  .bulk-app .ex-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: rgba(113, 215, 180, 0.09);
-    color: var(--primary);
-  }
-
-  .bulk-app select.in-name {
-    color: #F6F1E8;
-  }
-
-  .bulk-app input,
-  .bulk-app select,
-  .bulk-app textarea {
-    background: var(--sunken);
-    border-color: var(--line);
-    color: var(--ink);
-  }
-
-  .bulk-app input:focus,
-  .bulk-app select:focus,
-  .bulk-app textarea:focus {
-    background: #1B2C36;
-    border-color: rgba(113, 215, 180, 0.56);
-    box-shadow: 0 0 0 2px rgba(113, 215, 180, 0.08);
-  }
-
-  .bulk-app .ex-fields .field label,
-  .bulk-app .log-fields .field label {
-    color: #8299A5;
-  }
-
-  .bulk-app .in-muscle {
-    background: #1A2A34;
-    color: #9DB3BE;
-  }
-
-  /* Logging controls use a blue-slate fill so they are visually distinct from the page. */
-  .bulk-app .log-fields input {
-    background: var(--surface-input);
-    border-color: rgba(147, 188, 204, 0.13);
-    color: #FFF9EF;
-  }
-
-  .bulk-app .log-fields input::placeholder {
-    color: #617986;
-  }
-
-  .bulk-app .prev-hint {
-    padding: 8px 10px;
-    background: rgba(113, 215, 180, 0.045);
-    border-left: 2px solid rgba(113, 215, 180, 0.32);
-    border-radius: 0 8px 8px 0;
-    color: #78919D;
-  }
-
-  .bulk-app .prev-hint b {
-    color: #BED0D7;
-  }
-
-  .bulk-app .suggest-hint.suggest-up,
-  .bulk-app .prev-hint .up {
-    color: var(--gain);
-  }
-
-  .bulk-app .suggest-hint.suggest-down,
-  .bulk-app .prev-hint .down {
-    color: var(--drop);
-  }
-
-  .bulk-app .day-note {
-    padding: 9px 11px;
-    background: rgba(230, 179, 108, 0.08);
-    border-left: 2px solid rgba(230, 179, 108, 0.48);
-    border-radius: 0 8px 8px 0;
-    color: #D5B477;
-  }
-
-  /* Secondary actions are blue-slate; only the save action receives mint. */
-  .bulk-app .btn {
-    background: #21323D;
-    border-color: rgba(177, 205, 219, 0.10);
-    color: #B5C5CC;
-  }
-
-  .bulk-app .btn:hover {
-    background: #293D49;
-    border-color: rgba(177, 205, 219, 0.18);
-    color: #EEF2EF;
-  }
-
-  .bulk-app .btn-cardio[aria-pressed="true"] {
-    background: rgba(113, 215, 180, 0.08);
-    border-color: rgba(113, 215, 180, 0.30);
-    color: var(--primary);
-  }
-
-  .bulk-app .btn-log,
-  .bulk-app .cat-add-btn,
-  .bulk-app .profile-add-row button {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: var(--on-primary);
-  }
-
-  .bulk-app .btn-log:hover,
-  .bulk-app .cat-add-btn:hover,
-  .bulk-app .profile-add-row button:hover {
-    background: #83E2C0;
-  }
-
-  .bulk-app .cardio-tag {
-    color: #89A2AD;
-    border-top-color: rgba(177, 205, 219, 0.10);
-  }
-
-  /* Guidance gets its own quieter navy surface instead of disappearing into the background. */
-  #principles {
-    margin: 10px 0 16px;
-    padding: 0 14px;
-    background: var(--surface-quiet);
-    border: 1px solid rgba(177, 205, 219, 0.08);
-    border-radius: 12px;
-  }
-
-  .bulk-app .principle {
-    border-bottom-color: rgba(177, 205, 219, 0.09);
-  }
-
-  .bulk-app .principle summary {
-    color: #9FB1BA;
-  }
-
-  .bulk-app .principle .principle-body {
-    color: #8299A5;
-  }
-
-  .bulk-app .principle .principle-body b {
-    color: #D5DDD9;
-  }
-
-  .bulk-app .bar-track {
-    background: #20303A;
-  }
-
-  .bulk-app .bar-fill {
-    background: var(--primary) !important;
-  }
-
-  .bulk-app .bar-fill.under {
-    background: #56717E !important;
-  }
-
-  .bulk-app .bar-fill.over {
-    background: var(--drop) !important;
-  }
-
-  .bulk-app .bar-label,
-  .bulk-app .bar-val {
-    color: #93A8B2 !important;
-  }
-
-  /* Supporting screens use slate surfaces so hierarchy remains visible without card overload. */
-  .bulk-app .rec-filter {
-    padding: 14px;
-    margin-bottom: 10px;
-    background: var(--surface-quiet);
-    border: 1px solid rgba(177, 205, 219, 0.08);
-    border-radius: 12px;
-  }
-
-  .bulk-app .rec-filter-row input[type="date"] {
-    background: #1C2B35;
-  }
-
-  .bulk-app .rec-preset-btn {
-    background: #1D2C36;
-    color: #91A7B1;
-  }
-
-  .bulk-app .rec-preset-btn:hover {
-    background: #263944;
-    color: #D9E1DE;
-  }
-
-  .bulk-app .rec-group {
-    margin-bottom: 8px;
-    padding: 0 14px;
-    background: var(--panel);
-    border: 1px solid rgba(177, 205, 219, 0.08);
-    border-radius: 12px;
-  }
-
-  .bulk-app .rec-group summary {
-    padding: 16px 0;
-  }
-
-  .bulk-app .rec-title {
-    color: #EDF1EC !important;
-  }
-
-  .bulk-app .rec-count,
-  .bulk-app .rec-when,
-  .bulk-app .rec-set,
-  .bulk-app .rec-val .unit {
-    color: #758D99;
-  }
-
-  .bulk-app .rec-item,
-  .bulk-app .cat-item,
-  .bulk-app .cat-add-row {
-    border-color: rgba(177, 205, 219, 0.09);
-  }
-
-  .bulk-app .rec-val {
-    color: #F7F3EA;
-  }
-
-  .bulk-app .rep-summary {
-    padding: 16px;
-    margin-bottom: 10px;
-    background: var(--surface-quiet);
-    border: 1px solid rgba(177, 205, 219, 0.08);
-    border-radius: 12px;
-  }
-
-  .bulk-app .rep-day {
-    padding: 16px;
-    margin-bottom: 8px;
-    background: var(--panel);
-    border: 1px solid rgba(177, 205, 219, 0.08);
-    border-radius: 12px;
-  }
-
-  .bulk-app .rep-day-letter {
-    color: var(--primary);
-  }
-
-  .bulk-app .settings-card {
-    background: var(--panel);
-    border-color: rgba(177, 205, 219, 0.10);
-  }
-
-  .bulk-app .settings-head,
-  .bulk-app .rep-summary h2 {
-    color: #7F97A3;
-  }
-
-  .bulk-app .profile-select {
-    color: #A7BAC3;
-  }
-
-  .bulk-app .profile-select[aria-pressed="true"] {
-    color: #F4F0E8;
-  }
-
-  .bulk-app .btn-reset {
-    background: #17242D;
-    border-color: rgba(177, 205, 219, 0.10);
-    color: #839AA5;
-  }
-
-  .bulk-app .btn-reset:hover {
-    background: #21313B;
-    color: #BCC9CF;
-  }
-
-  .tab-bar {
-    background: #14212A;
-    border-top-color: rgba(177, 205, 219, 0.11);
-  }
-
-  .mode-btn {
-    color: #6F8793;
-  }
-
-  .mode-btn[aria-selected="true"] {
-    color: var(--primary);
-  }
-
-  @media (min-width: 700px) {
-    body {
-      background: #0D151B;
-    }
-    .bulk-app {
-      background: var(--void);
-      border-left: 1px solid rgba(177, 205, 219, 0.055);
-      border-right: 1px solid rgba(177, 205, 219, 0.055);
-    }
-  }
-
+/* Unified training interface */
+:root {
+ --void:#f5f6fa; --panel:#ffffff; --raised:#edf0f6; --sunken:#f7f8fc;
+ --line:#e3e7ef; --line-strong:#aebbd4; --ink:#19233b; --muted:#58657b; --faint:#69758a;
+ --primary:#315bea; --on-primary:#ffffff; --gain:#137454; --drop:#c43f57; --warn:#926016;
+ --r-lg:24px; --r-md:14px; --r-sm:10px;
+ --m-chest:#be5841; --m-back:#187f78; --m-shoulder:#926016; --m-legs:#7956b4; --m-tri:#315bea; --m-bi:#ad467c;
+}
+html,body {background:var(--void);color-scheme:light;}
+body {background:radial-gradient(ellipse at 85% 0%,#e7ecff 0%,transparent 45%),var(--void);background-attachment:fixed;}
+.bulk-app {max-width:760px;padding:32px 24px calc(126px + env(safe-area-inset-bottom));font-size:16px;}
+.bulk-app .masthead {margin:0 0 28px;padding:0 2px;}
+.bulk-app .masthead h1 {font-size:30px;font-weight:800;letter-spacing:-.04em;line-height:1.3;}
+.bulk-app .masthead p {font-size:14px;color:var(--muted);margin-top:8px;}
+.bulk-app .profile-tag {font-size:12px;padding:5px 10px;color:var(--primary);background:#e7ecff;}
+.bulk-app .gear-btn {width:46px;height:46px;padding:13px;background:var(--panel);border:1px solid var(--line);border-radius:16px;color:var(--ink);}
+.bulk-app .back-btn-inline {min-height:44px;font-size:14px;}
+.bulk-app .day-tabs {gap:8px;background:transparent;margin-bottom:20px;}
+.bulk-app .day-tab {background:var(--panel);border:1px solid var(--line);font-family:var(--ui);font-size:16px;padding:16px 0;border-radius:16px;color:var(--muted);}
+.bulk-app .day-tab[aria-selected=true] {background:var(--primary);color:var(--on-primary);border-color:var(--primary);box-shadow:0 6px 20px #315bea18;}
+.bulk-app .day-tab .today-dot {background:var(--primary);}
+.bulk-app .day-tab[aria-selected=true] .today-dot {background:var(--on-primary);}
+.bulk-app .day-panel {background:transparent;border:0;padding:0;margin:0 0 24px;}
+.bulk-app .stamp-row {background:linear-gradient(115deg,#315bea,#5278f1);border:1px solid #315bea;border-radius:22px;padding:23px 24px;margin-bottom:20px;align-items:center;}
+.bulk-app .stamp::before {content:'WORKOUT PLAN';display:block;color:#dfe6ff;font:600 12px var(--ui);letter-spacing:.14em;margin-bottom:8px;}
+.bulk-app .in-stamp {font-size:23px;font-weight:750;background:transparent!important;border:0;padding:0;}
+.bulk-app .set-total {font-size:44px;color:var(--primary);letter-spacing:-.04em;}
+.bulk-app .set-total span {display:block;text-align:right;font-size:12px;margin:6px 0 0;color:#e4e9ff;}
+.bulk-app .exercise-list {display:grid;gap:12px;margin:0;}
+.bulk-app .ex-row,.bulk-app .ex-row:last-child {padding:20px!important;background:var(--panel);border:1px solid var(--line);border-left-width:3px;border-radius:20px;box-shadow:0 4px 14px #0000000b;}
+.bulk-app .ex-top {gap:12px;}
+.bulk-app .ex-num {width:32px;height:32px;border-radius:10px;font-size:14px;color:var(--primary);background:#e7ecff;}
+.bulk-app select.in-name {font-size:17px;font-weight:700;padding:5px 0;}
+.bulk-app .btn-del,.bulk-app .btn-hist-del {min-width:36px;height:36px;border-radius:11px;font-size:18px;}
+.bulk-app .ex-fields {margin:17px 0 0;gap:10px;}
+.bulk-app .field {gap:6px;}
+.bulk-app .field label {font-size:12px;color:var(--muted);}
+.bulk-app input,.bulk-app select,.bulk-app textarea {font-size:16px;min-height:42px;padding:9px 10px;border-color:var(--line);}
+.bulk-app input:focus,.bulk-app select:focus,.bulk-app textarea:focus {border-color:var(--primary);background:#ffffff;box-shadow:0 0 0 3px #315bea15;}
+.bulk-app .in-muscle {font-size:14px;color:var(--muted);}
+.bulk-app .in-sets {width:52px;}.bulk-app .in-reps{width:72px;}.bulk-app .in-rir{width:58px;}
+.bulk-app .log-fields {margin:16px 0 0;padding:16px 0 0;border-top:1px solid var(--line);gap:18px;}
+.bulk-app .log-fields .field {flex:1;}
+.bulk-app .log-fields input {flex:1;width:72px;background:#f5f7ff;border-color:#d8e0fa;color:#2649b6;}
+.bulk-app .prev-hint {margin:12px 0 0;font-size:13px;line-height:1.6;}
+.bulk-app .panel-actions {gap:10px;margin-top:18px;}
+.bulk-app .btn {padding:14px 12px;min-height:48px;font-size:14px;border:1px solid var(--line);background:var(--raised);}
+.bulk-app .btn-log {background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-size:16px;min-height:54px;}
+.bulk-app .btn:hover,.bulk-app .gear-btn:hover,.bulk-app .cat-add-btn:hover,.bulk-app .profile-add-row button:hover,.bulk-app .btn-save-now:hover {background:#dfe5f2;}
+.bulk-app .btn-log:hover {background:#234ad0;}
+.bulk-app .save-hint {font-size:12px;margin:14px 0;}
+.bulk-app .day-note,.bulk-app .cardio-tag,.bulk-app .rest-note {font-size:13px;line-height:1.6;}
+.bulk-app .principle summary {font-size:15px;padding:20px;}
+.bulk-app .principle .principle-body {font-size:14px;padding:0 20px 20px;}
+.bulk-app .bar-label {font-size:14px;width:38px;}.bulk-app .bar-row{margin-bottom:14px;}.bulk-app .bar-track{height:8px;}.bulk-app .bar-val{font-size:14px;}.bulk-app .bar-legend{font-size:12px;}
+.bulk-app .btn-reset,.bulk-app .rec-preset-btn {font-size:14px;min-height:44px;padding:11px 8px;}
+.bulk-app .settings-card,.bulk-app .rep-summary,.bulk-app .rep-day,.bulk-app .rec-filter {padding:22px;}
+.bulk-app .settings-head,.bulk-app .rep-summary h2 {font-size:14px;color:var(--muted);margin:8px 0 12px;}
+.bulk-app .backup-note,.bulk-app .rec-empty,.bulk-app .cat-empty,.bulk-app .empty-note {font-size:14px;}
+.bulk-app .rec-group {margin-bottom:12px;}.bulk-app .rec-group summary {padding:20px;}.bulk-app .rec-title {font-size:17px;}.bulk-app .rec-count {font-size:12px;}.bulk-app .rec-body {padding:0 20px 20px;}
+.bulk-app .cat-name,.bulk-app .profile-select,.bulk-app .rec-ex-name {font-size:16px;}.bulk-app .cat-item {padding:16px 0;}.bulk-app .cat-item-specs {gap:10px;}.bulk-app .cat-add-specs {flex-wrap:wrap;}.bulk-app .cat-add-btn {min-height:44px;font-size:14px;}
+.bulk-app .rep-day-title,.bulk-app .rep-ex-list li {font-size:15px;}.bulk-app .rep-ex-spec,.bulk-app .rep-note,.bulk-app .rec-when,.bulk-app .rec-set {font-size:12px;}.bulk-app .rep-day-letter {color:var(--primary);font-size:20px;}
+.bulk-app .rec-filter-row input[type=date] {font-size:14px;}.bulk-app .backup-textarea {font-size:13px;}
+.tab-bar {max-width:712px;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom));border:1px solid #dce2ed;background:#ffffffef;border-radius:24px;padding:7px;box-shadow:0 14px 40px #2838571a;backdrop-filter:blur(24px);}
+.mode-btn {font-size:12px;padding:11px 5px;gap:6px;min-height:62px;border-radius:17px;color:#69758a;}
+.mode-btn svg {width:22px;height:22px;}.mode-btn[aria-selected=true] {background:#e7ecff;color:#315bea;}
+button {touch-action:manipulation;transition:background .18s ease,transform .18s ease!important;}button:active {transform:scale(.98);} .tab-bar :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+[hidden] {display:none!important;}
+@media(min-width:1000px){.bulk-app{max-width:1024px;padding-top:48px;}.bulk-app .exercise-list{grid-template-columns:repeat(2,minmax(0,1fr));}.bulk-app .day-tabs{max-width:580px;}.bulk-app .masthead h1{font-size:36px;}.bulk-app .stamp-row{padding:26px 28px;}.bulk-app .panel-actions{max-width:560px;margin:22px auto 0;}}
+@media(max-width:480px){.bulk-app{padding:24px 16px calc(120px + env(safe-area-inset-bottom));}.bulk-app .masthead h1{font-size:27px;}.bulk-app .day-tabs{gap:6px;}.bulk-app .day-tab{padding:14px 0;}.bulk-app .stamp-row{padding:20px;}.bulk-app .in-stamp{font-size:21px;}.bulk-app .ex-row,.bulk-app .ex-row:last-child{padding:17px 14px!important;}.bulk-app .ex-fields{gap:9px 10px;}.bulk-app .ex-fields .field{flex-direction:column;align-items:flex-start;gap:5px;}.bulk-app .ex-fields>.in-muscle{align-self:flex-end;}.bulk-app .log-fields{gap:12px;}.bulk-app .settings-card,.bulk-app .rec-filter{padding:17px;}}
+@media(prefers-reduced-motion:reduce){button{transition:none!important;}}
+
+/* Light palette refinements — layout intentionally unchanged */
+.bulk-app .set-total{color:#fff}.bulk-app .set-total span{color:#e4e9ff}.bulk-app .stamp-row .in-stamp{color:#fff}
+.bulk-app .btn-log:hover{color:#fff}.bulk-app .gear-btn,.bulk-app .back-btn-inline{box-shadow:0 8px 28px #2334510a}
+.bulk-app .ex-row,.bulk-app .day-panel,.bulk-app .settings-card,.bulk-app .rec-filter,.bulk-app .rep-summary,.bulk-app .rep-day,#principles,.bulk-app .rec-group{box-shadow:0 5px 20px #1e345208}
+.bulk-app .rec-filter-row input[type=date]{color-scheme:light}
+.bulk-app .profile-select .current-tag{color:#fff;background:#137454}
+
+/* Per-exercise record action */
+.bulk-app .log-fields {flex-wrap:nowrap;gap:10px;}
+.bulk-app .log-fields .field {min-width:0;gap:5px;}
+.bulk-app .log-fields input {min-width:0;width:52px;}
+.bulk-app .btn-record-one {flex:0 0 auto;min-height:42px;padding:9px 12px;border:0;border-radius:10px;background:var(--primary);color:var(--on-primary);font:600 14px var(--ui);cursor:pointer;white-space:nowrap;}
+.bulk-app .btn-record-one:hover {background:#234ad0;}
+@media(max-width:360px){.bulk-app .log-fields{gap:6px}.bulk-app .btn-record-one{padding:9px 8px}}
+
+/* Hold the left edge to reorder */
+.bulk-app .ex-row{position:relative;}
+.bulk-app .ex-row,.bulk-app .ex-row:last-child{padding-left:36px!important;}
+.bulk-app .reorder-handle{position:absolute;left:0;top:0;bottom:0;width:30px;border:0;border-radius:17px 0 0 17px;background:transparent;color:var(--faint);font:22px var(--ui);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
+.bulk-app .reorder-handle:hover{background:#edf1ff;color:var(--primary);}
+.bulk-app .reorder-handle.holding{background:#e7ecff;color:var(--primary);}
+.bulk-app .reorder-active{outline:2px solid var(--primary);box-shadow:0 12px 28px #315bea28;z-index:2;}
+.bulk-app .reorder-active .reorder-handle{cursor:grabbing;background:var(--primary);color:#fff;}
+.bulk-app .pending-save{background:var(--primary);color:#fff;border-color:var(--primary);}
 </style>
 </head>
 <body>
@@ -2187,12 +667,12 @@
       <p class="rest-note" id="restNote" hidden>오늘은 일요일 · 휴식일이에요</p>
 
       <div class="day-panel" id="dayPanel"></div>
-      <p class="save-hint" id="saveHint"></p>
+      <p class="save-hint" id="saveHint" role="status" aria-live="polite"></p>
 
       <div id="principles"></div>
 
       <div class="reset-row">
-        <button class="btn-reset btn-save-now" id="btnSaveNow" type="button">지금 저장</button>
+        <button class="btn-reset btn-save-now" id="btnSaveNow" type="button">루틴 저장</button>
         <button class="btn-reset" id="btnClearDay" type="button">운동 초기화</button>
         <button class="btn-reset" id="btnReset" type="button">처음 루틴으로 되돌리기</button>
       </div>
@@ -2347,6 +827,7 @@
   }
 
   var days = load();
+  var routineOrderPending = false;
 
   // 각 항목은 { n: 이름, s: 세트, r: 반복수, rir: RIR } — 종목 관리에서 직접 등록/수정 가능
   function defaultCatalog() {
@@ -2603,10 +1084,21 @@
     });
   }
 
-  function save() {
+  function showPendingOrder() {
+    clearTimeout(save._t);
+    var hint = document.getElementById('saveHint');
+    clearTimeout(hint._t);
+    hint.textContent = '순서 변경됨 · 루틴 저장을 눌러 저장하세요';
+    hint.className = 'save-hint';
+    document.getElementById('btnSaveNow').classList.add('pending-save');
+  }
+  function save(explicit) {
+    if (routineOrderPending && explicit !== true) { showPendingOrder(); return; }
     var hint = document.getElementById('saveHint');
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(days));
+      routineOrderPending = false;
+      document.getElementById('btnSaveNow').classList.remove('pending-save');
       hint.textContent = '저장됨';
       hint.className = 'save-hint on';
     } catch (e) {
@@ -2699,6 +1191,85 @@
     return wrap;
   }
 
+  function attachReorderHandle(row, list, day) {
+    var handle = document.createElement('button');
+    handle.type = 'button';
+    handle.className = 'reorder-handle';
+    handle.textContent = '⠿';
+    handle.title = '1.2초 길게 누른 뒤 위아래로 이동 · 키보드 Alt+↑/↓';
+    handle.setAttribute('aria-label', '운동 순서 이동: 길게 누르고 드래그 또는 Alt와 방향키');
+    row.appendChild(handle);
+    var timer = null, active = false, pointer = null, startX = 0, startY = 0;
+    var lastX = 0, lastY = 0, frame = 0;
+    function moveAt(x, y) {
+      var candidates = Array.from(list.children).filter(function (el) { return el !== row; });
+      var closest = null, distance = Infinity;
+      candidates.forEach(function (el) {
+        var box = el.getBoundingClientRect();
+        var dx = x < box.left ? box.left-x : (x > box.right ? x-box.right : 0);
+        var dy = y-(box.top+box.height/2);
+        var score = dx*dx + dy*dy;
+        if (score < distance) { closest=el; distance=score; }
+      });
+      if (!closest) return;
+      var rect = closest.getBoundingClientRect();
+      if (y < rect.top + rect.height/2) list.insertBefore(row, closest);
+      else list.insertBefore(row, closest.nextSibling);
+    }
+    function scrollFrame() {
+      if (!active) return;
+      var speed = lastY < 100 ? -12 : (lastY > window.innerHeight-110 ? 12 : 0);
+      if (speed) { window.scrollBy(0,speed); moveAt(lastX,lastY); }
+      frame = requestAnimationFrame(scrollFrame);
+    }
+    function finish(cancelled) {
+      clearTimeout(timer); timer=null;
+      var wasActive=active; active=false;
+      cancelAnimationFrame(frame);
+      row.classList.remove('reorder-active');handle.classList.remove('holding');
+      handle.setAttribute('aria-pressed','false');
+      if (pointer !== null && handle.hasPointerCapture(pointer)) handle.releasePointerCapture(pointer);
+      pointer=null;
+      if (!wasActive) return;
+      var reordered=Array.from(list.children).map(function(el){return el._exercise;});
+      if (!cancelled && reordered.some(function(ex,i){return ex !== day.ex[i];})) {
+        day.ex=reordered;
+        routineOrderPending=true;
+      }
+      renderPanel();
+      if (routineOrderPending) showPendingOrder();
+    }
+    handle.addEventListener('pointerdown',function(e){
+      if (e.button !== 0 || pointer !== null) return;
+      pointer=e.pointerId;startX=lastX=e.clientX;startY=lastY=e.clientY;
+      handle.setPointerCapture(pointer);handle.classList.add('holding');
+      timer=setTimeout(function(){
+        active=true;row.classList.add('reorder-active');handle.classList.remove('holding');
+        handle.setAttribute('aria-pressed','true');
+        frame=requestAnimationFrame(scrollFrame);
+      },1200);
+    });
+    handle.addEventListener('pointermove',function(e){
+      if(e.pointerId !== pointer)return;
+      lastX=e.clientX;lastY=e.clientY;
+      if(!active){if(Math.hypot(lastX-startX,lastY-startY)>12) finish(true);return;}
+      e.preventDefault();moveAt(lastX,lastY);
+    });
+    handle.addEventListener('pointerup',function(e){if(e.pointerId===pointer)finish(false);});
+    handle.addEventListener('pointercancel',function(e){if(e.pointerId===pointer)finish(true);});
+    handle.addEventListener('lostpointercapture',function(){if(pointer!==null)finish(true);});
+    handle.addEventListener('contextmenu',function(e){e.preventDefault();});
+    handle.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){finish(true);return;}
+      if(!e.altKey || (e.key!=='ArrowUp' && e.key!=='ArrowDown'))return;
+      e.preventDefault();var i=day.ex.indexOf(row._exercise),j=i+(e.key==='ArrowUp'?-1:1);
+      if(j<0 || j>=day.ex.length)return;
+      var item=day.ex.splice(i,1)[0];day.ex.splice(j,0,item);
+      routineOrderPending=true;renderPanel();showPendingOrder();
+      panelEl.querySelectorAll('.reorder-handle')[j].focus();
+    });
+  }
+
   function renderPanel() {
     var d = days[activeIndex];
     panelEl.innerHTML = '';
@@ -2744,6 +1315,8 @@
     d.ex.forEach(function (ex, idx) {
       var li = document.createElement('li');
       li.className = 'ex-row';
+      li._exercise = ex;
+      attachReorderHandle(li, list, d);
       li.style.borderLeft = '3px solid ' + (MUSCLE_COLOR[ex.m] || 'transparent');
       li.style.paddingLeft = '10px';
 
@@ -2853,7 +1426,15 @@
       doneIn.placeholder = '–';
 
       logRow.appendChild(wrapField('kg', wIn));
-      logRow.appendChild(wrapField('실제 회', doneIn));
+      logRow.appendChild(wrapField('회', doneIn));
+      var addRecordBtn = document.createElement('button');
+      addRecordBtn.type = 'button';
+      addRecordBtn.className = 'btn-record-one';
+      addRecordBtn.textContent = '+ 추가';
+      addRecordBtn.setAttribute('aria-label', ex.n + ' 운동 기록 추가');
+      addRecordBtn.addEventListener('click', function () { saveExerciseRecords(idx); });
+      logRow.appendChild(addRecordBtn);
+
 
       li.appendChild(top);
       li.appendChild(fields);
@@ -2924,13 +1505,15 @@
     logBtn.className = 'btn btn-log';
     logBtn.type = 'button';
     logBtn.textContent = '오늘 세트 기록 추가 (' + todayStr() + ')';
-    logBtn.addEventListener('click', function () {
+    logBtn.addEventListener('click', function () { saveExerciseRecords(null); });
+    function saveExerciseRecords(selectedIndex) {
       var entries = [];
       var rows = panelEl.querySelectorAll('.ex-row');
 
       // 모바일 브라우저에서 마지막 입력 이벤트가 늦게 반영되는 경우까지 대비해
       // 버튼을 누르는 순간 화면에 보이는 값을 직접 다시 읽는다.
       d.ex.forEach(function (ex, idx) {
+        if (selectedIndex !== null && idx !== selectedIndex) return;
         var dr = getDraft(d.key, ex.n);
         var row = rows[idx];
         if (row) {
@@ -2989,7 +1572,8 @@
 
       // 실제 저장이 확인된 뒤에만 메모리 상태와 입력 초안을 갱신한다.
       logs = persisted;
-      draft[d.key] = {};
+      if (selectedIndex === null) draft[d.key] = {};
+      else if (draft[d.key]) delete draft[d.key][d.ex[selectedIndex].n];
       writeJSON(DRAFT_KEY, draft);
       renderPanel();
       renderPrinciples();
@@ -3002,7 +1586,7 @@
         hint.textContent = '';
         hint.className = 'save-hint';
       }, 2800);
-    });
+    }
     actions.appendChild(logBtn);
 
     panelEl.appendChild(actions);
@@ -3348,7 +1932,7 @@
   }
 
   document.getElementById('btnSaveNow').addEventListener('click', function () {
-    save();
+    save(true);
   });
 
   document.getElementById('btnCatalogSave').addEventListener('click', function () {
@@ -3489,6 +2073,8 @@
     writeJSON(ACTIVE_PROFILE_KEY, activeProfile);
     applyProfileKeys();
     days = load();
+    routineOrderPending = false;
+    document.getElementById('btnSaveNow').classList.remove('pending-save');
     catalog = loadCatalog();
     logs = loadLogs();
     draft = readJSON(DRAFT_KEY, {});
@@ -3623,6 +2209,8 @@
     activeProfile = newActive;
     applyProfileKeys();
     days = load();
+    routineOrderPending = false;
+    document.getElementById('btnSaveNow').classList.remove('pending-save');
     catalog = loadCatalog();
     logs = loadLogs();
     draft = readJSON(DRAFT_KEY, {});
@@ -3659,14 +2247,5 @@
 })();
 </script>
 
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('./sw.js').catch(function (err) {
-        console.warn('Service worker registration failed:', err);
-      });
-    });
-  }
-</script>
 </body>
 </html>
