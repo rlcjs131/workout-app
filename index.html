@@ -790,6 +790,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 @media(prefers-reduced-motion:reduce){.app-toast{transition:none;}}
 @media(max-width:400px){.bulk-app .routine-mode-note{font-size:12px;}.bulk-app .exercise-name-read{font-size:16px;}}
 </style>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="./icon-192.png">
 </head>
 <body>
 <div id="appToast" class="app-toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -3202,5 +3207,14 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 })();
 </script>
 
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.error('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
 </body>
 </html>
