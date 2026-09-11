@@ -119,7 +119,7 @@
   .tab-bar {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
     max-width: 460px; margin: 0 auto;
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
     background: rgba(28, 32, 54, 0.92);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
     border-top: 1px solid var(--line);
@@ -573,7 +573,7 @@ body {background:radial-gradient(ellipse at 85% 0%,#e7ecff 0%,transparent 45%),v
 .bulk-app .rep-day-title,.bulk-app .rep-ex-list li {font-size:15px;}.bulk-app .rep-ex-spec,.bulk-app .rep-note,.bulk-app .rec-when,.bulk-app .rec-set {font-size:12px;}.bulk-app .rep-day-letter {color:var(--primary);font-size:20px;}
 .bulk-app .rec-filter-row input[type=date] {font-size:14px;}.bulk-app .record-export-text-base {font-size:13px;}
 .tab-bar {max-width:712px;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom));border:1px solid #dce2ed;background:#ffffffef;border-radius:24px;padding:7px;box-shadow:0 14px 40px #2838571a;backdrop-filter:blur(24px);}
-.mode-btn {font-size:12px;padding:11px 5px;gap:6px;min-height:62px;border-radius:17px;color:#69758a;}
+.mode-btn {font-size:12px;padding:11px 3px;gap:6px;min-width:0;min-height:62px;border-radius:17px;color:#69758a;white-space:nowrap;}
 .mode-btn svg {width:22px;height:22px;}.mode-btn[aria-selected=true] {background:#e7ecff;color:#315bea;}
 button {touch-action:manipulation;transition:background .18s ease,transform .18s ease!important;}button:active {transform:scale(.98);} .tab-bar :focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
 [hidden] {display:none!important;}
@@ -596,25 +596,16 @@ button {touch-action:manipulation;transition:background .18s ease,transform .18s
 .bulk-app .btn-record-one:hover {background:#234ad0;}
 @media(max-width:360px){.bulk-app .log-fields{gap:6px}.bulk-app .btn-record-one{padding:9px 8px}}
 
-/* Hold the left edge to reorder */
+/* Arrow controls for routine order */
 .bulk-app .ex-row{position:relative;}
 .bulk-app .ex-row,.bulk-app .ex-row:last-child{padding-left:36px!important;}
-.bulk-app .reorder-handle{position:absolute;left:0;top:0;bottom:0;width:30px;border:0;border-radius:17px 0 0 17px;background:transparent;color:var(--faint);font:22px var(--ui);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
-.bulk-app .reorder-handle:hover{background:#edf1ff;color:var(--primary);}
-.bulk-app .reorder-handle.holding{background:#e7ecff;color:var(--primary);}
-.bulk-app .reorder-active{outline:2px solid var(--primary);box-shadow:0 12px 28px #315bea28;z-index:2;}
-.bulk-app .reorder-active .reorder-handle{cursor:grabbing;background:var(--primary);color:#fff;}
 .bulk-app .pending-save{background:var(--primary);color:#fff;border-color:var(--primary);}
 .bulk-app .record-export-open{width:100%;background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-size:15px;}
 .bulk-app #recordExportWrap{margin-top:14px;}
 .bulk-app .record-export-text{min-height:260px;margin-bottom:10px;line-height:1.75;background:var(--sunken);color:var(--ink);white-space:pre-wrap;}
 /* Mobile and installed-app layout */
 html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
-.bulk-app .drop-before {box-shadow:0 -4px 0 var(--primary)!important;}
-.bulk-app .drop-after {box-shadow:0 4px 0 var(--primary)!important;}
-.bulk-app .reorder-handle {width:40px;z-index:3;}
 .bulk-app .ex-row,.bulk-app .ex-row:last-child {padding-left:46px!important;}
-.bulk-app .reorder-active {opacity:.75;}
 @media(max-width:700px),(pointer:coarse){
  .bulk-app {width:100%;max-width:620px;min-height:100dvh;padding:calc(20px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(118px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));}
  .bulk-app .exercise-list {grid-template-columns:minmax(0,1fr);}
@@ -663,8 +654,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .bulk-app .record-card-date{font-size:12px;color:var(--muted);flex-shrink:0;}
 .bulk-app .record-card-value{flex:1;font-size:15px;font-weight:600;overflow-wrap:anywhere;}
 .bulk-app .record-muscle-group .exercise-record-card{background:var(--sunken);padding:14px;margin:0 0 10px;border-radius:14px;}
-.bulk-app .record-muscle-group > summary{display:grid;grid-template-columns:minmax(0,1fr) auto 8px;align-items:center;gap:16px;}
-.bulk-app .record-muscle-group > summary > .rec-count{text-align:right;justify-self:end;}
+.bulk-app .record-muscle-group > summary,.bulk-app .stats-muscle-group > summary{display:grid;grid-template-columns:minmax(0,1fr) auto 8px;align-items:center;gap:16px;}
+.bulk-app .record-muscle-group > summary > .rec-count,.bulk-app .stats-muscle-group > summary > .rec-count{text-align:right;justify-self:end;}
 .bulk-app .record-muscle-group .exercise-record-head{padding:0;list-style:none;cursor:pointer;gap:8px;}
 .bulk-app .exercise-record-head::-webkit-details-marker{display:none;}
 .bulk-app .exercise-record-head h3{flex:1;font-size:15px;}
@@ -682,8 +673,126 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .exercise-search-result{width:100%;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;color:var(--ink);font:600 16px var(--ui);cursor:pointer;}
 .exercise-search-result small{font-size:12px;font-weight:400;color:var(--muted);}.exercise-search-result:hover{background:#edf1ff;}
 </style>
+<style>
+.bulk-app .routine-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;}
+.bulk-app .routine-mode-note{margin:0;color:var(--muted);font-size:13px;line-height:1.6;}
+.bulk-app #btnRoutineEdit{flex-shrink:0;min-height:44px;}
+.bulk-app #btnRoutineEdit[aria-pressed=true]{background:var(--primary);color:var(--on-primary);}
+.bulk-app .exercise-name-read{margin:0;min-width:0;flex:1;font-size:17px;font-weight:700;line-height:1.5;overflow-wrap:anywhere;}
+.bulk-app .exercise-goal-read{display:flex;flex-wrap:wrap;gap:6px 10px;margin:12px 0 0;font-size:14px;color:var(--ink);line-height:1.6;}
+.bulk-app .exercise-goal-read span{padding:4px 9px;border-radius:8px;background:var(--sunken);}
+.bulk-app .stamp-row .stamp-read{font-size:20px;font-weight:700;overflow-wrap:anywhere;color:#ffffff;}
+.bulk-app #dayView:not(.routine-editing) .routine-edit-only,
+.bulk-app #dayView.routine-editing .routine-read-only{display:none!important;}
+.bulk-app #dayView:not(.routine-editing) .ex-row,
+.bulk-app #dayView:not(.routine-editing) .ex-row:last-child{padding-left:16px!important;}
+.bulk-app #btnSaveNow[hidden]{display:none!important;}
+.bulk-app #dayPanel .ex-fields{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:8px 6px;align-items:center;margin-top:10px;max-width:350px;}
+.bulk-app #dayPanel .ex-fields .muscle-field{grid-column:1 / -1;}
+.bulk-app #dayPanel .field{display:flex;flex-direction:row;align-items:center;min-width:0;gap:4px;margin:0;}
+.bulk-app #dayPanel .field-label{display:block;flex:0 0 auto;white-space:nowrap;font-size:12px;line-height:1.5;font-weight:600;color:var(--muted);text-align:left;}
+.bulk-app #dayPanel .field input,.bulk-app #dayPanel .field select{box-sizing:border-box;min-width:0;min-height:44px;margin:0;font-size:16px;line-height:1.4;}
+.bulk-app #dayPanel .field input{flex:1 1 56px;width:56px;max-width:72px;text-align:center;padding:8px 3px;-moz-appearance:textfield;}
+.bulk-app #dayPanel .field input::-webkit-inner-spin-button,.bulk-app #dayPanel .field input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+.bulk-app #dayPanel .muscle-field{gap:8px;}
+.bulk-app #dayPanel .muscle-field select{width:110px;text-align:left;padding:8px 10px;background-color:var(--sunken);color:var(--ink);border:1px solid var(--line);border-radius:10px;-webkit-appearance:menulist;appearance:auto;}
+.bulk-app #dayPanel .log-fields{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;margin-top:10px;padding-top:10px;}
+.bulk-app #dayPanel .log-fields .field{flex:0 1 auto;}
+.bulk-app #dayPanel .log-fields .in-weight{width:72px;flex-basis:72px;}
+.bulk-app #dayPanel .btn-record-one{min-height:44px;margin-left:auto;align-self:center;}
+.bulk-app #dayView.routine-editing .log-fields,
+.bulk-app #dayView.routine-editing .btn-log,
+.bulk-app #dayView.routine-editing .prev-hint{display:none!important;}
+.bulk-app .reorder-controls{position:absolute;left:3px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;}
+.bulk-app .reorder-step{width:36px;height:44px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--sunken);color:var(--primary);font-size:20px;touch-action:manipulation;}
+.bulk-app .reorder-step:disabled{opacity:.25;}
+.bulk-app .record-date-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.bulk-app .record-date-row label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.bulk-app .record-date-row input{font-size:16px;max-width:170px;min-width:0;}
+.bulk-app .record-edit-trigger{border:0;background:transparent;padding:0;text-align:left;font-family:inherit;cursor:pointer;}
+.bulk-app .record-edit-trigger:focus-visible{outline:2px solid var(--primary);outline-offset:3px;}
+.bulk-app .record-edit-form{display:flex;flex-wrap:wrap;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);}
+.bulk-app .record-edit-form .field{min-width:0;display:flex;gap:4px;align-items:center;}
+.bulk-app .record-edit-form input{width:64px;font-size:16px;}
+.bulk-app .record-edit-form input[type=date]{width:160px;max-width:100%;}
+.bulk-app .record-edit-form .save-hint{flex-basis:100%;margin:0;}
+.bulk-app .transfer-actions{display:flex;flex-wrap:wrap;gap:8px;}
+.bulk-app .stats-heading{margin:8px 0;font-size:20px;color:var(--ink);}
+.bulk-app .stats-note{margin:8px 0 16px;color:var(--muted);font-size:12px;line-height:1.65;overflow-wrap:anywhere;}
+.bulk-app .stats-periods{display:flex;gap:8px;margin-bottom:12px;}
+.bulk-app .stats-periods button{flex:1;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--raised);color:var(--muted);font:600 14px var(--ui);}
+.bulk-app .stats-periods button[aria-pressed=true]{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
+.bulk-app .stats-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0;}
+.bulk-app .stats-metric{padding:16px 8px;border:1px solid var(--line);border-radius:16px;background:var(--raised);text-align:center;}
+.bulk-app .stats-metric strong{display:block;color:var(--primary);font:700 25px var(--num);overflow-wrap:anywhere;}
+.bulk-app .stats-metric span{display:block;margin-top:6px;font-size:12px;color:var(--muted);}
+.bulk-app .stats-card{padding:20px;margin:14px 0;background:var(--raised);border:1px solid var(--line);border-radius:20px;}
+.bulk-app .stats-card h3{margin:0 0 14px;font-size:16px;color:var(--ink);}
+.bulk-app .stats-bar-row{display:grid;grid-template-columns:42px minmax(0,1fr) 50px;gap:10px;align-items:center;margin:14px 0;font-size:13px;}
+.bulk-app .stats-bar-track{height:8px;border-radius:8px;background:var(--sunken);overflow:hidden;}
+.bulk-app .stats-bar-fill{display:block;height:100%;border-radius:8px;background:var(--primary);}
+.bulk-app .stats-bar-count{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;}
+.bulk-app .stats-week-row{grid-template-columns:85px minmax(0,1fr) 50px;}
+.bulk-app .stats-week-row small{display:block;color:var(--muted);font-size:11px;margin-top:3px;}
+.bulk-app .stats-rank{padding:0;margin:0;list-style:none;}
+.bulk-app .stats-rank li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;}
+.bulk-app .stats-rank li:last-child{border-bottom:0;}
+.bulk-app .stats-rank-name{min-width:0;overflow-wrap:anywhere;}.bulk-app .stats-rank-value{flex-shrink:0;text-align:right;font-size:12px;color:var(--muted);}
+.bulk-app .stats-exercise{margin:10px 0;border:1px solid var(--line);border-radius:16px;background:var(--raised);overflow:hidden;}
+.bulk-app .stats-exercise summary{display:flex;align-items:center;gap:10px;cursor:pointer;padding:16px;list-style:none;min-height:44px;box-sizing:border-box;}
+.bulk-app .stats-exercise summary::-webkit-details-marker{display:none;}
+.bulk-app .stats-exercise summary::after{content:'⌄';margin-left:auto;color:var(--muted);}
+.bulk-app .stats-exercise[open] summary::after{content:'⌃';}
+.bulk-app .stats-exercise-title{min-width:0;flex:1;overflow-wrap:anywhere;font-size:14px;font-weight:600;}
+.bulk-app .stats-exercise-title small{display:block;margin-top:5px;font-size:12px;color:var(--muted);font-weight:400;}
+.bulk-app .stats-exercise-body{padding:0 16px 16px;}
+.bulk-app .stats-detail-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:13px;}
+.bulk-app .stats-detail-row span{color:var(--muted);}.bulk-app .stats-detail-row strong{text-align:right;font-weight:600;overflow-wrap:anywhere;}
+.bulk-app .stats-attendance{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.bulk-app .stats-attendance strong{font:700 32px var(--num);color:var(--primary);}.bulk-app .stats-attendance small{font-size:14px;margin-left:5px;}
+.bulk-app .stats-calendar-head{display:flex;align-items:center;gap:6px;margin-bottom:14px;}
+.bulk-app .stats-calendar-head h3{flex:1;margin:0;}.bulk-app .stats-calendar-head button{min-width:44px;min-height:44px;padding:5px;border:1px solid var(--line);border-radius:10px;background:var(--raised);color:var(--ink);font:600 14px var(--ui);}
+.bulk-app .stats-calendar-head button:disabled{opacity:.35;}
+.bulk-app .stats-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px 0;text-align:center;}
+.bulk-app .stats-calendar-weekday{font-size:11px;color:var(--muted);padding:6px 0;}
+.bulk-app .stats-calendar-date{display:flex;min-width:0;min-height:44px;padding:4px 0;flex-direction:column;justify-content:center;align-items:center;gap:4px;border-radius:10px;font:400 13px var(--ui);color:var(--ink);background:transparent;border:1px solid transparent;}
+.bulk-app .stats-calendar-date.has-record{color:var(--primary);font-weight:700;}
+.bulk-app .stats-calendar-date.in-range{background:#e7ecff;border-radius:0;}
+.bulk-app .stats-calendar-date.range-start,.bulk-app .stats-calendar-date.range-end{background:var(--primary);color:var(--on-primary);}
+.bulk-app .stats-calendar-date.range-start{border-radius:10px 0 0 10px;}.bulk-app .stats-calendar-date.range-end{border-radius:0 10px 10px 0;}
+.bulk-app .stats-calendar-date.range-start.range-end{border-radius:10px;}
+.bulk-app .stats-calendar-date:focus-visible{outline:2px solid var(--primary);outline-offset:-3px;}
+.bulk-app .stats-range-status{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.bulk-app .stats-range-status .stats-note{margin:4px 0;}.bulk-app .stats-range-status button{min-height:44px;background:transparent;color:var(--primary);border:0;font:600 12px var(--ui);padding:8px;}
+.bulk-app .stats-calendar-dot{width:4px;height:4px;border-radius:50%;background:transparent;}.bulk-app .has-record .stats-calendar-dot{background:currentColor;}
+.bulk-app .stats-calendar-date.is-today{border-color:var(--primary);}.bulk-app .stats-calendar-date.is-future{opacity:.35;}
+.bulk-app .stats-muscle-group>.rec-body{padding:0 12px 12px;}
+.bulk-app .stats-muscle-group .stats-exercise summary{padding:14px 12px;}
+.bulk-app .stats-muscle-group .stats-exercise-body{padding:0 10px 12px;}
+.bulk-app .stats-weight-peak{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:6px 0 8px;font-size:12px;color:var(--muted);}.bulk-app .stats-weight-peak strong{color:var(--primary);font:700 19px var(--num);}.bulk-app .stats-weight-peak strong.stats-weight-empty{font:500 12px var(--ui);}
+.bulk-app .stats-weight-figure{margin:0;}.bulk-app .stats-weight-graph{display:block;width:100%;height:auto;overflow:visible;color:var(--primary);}
+.bulk-app .stats-weight-graph text{fill:var(--muted);font:12px var(--ui);}.bulk-app .stats-weight-graph .weight-grid{stroke:var(--line);stroke-width:1;}
+.bulk-app .stats-weight-graph .weight-line{fill:none;stroke:currentColor;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
+.bulk-app .stats-weight-graph .weight-point{fill:currentColor;stroke:var(--raised);stroke-width:1.5;}
+.bulk-app .stats-weight-figure figcaption{font-size:11px;color:var(--muted);line-height:1.6;margin-top:6px;}
+.bulk-app .stats-chart-select{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted);}
+.bulk-app .stats-chart-select>span{flex-shrink:0;}
+.bulk-app .stats-chart-select select{min-width:0;max-width:100%;flex:1;font-size:13px;min-height:44px;}
+.bulk-app .cardio-routine-card{list-style:none;margin:12px 0 0;padding:16px;border:1px solid var(--line);border-left:3px solid var(--gain);border-radius:16px;background:var(--raised);}
+.bulk-app .cardio-routine-head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.bulk-app .cardio-routine-head h3{margin:0;color:var(--ink);font-size:16px;}
+.bulk-app .cardio-routine-target{color:var(--gain);font-size:13px;font-weight:600;white-space:nowrap;}
+.bulk-app .cardio-routine-card p{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.6;}
+.app-toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;z-index:2000;box-sizing:border-box;width:max-content;max-width:calc(100% - 28px);padding:13px 18px;border:1px solid #ffffff30;border-radius:14px;background:#20314d;color:#fff;font:600 14px/1.5 system-ui,sans-serif;text-align:center;box-shadow:0 8px 28px #17243d30;pointer-events:none;opacity:0;transform:translate(-50%,-8px);transition:opacity .18s,transform .18s;overflow-wrap:anywhere;}
+.app-toast.is-visible{opacity:1;transform:translate(-50%,0);}
+.app-toast[data-kind=pending]{background:#2459b8;}
+.app-toast[data-kind=error]{background:#a72c42;}
+@media(prefers-reduced-motion:reduce){.app-toast{transition:none;}}
+@media(max-width:400px){.bulk-app .routine-mode-note{font-size:12px;}.bulk-app .exercise-name-read{font-size:16px;}}
+</style>
 </head>
 <body>
+<div id="appToast" class="app-toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <div class="bulk-app" id="bulkApp">
   <div class="masthead">
@@ -702,10 +811,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     </div>
   </div>
 
+  <section class="settings-card" id="recordDataNotice" hidden aria-label="운동기록 데이터 확인">
+    <p class="record-export-note" id="recordDataMessage" role="status"></p>
+    <button class="btn-reset" id="btnRecoveryDownload" type="button">복구용 원본 파일 받기</button>
+  </section>
+
   <div class="settings-view" id="settingsView" hidden>
     <div class="settings-head">프로필</div>
     <div class="settings-card">
       <div id="profileList"></div>
+      <p class="save-hint" id="profileActionHint" role="status" aria-live="polite"></p>
       <div class="profile-add-row">
         <input type="text" id="newProfileName" placeholder="새 프로필 이름" aria-label="새 프로필 이름">
         <button id="btnAddProfile" type="button">추가</button>
@@ -723,12 +838,27 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="settings-head" style="margin-top:18px;">운동기록</div>
     <div class="settings-card">
       <p class="record-export-note">현재 프로필에 저장된 운동기록을 텍스트로 확인하고 복사할 수 있어요.</p>
-      <button class="btn-reset btn-save-now record-export-open" id="btnRecordExport" type="button">운동기록 저장</button>
+      <button class="btn-reset btn-save-now record-export-open" id="btnRecordExport" type="button">운동기록 내보내기</button>
       <div id="recordExportWrap" hidden>
         <textarea id="recordExportText" class="record-export-text-base record-export-text" readonly rows="12" aria-label="저장된 운동기록 텍스트"></textarea>
         <button class="btn-reset" id="btnRecordCopy" type="button">텍스트 복사</button>
         <p class="save-hint" id="recordExportHint" role="status" aria-live="polite"></p>
       </div>
+    </div>
+    <div class="settings-head" style="margin-top:18px;">기기 변경 · 데이터 보관</div>
+    <div class="settings-card">
+      <p class="record-export-note">데이터는 이 브라우저에 저장됩니다. 현재 프로필의 저장된 루틴·종목·운동기록·메모와 임시 루틴·기록 입력값을 파일로 보관하세요. 아직 저장하지 않은 메모·종목 수정은 먼저 저장해주세요. 가져오기는 기존 데이터를 덮어쓰지 않고 새 프로필로 복원합니다.</p>
+      <div class="transfer-actions">
+        <button class="btn-reset" id="btnDataExport" type="button">현재 프로필 파일 내보내기</button>
+        <button class="btn-reset" id="btnDataImport" type="button">파일 가져오기</button>
+        <input id="dataImportFile" type="file" accept=".json,application/json" hidden>
+      </div>
+      <div id="dataImportPreview" hidden>
+        <p id="dataImportSummary" class="record-export-note"></p>
+        <button class="btn-reset" id="btnImportConfirm" type="button">새 프로필로 가져오기</button>
+        <button class="btn-reset" id="btnImportCancel" type="button">취소</button>
+      </div>
+      <p class="save-hint" id="dataTransferHint" role="status" aria-live="polite"></p>
     </div>
   </div>
 
@@ -737,15 +867,25 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="day-tabs" id="dayTabs" role="tablist"></div>
       <p class="rest-note" id="restNote" hidden>오늘은 일요일 · 휴식일이에요</p>
 
+      <div class="routine-mode-bar">
+        <p class="routine-mode-note" id="routineModeNote">목표를 확인하고 운동 기록을 추가하세요.</p>
+        <button class="btn-reset" id="btnRoutineEdit" type="button" aria-pressed="false" aria-controls="dayPanel">루틴 편집</button>
+      </div>
+
+      <div class="record-date-row routine-read-only">
+        <label>기록 날짜 <input type="date" id="recordDate" aria-label="운동 기록 날짜"></label>
+        <button class="btn-reset" id="btnRecordToday" type="button">오늘</button>
+      </div>
       <div class="day-panel" id="dayPanel"></div>
+      <p class="save-hint routine-edit-only" id="routineSaveHint" role="status" aria-live="polite"></p>
       <p class="save-hint" id="saveHint" role="status" aria-live="polite"></p>
 
       <div id="principles"></div>
 
       <div class="reset-row">
-        <button class="btn-reset btn-save-now" id="btnSaveNow" type="button">루틴 저장</button>
-        <button class="btn-reset" id="btnClearDay" type="button">운동 초기화</button>
-        <button class="btn-reset" id="btnReset" type="button">처음 루틴으로 되돌리기</button>
+        <button class="btn-reset btn-save-now routine-edit-only" id="btnSaveNow" type="button" hidden>루틴 저장</button>
+        <button class="btn-reset routine-edit-only" id="btnClearDay" type="button">운동 초기화</button>
+        <button class="btn-reset routine-edit-only" id="btnReset" type="button">기본 루틴 적용</button>
       </div>
     </div>
 
@@ -760,6 +900,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div id="catalogList"></div>
     </div>
     <div id="recordsView" hidden>
+      <p class="save-hint" id="recordsActionHint" role="status" aria-live="polite"></p>
+      <p class="record-export-note">기록의 무게·횟수 또는 날짜를 누르면 수정할 수 있어요.</p>
       <div class="rec-filter">
         <div class="rec-filter-row">
           <input type="date" id="recFilterFrom" aria-label="조회 시작일">
@@ -778,6 +920,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       </div>
     </div>
     <div id="reportView" hidden></div>
+    <div id="statsView" hidden></div>
   </div>
 </div>
 
@@ -795,7 +938,45 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     '이두': 'var(--m-bi)'
   };
   var MEV = 14, MRV = 22;
+  var recordDataLocked = false, recordDataWarning = '';
 
+  function storageTransaction(operations) {
+    if(typeof recordDataLocked!=='undefined' && recordDataLocked && operations.some(function(op){return op.key===LOG_KEY;}))return false;
+    var previous=[],applied=[];
+    try {
+      operations.forEach(function(op){previous.push({key:op.key,raw:localStorage.getItem(op.key)});});
+      operations.forEach(function(op,i){
+        if(op.remove)localStorage.removeItem(op.key);else localStorage.setItem(op.key,JSON.stringify(op.value));
+        applied.push(i);
+      });return true;
+    } catch(e){
+      applied.reverse().forEach(function(i){try{var p=previous[i];if(p.raw===null)localStorage.removeItem(p.key);else localStorage.setItem(p.key,p.raw);}catch(ignore){}});
+      return false;
+    }
+  }
+  function showToast(message,kind) {
+    var toast=document.getElementById('appToast');
+    if(!toast)return;
+    clearTimeout(showToast._announce);clearTimeout(showToast._hide);
+    toast.textContent='';toast.dataset.kind=kind || 'success';
+    toast.classList.remove('is-visible');
+    showToast._announce=setTimeout(function(){
+      toast.textContent=message;toast.classList.add('is-visible');
+      showToast._hide=setTimeout(function(){toast.classList.remove('is-visible');toast.textContent='';},kind==='error'?5000:3500);
+    },30);
+  }
+  function showStorageError(id) {
+    var hint=document.getElementById(id);
+    hint.textContent='저장하지 못했어요. 기존 데이터는 유지됩니다. 저장 공간을 확인하고 다시 시도하세요.';
+    hint.className='save-hint save-error';
+    showToast('저장 실패 · 기존 데이터는 유지됩니다. 다시 시도해주세요.','error');
+  }
+  function profileStorageBases() {
+    return ['bulk-routine-v4','bulk-routine-v5','bulk-routine-v6','bulk-routine-v7','bulk-routine-v8','bulk-routine-v9',
+      'bulk-routine-pending-v1','bulk-routine-catalog-v2','bulk-routine-catalog-v3','bulk-routine-log-v1',
+      'bulk-routine-draft-v1','bulk-routine-draft-v2','bulk-routine-log-recovery-v1','bulk-routine-memos-v1','bulk-catalog-hypertrophy-v1',
+      'bulk-catalog-add-bulgarian-v1','bulk-catalog-expand-all-v2'];
+  }
   function readJSON(key, fallback) {
     try {
       var raw = localStorage.getItem(key);
@@ -804,6 +985,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     return fallback;
   }
   function writeJSON(key, val) {
+    if(typeof recordDataLocked!=='undefined' && recordDataLocked && key===LOG_KEY)return false;
     try { localStorage.setItem(key, JSON.stringify(val)); return true; }
     catch (e) { return false; }
   }
@@ -858,26 +1040,43 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
 
   var memoryOnly = false;
+  function routinePendingKey() { return keyFor('bulk-routine-pending-v1', activeProfile); }
+  function isRoutine(value) {
+    return Array.isArray(value) && value.length===6 && value.every(function(d){
+      return d && typeof d.key==='string' && typeof d.title==='string' && Array.isArray(d.ex) &&
+        d.ex.every(function(e){return e && typeof e.n==='string' && typeof e.m==='string';});
+    });
+  }
+  function loadSavedRoutine() {
+    // v9 is a stable data key, not an app-release number. Never bump it on update.
+    var saved=readJSON(STORAGE_KEY,null);
+    if(isRoutine(saved))return saved;
+    try {if(localStorage.getItem(STORAGE_KEY)!==null){memoryOnly=true;return defaults();}}
+    catch(e){memoryOnly=true;return defaults();}
+    for(var version=8;version>=4;version--){
+      var old=readJSON(keyFor('bulk-routine-v'+version,activeProfile),null);
+      if(isRoutine(old)){writeJSON(STORAGE_KEY,old);return old;}
+    }
+    var initial=defaults();writeJSON(STORAGE_KEY,initial);return initial;
+  }
   function load() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        var parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length === 6) return finalizeDays(parsed);
+    var saved=loadSavedRoutine(),pending=readJSON(routinePendingKey(),null);
+    return ensureRoutineIds(isRoutine(pending)?pending:saved);
+  }
+  function ensureRoutineIds(routine) {
+    var used=new Set();
+    routine.forEach(function(day){day.ex.forEach(function(ex,index){
+      if(typeof ex.uid!=='string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(ex.uid) || used.has(ex.uid)){
+        var base='row-'+day.key+'-'+index,id=base,suffix=1;
+        while(used.has(id))id=base+'-'+suffix++;
+        ex.uid=id;
       }
-    } catch (e) { memoryOnly = true; }
-    return finalizeDays(defaults());
+      used.add(ex.uid);
+    });});
+    return routine;
   }
-  function finalizeDays(result) {
-    var old = '※ 금요일 인클라인 수행이 떨어지면 오버헤드 프레스 4→3세트로 조정';
-    var changed = false;
-    result.forEach(function (d) { if (d.note === old) { delete d.note; changed = true; } });
-    if (changed) writeJSON(STORAGE_KEY, result);
-    return result;
-  }
-
   var days = load();
-  var routineOrderPending = false;
+  var routineOrderPending = isRoutine(readJSON(routinePendingKey(),null));
 
   // 각 항목은 { n: 이름, s: 세트, r: 반복수, rir: RIR } — 종목 관리에서 직접 등록/수정 가능
   function defaultCatalog() {
@@ -1190,36 +1389,95 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   function genId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
+  var activeConfirmation = null;
+  function clearConfirmation() {
+    if(activeConfirmation)activeConfirmation.reset();
+  }
   function requireSecondClick(button, confirmText, action) {
-    if (button.dataset.deleteArmed === 'true') {
-      clearTimeout(button._deleteTimer);
-      action();
-      return;
+    if(activeConfirmation && activeConfirmation.button===button){
+      clearConfirmation();action();return;
     }
-    var originalText = button.textContent;
-    var originalLabel = button.getAttribute('aria-label') || originalText;
-    button.dataset.deleteArmed = 'true';
-    button.classList.add('confirming');
-    button.textContent = confirmText || '삭제 확인';
-    button.setAttribute('aria-label', originalLabel + ' — 한 번 더 누르면 삭제');
-    button._deleteTimer = setTimeout(function () {
-      if (!button.isConnected) return;
-      button.dataset.deleteArmed = '';
-      button.classList.remove('confirming');
-      button.textContent = originalText;
-      button.setAttribute('aria-label', originalLabel);
-    }, 4000);
+    clearConfirmation();
+    var originalText=button.textContent, originalLabel=button.getAttribute('aria-label');
+    var timer;
+    function reset(){
+      clearTimeout(timer);button.classList.remove('confirming');button.dataset.deleteArmed='';
+      button.textContent=originalText;
+      if(originalLabel===null)button.removeAttribute('aria-label');else button.setAttribute('aria-label',originalLabel);
+      activeConfirmation=null;
+    }
+    activeConfirmation={button:button,reset:reset};
+    button.dataset.deleteArmed='true';button.classList.add('confirming');
+    button.textContent=confirmText||'삭제 확인';
+    button.setAttribute('aria-label',(originalLabel||originalText)+' — 한 번 더 눌러 실행');
+    timer=setTimeout(reset,4000);
+  }
+  document.addEventListener('click',function(e){
+    if(activeConfirmation && !activeConfirmation.button.contains(e.target))clearConfirmation();
+  },true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')clearConfirmation();});
+  document.addEventListener('visibilitychange',function(){if(document.hidden)clearConfirmation();});
+  function logRecoveryKey() { return keyFor('bulk-routine-log-recovery-v1',activeProfile); }
+  function preserveLogSource(raw) {
+    var history=readJSON(logRecoveryKey(),[]);
+    if(!Array.isArray(history))return false;
+    if(history.some(function(item){return item && item.raw===raw;}))return true;
+    return writeJSON(logRecoveryKey(),history.concat({savedAt:new Date().toISOString(),raw:raw}));
+  }
+  function logValue(value,max,integer) {
+    if(value==null || value==='')return '-';
+    if(typeof value!=='string' && typeof value!=='number')return null;
+    var text=String(value).trim();if(text==='-')return '-';
+    if(!/^\d+(\.\d+)?$/.test(text))return null;
+    var number=Number(text);
+    return Number.isFinite(number) && number>=0 && number<=max && (!integer || Number.isInteger(number))?text:null;
   }
   function loadLogs() {
-    var L = readJSON(LOG_KEY, []);
-    var changed = false;
-    L.forEach(function (rec) {
-      (rec.entries || []).forEach(function (e) {
-        if (!e.id) { e.id = genId(); changed = true; }
+    recordDataLocked=false;recordDataWarning='';
+    var raw=null,source=[],damaged=false,changed=false;
+    try {
+      raw=localStorage.getItem(LOG_KEY);
+      if(raw===null)return [];
+      source=JSON.parse(raw);
+      if(!Array.isArray(source)){source=[];damaged=true;}
+    } catch(error){
+      if(raw===null){recordDataLocked=true;recordDataWarning='운동기록 저장소에 접근할 수 없어요. 원본 보호를 위해 기록 변경을 중지했어요.';return [];}
+      source=[];damaged=true;
+    }
+    var result=[],ids=new Set();
+    source.forEach(function(rec){
+      if(!rec || typeof rec.date!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(rec.date) || !['mon','tue','wed','thu','fri','sat'].includes(rec.dayKey) || !Array.isArray(rec.entries)){damaged=true;return;}
+      var date=new Date(rec.date+'T00:00:00Z');
+      if(isNaN(date.getTime()) || date.toISOString().slice(0,10)!==rec.date){damaged=true;return;}
+      var entries=[];
+      rec.entries.forEach(function(entry){
+        if(!entry || typeof entry.n!=='string' || !entry.n.trim() || (entry.m!=null && typeof entry.m!=='string')){damaged=true;return;}
+        var weight=logValue(entry.w,500,false),reps=logValue(entry.reps,100,true);
+        if(weight===null || reps===null || (weight==='-' && reps==='-')){damaged=true;return;}
+        var id=entry.id;
+        if(typeof id!=='string' || !id || ids.has(id)){id='recovered-'+result.length+'-'+entries.length+'-'+genId();changed=true;}
+        ids.add(id);entries.push(Object.assign({},entry,{id:id,w:weight,reps:reps}));
       });
+      if(entries.length)result.push(Object.assign({},rec,{entries:entries}));
     });
-    if (changed) writeJSON(LOG_KEY, L);
-    return L;
+    result.sort(function(a,b){return a.date.localeCompare(b.date);});
+    if(damaged){
+      var protectedSource=preserveLogSource(raw);
+      recordDataLocked=!protectedSource;
+      recordDataWarning=protectedSource?'읽지 못한 운동기록의 원본을 별도 보관했어요. 정상 기록은 계속 이용할 수 있어요.':'일부 기록을 읽지 못했고 원본 보관도 실패했어요. 원본 보호를 위해 기록 추가·수정·삭제를 중지했어요.';
+    } else if(changed){
+      if(!writeJSON(LOG_KEY,result)){
+        recordDataLocked=true;recordDataWarning='이전 기록의 식별 정보를 저장하지 못했어요. 원본 보호를 위해 기록 변경을 중지했어요.';
+      }
+    }
+    return result;
+  }
+  function showRecordDataStatus() {
+    var notice=document.getElementById('recordDataNotice');if(!notice)return;
+    var history=readJSON(logRecoveryKey(),[]),hasHistory=Array.isArray(history) && history.length>0;
+    notice.hidden=!recordDataWarning && !hasHistory;
+    document.getElementById('recordDataMessage').textContent=recordDataWarning || '읽지 못했던 기록의 원본 파일이 보관되어 있어요. 필요하면 내려받아 확인할 수 있어요.';
+    document.getElementById('btnRecoveryDownload').hidden=!hasHistory && !recordDataLocked;
   }
   // logs: [{ date, dayKey, entries: [{ n, w, reps, id }] }]
   var logs = loadLogs();
@@ -1239,10 +1497,28 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var day = ('0' + d.getDate()).slice(-2);
     return d.getFullYear() + '-' + m + '-' + day;
   }
-  function getDraft(dayKey, name) {
-    if (!draft[dayKey]) draft[dayKey] = {};
-    if (!draft[dayKey][name]) draft[dayKey][name] = { w: '', reps: '' };
-    return draft[dayKey][name];
+  function draftEntryKey(name,uid) { return uid ? JSON.stringify([uid,name]) : name; }
+  function getDraft(dayKey, name, uid) {
+    if(!draft || typeof draft!=='object' || Array.isArray(draft))draft={};
+    var datedKey=dayKey+'@'+selectedRecordDate;
+    if(!Object.hasOwn(draft,datedKey) || !draft[datedKey] || typeof draft[datedKey]!=='object' || Array.isArray(draft[datedKey]))draft[datedKey]={};
+    var group=draft[datedKey];
+    if(selectedRecordDate===todayStr() && Object.hasOwn(draft,dayKey) && draft[dayKey] && typeof draft[dayKey]==='object'){
+      Object.keys(draft[dayKey]).forEach(function(n){
+        if(!Object.hasOwn(group,n))Object.defineProperty(group,n,{value:draft[dayKey][n],writable:true,enumerable:true,configurable:true});
+      });
+      delete draft[dayKey];
+    }
+    var key=draftEntryKey(name,uid),value=Object.hasOwn(group,key)?group[key]:null;
+    if(!value && uid && Object.hasOwn(group,name)){
+      value=group[name];delete group[name];
+    }
+    if(!value || typeof value!=='object' || Array.isArray(value))value={w:'',reps:''};
+    var clean={w:value.w==null?'':String(value.w),reps:value.reps==null?'':String(value.reps)};
+    if(!Object.hasOwn(group,key) || group[key]!==value){
+      Object.defineProperty(group,key,{value:clean,writable:true,enumerable:true,configurable:true});
+    }
+    return group[key];
   }
   function lastRecord(name) {
     for (var i = logs.length - 1; i >= 0; i--) {
@@ -1270,6 +1546,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   var recordsViewEl = document.getElementById('recordsView');
   var recordsListEl = document.getElementById('recordsList');
   var reportViewEl = document.getElementById('reportView');
+  var statsViewEl = document.getElementById('statsView');
+  var statsPeriod = 'week';
+  var statsCalendarMonth = '';
+  var statsCustomRange = null, statsRangeAnchor = '';
   var tabsEl = document.getElementById('dayTabs');
   var panelEl = document.getElementById('dayPanel');
   var restNoteEl = document.getElementById('restNote');
@@ -1279,21 +1559,48 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   if (todayIndex === null) restNoteEl.hidden = false;
   var activeIndex = todayIndex !== null ? todayIndex : 0;
 
+  var selectedRecordDate = todayStr();
+  document.getElementById('recordDate').addEventListener('change',function(){
+    if(!validRecordDate(this.value)){this.value=selectedRecordDate;return;}
+    selectedRecordDate=this.value;renderPanel();
+  });
+  document.getElementById('btnRecordToday').addEventListener('click',function(){selectedRecordDate=todayStr();renderPanel();});
   var mode = 'day';
+  var routineEditing = false;
+  function updateRoutineMode() {
+    dayViewEl.classList.toggle('routine-editing', routineEditing);
+    var button = document.getElementById('btnRoutineEdit');
+    button.textContent = routineEditing ? '편집 닫기' : '루틴 편집';
+    button.setAttribute('aria-pressed', String(routineEditing));
+    document.getElementById('routineModeNote').textContent = routineEditing
+      ? '종목·목표·순서 변경은 루틴 저장을 눌러야 확정됩니다.'
+      : (routineOrderPending ? '미저장 변경사항이 있어요. 루틴 편집에서 저장해주세요.' : '목표를 확인하고 운동 기록을 추가하세요.');
+    document.getElementById('btnSaveNow').hidden = !routineEditing;
+    document.getElementById('btnSaveNow').classList.toggle('pending-save',routineOrderPending);
+    var hint=document.getElementById('routineSaveHint');
+    if(routineOrderPending && !hint.textContent)hint.textContent='임시 보관된 변경사항 · 루틴 저장을 눌러 확정하세요.';
+  }
+  document.getElementById('btnRoutineEdit').addEventListener('click', function () {
+    routineEditing = !routineEditing;
+    renderPanel();
+  });
   var TAB_ICONS = {
     day: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="10" x2="21" y2="10"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="16" y1="3" x2="16" y2="7"></line></svg>',
     catalog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12"></line><rect x="4" y="8" width="3" height="8" rx="1"></rect><rect x="17" y="8" width="3" height="8" rx="1"></rect><line x1="9" y1="10" x2="9" y2="14"></line><line x1="15" y1="10" x2="15" y2="14"></line></svg>',
     records: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><rect x="9" y="2" width="6" height="4" rx="1"></rect><line x1="8" y1="12" x2="16" y2="12"></line><line x1="8" y1="16" x2="16" y2="16"></line></svg>',
-    report: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"></rect><rect x="13" y="3" width="8" height="8" rx="1.5"></rect><rect x="3" y="13" width="8" height="8" rx="1.5"></rect><rect x="13" y="13" width="8" height="8" rx="1.5"></rect></svg>'
+    report: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M8 2v4m8-4v4M3 10h18M7 14h3m4 0h3m-10 4h3m4 0h3"></path></svg>',
+    stats: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 17v-5m5 5V8m5 9V4"></path></svg>'
   };
   function renderModeToggle() {
     modeToggleEl.innerHTML = '';
-    [['day', '오늘'], ['catalog', '운동 관리'], ['records', '기록'], ['report', '통계']].forEach(function (pair) {
+    [['day', '오늘'], ['catalog', '운동 관리'], ['records', '기록'], ['report', '루틴'], ['stats', '통계']].forEach(function (pair) {
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'mode-btn';
       b.innerHTML = TAB_ICONS[pair[0]] + '<span>' + pair[1] + '</span>';
+      var icon=b.querySelector('svg');if(icon){icon.setAttribute('aria-hidden','true');icon.setAttribute('focusable','false');}
       b.setAttribute('role', 'tab');
+      b.setAttribute('aria-controls',pair[0]==='report'?'reportView':pair[0]==='stats'?'statsView':pair[0]==='records'?'recordsView':pair[0]==='catalog'?'catalogView':'dayView');
       b.setAttribute('aria-selected', mode === pair[0] ? 'true' : 'false');
       b.addEventListener('click', function () {
         if (mode === pair[0]) return;
@@ -1302,10 +1609,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         catalogViewEl.hidden = mode !== 'catalog';
         recordsViewEl.hidden = mode !== 'records';
         reportViewEl.hidden = mode !== 'report';
+        statsViewEl.hidden = mode !== 'stats';
         renderModeToggle();
         if (mode === 'catalog') renderCatalog();
         else if (mode === 'records') renderRecords();
         else if (mode === 'report') renderReport();
+        else if (mode === 'stats') renderStats();
         else { renderPanel(); renderPrinciples(); }
       });
       modeToggleEl.appendChild(b);
@@ -1314,29 +1623,25 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
   function showPendingOrder() {
     clearTimeout(save._t);
-    var hint = document.getElementById('saveHint');
-    clearTimeout(hint._t);
-    hint.textContent = '순서 변경됨 · 루틴 저장을 눌러 저장하세요';
-    hint.className = 'save-hint';
-    document.getElementById('btnSaveNow').classList.add('pending-save');
+    var hint=document.getElementById('routineSaveHint');
+    var retained=writeJSON(routinePendingKey(),days);
+    hint.textContent=retained?'미저장 변경사항 · 임시 보관 중입니다. 루틴 저장을 눌러 확정하세요.':'임시 보관 실패 · 창을 닫기 전에 루틴 저장을 눌러주세요.';
+    hint.className='save-hint';
+    updateRoutineMode();
   }
   function save(explicit) {
-    if (routineOrderPending && explicit !== true) { showPendingOrder(); return; }
-    var hint = document.getElementById('saveHint');
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(days));
-      routineOrderPending = false;
-      document.getElementById('btnSaveNow').classList.remove('pending-save');
-      hint.textContent = '저장됨';
-      hint.className = 'save-hint on';
-    } catch (e) {
-      memoryOnly = true;
-      hint.textContent = '이 브라우저에서는 저장이 안 돼요 (창을 닫으면 초기화)';
-      hint.className = 'save-hint';
-      return;
+    ensureRoutineIds(days);
+    if(explicit!==true){routineOrderPending=true;showPendingOrder();return;}
+    var hint=document.getElementById('routineSaveHint');
+    if(!storageTransaction([{key:STORAGE_KEY,value:days},{key:routinePendingKey(),remove:true}])){
+      routineOrderPending=true;updateRoutineMode();
+      hint.textContent='루틴 저장 실패 · 변경사항은 유지됩니다. 다시 시도하세요.';
+      hint.className='save-hint save-error';showToast(hint.textContent,'error');return;
     }
-    clearTimeout(save._t);
-    save._t = setTimeout(function () { hint.textContent = ''; hint.className = 'save-hint'; }, 1400);
+    routineOrderPending=false;updateRoutineMode();
+    hint.textContent='루틴 저장됨';hint.className='save-hint on';
+    showToast('루틴 저장 완료');
+    clearTimeout(save._t);save._t=setTimeout(function(){hint.textContent='';hint.className='save-hint';},2000);
   }
 
   function dayTotal(d) {
@@ -1410,127 +1715,51 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
 
   function wrapField(labelText, input) {
-    var wrap = document.createElement('span');
+    var wrap = document.createElement('label');
     wrap.className = 'field';
-    var lab = document.createElement('label');
+    var lab = document.createElement('span');
+    lab.className = 'field-label';
     lab.textContent = labelText;
-    wrap.appendChild(input);
-    wrap.appendChild(lab);
+    if (input.tagName === 'SELECT') {
+      wrap.appendChild(lab);
+      wrap.appendChild(input);
+    } else {
+      wrap.appendChild(input);
+      wrap.appendChild(lab);
+    }
     return wrap;
   }
 
-  function attachReorderHandle(row, list, day) {
-    var handle = document.createElement('button');
-    handle.type = 'button';
-    handle.className = 'reorder-handle';
-    handle.textContent = '⠿';
-    handle.title = '1.2초 길게 누른 뒤 위아래로 이동 · 키보드 Alt+↑/↓';
-    handle.setAttribute('aria-label', '운동 순서 이동: 길게 누르고 드래그 또는 Alt와 방향키');
-    row.appendChild(handle);
-    var timer = null, active = false, pointer = null, startX = 0, startY = 0;
-    var lastX = 0, lastY = 0, frame = 0, target = null, insertAfter = false;
-    function moveAt(x, y) {
-      var candidates = Array.from(list.children).filter(function (el) { return el !== row; });
-      var closest = null, distance = Infinity;
-      candidates.forEach(function (el) {
-        var box = el.getBoundingClientRect();
-        var dx = x < box.left ? box.left-x : (x > box.right ? x-box.right : 0);
-        var dy = y-(box.top+box.height/2);
-        var score = dx*dx + dy*dy;
-        if (score < distance) { closest=el; distance=score; }
+  function attachReorderButtons(row, day) {
+    var controls = document.createElement('div');
+    controls.className = 'reorder-controls';
+    controls.setAttribute('role', 'group');
+    controls.setAttribute('aria-label', row._exercise.n + ' 순서 변경');
+    [-1, 1].forEach(function (offset) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'reorder-step' + (offset === 1 ? ' move-down' : ' move-up');
+      button.textContent = offset === -1 ? '↑' : '↓';
+      button.setAttribute('aria-label', row._exercise.n + (offset === -1 ? ' 위로 이동' : ' 아래로 이동'));
+      var index = day.ex.indexOf(row._exercise);
+      button.disabled = offset === -1 ? index === 0 : index === day.ex.length - 1;
+      button.addEventListener('click', function () {
+        var from = day.ex.indexOf(row._exercise), to = from + offset;
+        if (from < 0 || to < 0 || to >= day.ex.length) return;
+        var item = day.ex.splice(from, 1)[0];
+        day.ex.splice(to, 0, item);
+        routineOrderPending = true;
+        renderPanel();
+        showPendingOrder();
+        var movedRow = panelEl.querySelectorAll('.ex-row')[to];
+        var nextButton = movedRow.querySelector(offset === -1 ? '.move-up' : '.move-down');
+        if (nextButton.disabled) nextButton = movedRow.querySelector('.reorder-step:not(:disabled)');
+        if (nextButton) nextButton.focus({preventScroll:true});
+        movedRow.scrollIntoView({block:'nearest'});
       });
-      if (!closest) return;
-      if (target) target.classList.remove('drop-before','drop-after');
-      target = closest;
-      var rect = closest.getBoundingClientRect();
-      insertAfter = y >= rect.top + rect.height/2;
-      closest.classList.add(insertAfter ? 'drop-after' : 'drop-before');
-    }
-    function scrollFrame() {
-      if (!active) return;
-      var speed = lastY < 100 ? -12 : (lastY > window.innerHeight-110 ? 12 : 0);
-      if (speed) { window.scrollBy(0,speed); moveAt(lastX,lastY); }
-      frame = requestAnimationFrame(scrollFrame);
-    }
-    function finish(cancelled) {
-      clearTimeout(timer); timer=null;
-      var wasActive=active; active=false;
-      cancelAnimationFrame(frame);
-      row.classList.remove('reorder-active');handle.classList.remove('holding');
-      if (target) target.classList.remove('drop-before','drop-after');
-      handle.setAttribute('aria-pressed','false');
-      var oldPointer = pointer;
-      pointer=null;
-      if (oldPointer !== null && handle.hasPointerCapture(oldPointer)) handle.releasePointerCapture(oldPointer);
-      document.removeEventListener('touchmove',touchMove);
-      document.removeEventListener('touchend',touchEnd);
-      document.removeEventListener('touchcancel',touchCancel);
-      if (!wasActive) return;
-      if (!cancelled && target) list.insertBefore(row, insertAfter ? target.nextSibling : target);
-      target = null;
-      var reordered=Array.from(list.children).map(function(el){return el._exercise;});
-      if (!cancelled && reordered.some(function(ex,i){return ex !== day.ex[i];})) {
-        day.ex=reordered;
-        routineOrderPending=true;
-      }
-      renderPanel();
-      if (routineOrderPending) showPendingOrder();
-    }
-    function activate() {
-      active=true;row.classList.add('reorder-active');handle.classList.remove('holding');
-      handle.setAttribute('aria-pressed','true');
-      if (navigator.vibrate) navigator.vibrate(25);
-      frame=requestAnimationFrame(scrollFrame);
-    }
-    function touchMove(e) {
-      var t=Array.from(e.touches).find(function(t){return t.identifier===pointer;});
-      if (!t) return;
-      if(e.cancelable)e.preventDefault();
-      lastX=t.clientX;lastY=t.clientY;
-      if(active)moveAt(lastX,lastY);
-      else if(Math.hypot(lastX-startX,lastY-startY)>24)finish(true);
-    }
-    function touchEnd(e) {
-      if(Array.from(e.changedTouches).some(function(t){return t.identifier===pointer;})) finish(false);
-    }
-    function touchCancel(){finish(true);}
-    handle.addEventListener('touchstart',function(e){
-      if(pointer!==null || e.touches.length!==1)return;
-      if(e.cancelable)e.preventDefault();
-      var t=e.changedTouches[0];pointer=t.identifier;
-      startX=lastX=t.clientX;startY=lastY=t.clientY;
-      handle.classList.add('holding');timer=setTimeout(activate,1200);
-      document.addEventListener('touchmove',touchMove,{passive:false});
-      document.addEventListener('touchend',touchEnd);
-      document.addEventListener('touchcancel',touchCancel);
-    },{passive:false});
-    handle.addEventListener('pointerdown',function(e){
-      if(e.pointerType==='touch')return;
-      if (e.button !== 0 || pointer !== null) return;
-      pointer=e.pointerId;startX=lastX=e.clientX;startY=lastY=e.clientY;
-      handle.setPointerCapture(pointer);handle.classList.add('holding');
-      timer=setTimeout(activate,1200);
+      controls.appendChild(button);
     });
-    handle.addEventListener('pointermove',function(e){
-      if(e.pointerType==='touch')return;
-      if(e.pointerId !== pointer)return;
-      lastX=e.clientX;lastY=e.clientY;
-      if(!active){if(Math.hypot(lastX-startX,lastY-startY)>12) finish(true);return;}
-      e.preventDefault();moveAt(lastX,lastY);
-    });
-    handle.addEventListener('pointerup',function(e){if(e.pointerType!=='touch' && e.pointerId===pointer)finish(false);});
-    handle.addEventListener('pointercancel',function(e){if(e.pointerType!=='touch' && e.pointerId===pointer)finish(true);});
-    handle.addEventListener('lostpointercapture',function(){if(pointer!==null)finish(true);});
-    handle.addEventListener('contextmenu',function(e){e.preventDefault();});
-    handle.addEventListener('keydown',function(e){
-      if(e.key==='Escape'){finish(true);return;}
-      if(!e.altKey || (e.key!=='ArrowUp' && e.key!=='ArrowDown'))return;
-      e.preventDefault();var i=day.ex.indexOf(row._exercise),j=i+(e.key==='ArrowUp'?-1:1);
-      if(j<0 || j>=day.ex.length)return;
-      var item=day.ex.splice(i,1)[0];day.ex.splice(j,0,item);
-      routineOrderPending=true;renderPanel();showPendingOrder();
-      panelEl.querySelectorAll('.reorder-handle')[j].focus();
-    });
+    row.appendChild(controls);
   }
 
   function searchExerciseCatalog(query) {
@@ -1575,7 +1804,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var meta=document.createElement('small');meta.textContent=match.muscle+' · '+match.exercise.s+'세트'+(match.exercise.r?' · '+match.exercise.r+'회':'')+(match.exercise.rir?' · RIR '+match.exercise.rir:'');
         button.appendChild(name);button.appendChild(meta);
         button.addEventListener('click',function(){
-          var ex=match.exercise;day.ex.push({n:ex.n,m:match.muscle,s:ex.s,r:ex.r,rir:ex.rir});
+          var ex=match.exercise;day.ex.push({uid:'row-'+genId(),n:ex.n,m:match.muscle,s:ex.s,r:ex.r,rir:ex.rir});
           close();save();renderPanel();renderPrinciples();
           var handles=panelEl.querySelectorAll('.in-name');if(handles.length)handles[handles.length-1].focus();
         });results.appendChild(button);
@@ -1585,7 +1814,27 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     app.inert=true;document.body.style.overflow='hidden';document.body.appendChild(overlay);document.addEventListener('keydown',keydown);renderResults();input.focus();
   }
 
+  function createCardioCard() {
+    var card=document.createElement('li');card.className='cardio-routine-card';
+    var head=document.createElement('div');head.className='cardio-routine-head';
+    var title=document.createElement('h3');title.textContent='유산소';
+    var target=document.createElement('span');target.className='cardio-routine-target';target.textContent='저강도 · 15~20분';
+    head.appendChild(title);head.appendChild(target);card.appendChild(head);
+    var note=document.createElement('p');note.textContent='웨이트 후 진행 · 컨디션에 맞춰 시간과 강도를 조절하세요.';
+    card.appendChild(note);return card;
+  }
+  function toggleCardio(day) {
+    day.cardio=!day.cardio;
+    save();renderPanel();
+    showToast(day.cardio?'유산소 루틴이 추가되었어요 · 루틴 저장 필요':'유산소 루틴이 제거되었어요 · 루틴 저장 필요','pending');
+    var button=panelEl.querySelector('.btn-cardio');
+    if(button)button.focus({preventScroll:true});
+  }
   function renderPanel() {
+    ensureRoutineIds(days);
+    updateRoutineMode();
+    document.getElementById('recordDate').value=selectedRecordDate;
+    document.getElementById('recordDate').max=todayStr();
     var d = days[activeIndex];
     panelEl.innerHTML = '';
 
@@ -1595,12 +1844,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var stampWrap = document.createElement('div');
     stampWrap.className = 'stamp';
     var stampIn = document.createElement('input');
-    stampIn.className = 'in-stamp';
+    stampIn.className = 'in-stamp routine-edit-only';
     stampIn.type = 'text';
     stampIn.value = d.title;
     stampIn.setAttribute('aria-label', '요일 부위 이름');
     stampIn.addEventListener('input', function () { d.title = stampIn.value; save(); });
     stampWrap.appendChild(stampIn);
+    var stampRead = document.createElement('span');
+    stampRead.className = 'stamp-read routine-read-only';
+    stampRead.textContent = d.title || d.letter + '요일 운동';
+    stampWrap.appendChild(stampRead);
 
     var total = document.createElement('span');
     total.className = 'set-total';
@@ -1617,10 +1870,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       panelEl.appendChild(noteEl);
     }
 
-    if (d.ex.length === 0) {
+    if (d.ex.length === 0 && !d.cardio) {
       var empty = document.createElement('p');
       empty.className = 'empty-note';
-      empty.textContent = '아직 종목이 없어요. 아래 버튼으로 추가하세요.';
+      empty.textContent = routineEditing ? '아직 종목이 없어요. 아래 버튼으로 추가하세요.' : '등록된 운동이 없어요. 루틴 편집에서 종목을 추가하세요.';
       panelEl.appendChild(empty);
     }
 
@@ -1631,7 +1884,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var li = document.createElement('li');
       li.className = 'ex-row';
       li._exercise = ex;
-      attachReorderHandle(li, list, d);
+      if (routineEditing) attachReorderButtons(li, d);
       li.style.borderLeft = '3px solid ' + (MUSCLE_COLOR[ex.m] || 'transparent');
       li.style.paddingLeft = '10px';
 
@@ -1643,7 +1896,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       num.textContent = idx + 1;
 
       var nameSel = document.createElement('select');
-      nameSel.className = 'in-name';
+      nameSel.className = 'in-name routine-edit-only';
       nameSel.setAttribute('aria-label', '운동 이름');
       var opts = (catalog[ex.m] || []).map(function (c) { return c.n; });
       if (ex.n && opts.indexOf(ex.n) === -1) opts.unshift(ex.n);
@@ -1670,7 +1923,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       });
 
       var del = document.createElement('button');
-      del.className = 'btn-del';
+      del.className = 'btn-del routine-edit-only';
       del.type = 'button';
       del.textContent = '×';
       del.setAttribute('aria-label', '이 종목 삭제');
@@ -1680,15 +1933,20 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
           save();
           renderPanel();
           renderPrinciples();
+          showToast('루틴에서 종목 삭제됨 · 루틴 저장 필요','pending');
         });
       });
 
       top.appendChild(num);
+      var nameRead = document.createElement('h3');
+      nameRead.className = 'exercise-name-read routine-read-only';
+      nameRead.textContent = ex.n || '종목 미지정';
+      top.appendChild(nameRead);
       top.appendChild(nameSel);
       top.appendChild(del);
 
       var fields = document.createElement('div');
-      fields.className = 'ex-fields';
+      fields.className = 'ex-fields routine-edit-only';
 
       var mSel = document.createElement('select');
       mSel.className = 'in-muscle';
@@ -1725,14 +1983,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var rirIn = makeInput('in-rir', ex.rir, function (v) { ex.rir = v; save(); });
       rirIn.setAttribute('aria-label', 'RIR');
 
-      fields.appendChild(mSel);
+      var muscleField = wrapField('운동 부위', mSel);
+      muscleField.classList.add('muscle-field');
+      fields.appendChild(muscleField);
       fields.appendChild(wrapField('세트', setsIn));
       fields.appendChild(wrapField('회', repsIn));
       fields.appendChild(wrapField('RIR', rirIn));
 
       var logRow = document.createElement('div');
       logRow.className = 'log-fields';
-      var dr = getDraft(d.key, ex.n);
+      var dr = getDraft(d.key, ex.n, ex.uid);
 
       var wIn = makeNumberInput('in-weight', dr.w, 0, 500, 0.5, function (v) { dr.w = v; writeJSON(DRAFT_KEY, draft); });
       wIn.setAttribute('aria-label', '무게 (kg)');
@@ -1755,6 +2015,13 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
       li.appendChild(top);
       li.appendChild(fields);
+      var goal = document.createElement('div');
+      goal.className = 'exercise-goal-read routine-read-only';
+      goal.setAttribute('aria-label', '운동 목표');
+      [ex.s + '세트', ex.r ? ex.r + '회' : '반복수 미설정', ex.rir ? 'RIR ' + ex.rir : 'RIR 미설정'].forEach(function(text) {
+        var badge = document.createElement('span');badge.textContent = text;goal.appendChild(badge);
+      });
+      li.appendChild(goal);
       li.appendChild(logRow);
 
       var prev = lastRecord(ex.n);
@@ -1764,7 +2031,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var up = '';
         var curW = parseFloat(dr.w), prevW = parseFloat(prev.w);
         if (!isNaN(curW) && !isNaN(prevW) && curW > prevW) up = ' <span class="up">↑ 증량</span>';
-        hint.innerHTML = '지난 기록 <b>' + prev.w + 'kg × ' + prev.reps + '회</b> <span>(' + prev.date + ')</span>' + up;
+        hint.innerHTML = '지난 기록 <b>' + statsEscape(prev.w) + 'kg × ' + statsEscape(prev.reps) + '회</b> <span>(' + statsEscape(prev.date) + ')</span>' + up;
         li.appendChild(hint);
 
         var suggestion = suggestNext(ex, ex.n);
@@ -1773,7 +2040,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
           var sugIcon = suggestion.type === 'up' ? '<span class="up">↑</span> ' : (suggestion.type === 'down' ? '<span class="down">↓</span> ' : '');
           var sugEl = document.createElement('p');
           sugEl.className = 'prev-hint suggest-hint' + sugClass;
-          sugEl.innerHTML = sugIcon + suggestion.text;
+          sugEl.innerHTML = sugIcon + statsEscape(suggestion.text);
           li.appendChild(sugEl);
         }
       }
@@ -1781,13 +2048,14 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       list.appendChild(li);
     });
 
+    if(d.cardio)list.appendChild(createCardioCard());
     panelEl.appendChild(list);
 
     var actions = document.createElement('div');
     actions.className = 'panel-actions';
 
     var addBtn = document.createElement('button');
-    addBtn.className = 'btn';
+    addBtn.className = 'btn routine-edit-only';
     addBtn.type = 'button';
     addBtn.textContent = '+ 종목 추가';
     addBtn.addEventListener('click', function () {
@@ -1795,14 +2063,13 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     });
 
     var cardioBtn = document.createElement('button');
-    cardioBtn.className = 'btn btn-cardio';
+    cardioBtn.className = 'btn btn-cardio routine-edit-only';
     cardioBtn.type = 'button';
     cardioBtn.setAttribute('aria-pressed', d.cardio ? 'true' : 'false');
+    cardioBtn.setAttribute('aria-label', d.cardio ? '유산소 루틴 제거' : '유산소 루틴 추가');
     cardioBtn.textContent = d.cardio ? '유산소 켜짐' : '유산소 꺼짐';
     cardioBtn.addEventListener('click', function () {
-      d.cardio = !d.cardio;
-      save();
-      renderPanel();
+      toggleCardio(d);
     });
 
     actions.appendChild(addBtn);
@@ -1811,17 +2078,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var logBtn = document.createElement('button');
     logBtn.className = 'btn btn-log';
     logBtn.type = 'button';
-    logBtn.textContent = '오늘 세트 기록 추가 (' + todayStr() + ')';
+    logBtn.textContent = '입력한 운동 기록 추가 (' + selectedRecordDate + ')';
     logBtn.addEventListener('click', function () { saveExerciseRecords(null); });
     function saveExerciseRecords(selectedIndex) {
       var entries = [];
+      var validationError='';
       var rows = panelEl.querySelectorAll('.ex-row');
 
       // 모바일 브라우저에서 마지막 입력 이벤트가 늦게 반영되는 경우까지 대비해
       // 버튼을 누르는 순간 화면에 보이는 값을 직접 다시 읽는다.
       d.ex.forEach(function (ex, idx) {
         if (selectedIndex !== null && idx !== selectedIndex) return;
-        var dr = getDraft(d.key, ex.n);
+        var dr = getDraft(d.key, ex.n, ex.uid);
         var row = rows[idx];
         if (row) {
           var wEl = row.querySelector('.in-weight');
@@ -1833,6 +2101,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var weight = String(dr.w == null ? '' : dr.w).trim();
         var doneReps = String(dr.reps == null ? '' : dr.reps).trim();
         if (weight !== '' || doneReps !== '') {
+          try { cleanRecordValues(selectedRecordDate,weight,doneReps); }
+          catch(e){validationError=e.message;return;}
           entries.push({
             id: genId(),
             n: ex.n,
@@ -1844,16 +2114,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       });
 
       var hint = document.getElementById('saveHint');
+      if(validationError){hint.textContent=validationError;hint.className='save-hint save-error';showToast(validationError,'error');return;}
       if (entries.length === 0) {
         hint.textContent = '저장할 기록이 없어요 · kg 또는 실제 횟수를 입력해주세요';
         hint.className = 'save-hint';
+        showToast('kg 또는 횟수를 먼저 입력해주세요.','pending');
         return;
       }
 
       // 저장에 실패했을 때 현재 화면의 입력값이 사라지지 않도록 초안을 먼저 보존한다.
       writeJSON(DRAFT_KEY, draft);
 
-      var date = todayStr();
+      var date = selectedRecordDate;
       var nextLogs = logs.map(function (rec) {
         return {
           date: rec.date,
@@ -1869,24 +2141,28 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       else nextLogs.push({ date: date, dayKey: d.key, entries: entries });
       nextLogs.sort(function (a, b) { return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
 
-      var ok = writeJSON(LOG_KEY, nextLogs);
+      var nextDraft=JSON.parse(JSON.stringify(draft));
+      var datedKey=d.key+'@'+selectedRecordDate;
+      if(selectedIndex===null)nextDraft[datedKey]={};
+      else if(nextDraft[datedKey])delete nextDraft[datedKey][draftEntryKey(d.ex[selectedIndex].n,d.ex[selectedIndex].uid)];
+      var ok = storageTransaction([{key:LOG_KEY,value:nextLogs},{key:DRAFT_KEY,value:nextDraft}]);
       var persisted = ok ? readJSON(LOG_KEY, null) : null;
       if (!ok || !Array.isArray(persisted)) {
         hint.textContent = '기록을 저장하지 못했어요 · 브라우저 저장 권한을 확인해주세요';
         hint.className = 'save-hint save-error';
+        showToast(hint.textContent,'error');
         return;
       }
 
       // 실제 저장이 확인된 뒤에만 메모리 상태와 입력 초안을 갱신한다.
       logs = persisted;
-      if (selectedIndex === null) draft[d.key] = {};
-      else if (draft[d.key]) delete draft[d.key][d.ex[selectedIndex].n];
-      writeJSON(DRAFT_KEY, draft);
+      draft=nextDraft;
       renderPanel();
       renderPrinciples();
 
       hint = document.getElementById('saveHint');
-      hint.textContent = entries.length + '개 운동 기록 저장됨 · 기록 탭에서 확인하세요';
+      hint.textContent = date+' · '+entries.length + '개 운동 기록 저장됨';
+      showToast('운동기록 '+entries.length+'건 저장 완료');
       hint.className = 'save-hint on';
       clearTimeout(hint._t);
       hint._t = setTimeout(function () {
@@ -1898,12 +2174,6 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
     panelEl.appendChild(actions);
 
-    if (d.cardio) {
-      var tag = document.createElement('div');
-      tag.className = 'cardio-tag';
-      tag.textContent = '+ 웨이트 후 저강도 유산소 15~20분';
-      panelEl.appendChild(tag);
-    }
   }
 
   function weeklyVolume() {
@@ -1972,58 +2242,50 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         '<summary>주간볼륨<span class="chev"></span></summary>' +
         '<div class="principle-body">' +
           '<div class="bars">' + barsHtml + '</div>' +
-          '<p class="bar-legend">루틴에 입력한 부위별 주간 직접 세트 합계 · 빨간 선은 참고 하한 14세트 · 막대 끝은 참고 상한 22세트</p>' +
-          '<p style="margin-top:12px">이 그래프는 <b>계획한 직접 세트 수</b>를 보여줘요. 실제 완료 여부, 운동 강도, 가슴·등 운동에서 이두·삼두가 받는 간접 자극은 포함하지 않아요.</p>' +
-          '<p>14~22세트는 모든 사람과 부위에 똑같이 적용되는 절대 기준이 아니라 비교를 위한 참고 범위예요. 2~3주간 수행 기록과 회복 상태를 확인하고, 무게나 반복수가 오르면서 다음 운동 전 충분히 회복된다면 필요한 부위만 1~2세트 늘리세요. 수행이 떨어지거나 통증·피로가 오래가면 유지하거나 줄이세요.</p>' +
-        '</div>' +
-      '</details>' +
-      '<details class="principle"' + (openStates[1] ? ' open' : '') + '>' +
-        '<summary>유산소는 언제<span class="chev"></span></summary>' +
-        '<div class="principle-body">' +
-          '<p>주 2회, <b>월·목 웨이트 끝난 직후</b> 저강도로 15~20분.</p>' +
-          '<p>목요일은 수요일(하체) 다음 날이라 능동 회복 방향이라 유산소가 다리에 부담을 더하지 않아요. 반대로 금요일에 넣으면 다음 날(토) 다리 세션 직전이라 잔여 피로가 남을 수 있어 피했어요.</p>' +
-        '</div>' +
-      '</details>' +
-      '<details class="principle"' + (openStates[2] ? ' open' : '') + '>' +
-        '<summary>반복수 · RIR 기준<span class="chev"></span></summary>' +
-        '<div class="principle-body">' +
-          '<p><b>컴파운드</b> (벤치프레스, 스쿼트, 로우 등) — 6~10회, RIR 1~2. 관절 부담과 CNS 피로를 고려해 여유를 남겨요.</p>' +
-          '<p><b>고립 · 머신</b> (케이블 플라이, 레터럴 레이즈, 레그컬 등) — 10~15(~20)회, RIR 0~1. 전신 피로가 적어 실패 근접까지 밀어붙여도 괜찮아요.</p>' +
-        '</div>' +
-      '</details>' +
-      '<details class="principle"' + (openStates[3] ? ' open' : '') + '>' +
-        '<summary>더블 프로그레션 — 무게 올리는 법<span class="chev"></span></summary>' +
-        '<div class="principle-body">' +
-          '<p>각 종목의 반복수는 고정값이 아니라 <b>범위</b>예요 (예: 8~10회). 이 범위 안에서 순서대로 진행해요.</p>' +
-          '<ol>' +
-            '<li>정해진 무게로 <b>모든 세트가 범위 상한</b>에 도달하고, 목표 RIR도 만족하면 → 다음 세션에 무게를 올려요.</li>' +
-            '<li>무게를 올리면 반복수는 다시 범위 하한 근처로 떨어지는 게 정상이에요. 거기서부터 다시 상한까지 채워나가는 걸 반복해요.</li>' +
-            '<li>상한을 못 채우면 무게는 그대로 두고 같은 무게로 다음 세션에 재도전하세요.</li>' +
-          '</ol>' +
-          '<p><b>증량 신호는 두 조건을 동시에 만족할 때만</b> — 반복수를 채웠어도 RIR이 목표보다 힘들게 느껴졌다면 증량하지 마세요.</p>' +
-          '<p><b>증량 폭</b>: 컴파운드는 2.5~5kg, 고립·머신은 스택 한 칸 정도의 작은 폭으로.</p>' +
+          '<p class="bar-legend">편집 중인 루틴의 부위별 세트 합계 · 빨간 선 14세트 · 막대 눈금 최대 22세트</p>' +
+          '<p style="margin-top:12px">이 그래프는 <b>현재 화면의 루틴에 계획된 세트 수</b>를 종목에 지정된 부위별로 합산해요. 저장 전 변경도 반영되며, 실제 완료 세트나 다른 부위의 간접 자극을 계산한 값은 아니에요.</p>' +
+          '<p>14·22세트는 이 앱의 비교용 눈금이지, 모두에게 적용되는 최소·최대 권장량이 아니에요. 막대 색만으로 부족하거나 과하다고 판단하지 마세요. 22세트를 넘으면 막대 길이는 같지만 옆 숫자에는 전체 세트 수가 표시돼요. 세트 수는 수행 기록과 회복 상태를 함께 보며 조절하세요.</p>' +
         '</div>' +
       '</details>';
   }
 
-  var memoDefaults = null, memoDraft = [], memoEditingProfile = null;
+  function defaultMemos() {
+    return [
+  {
+    "id": "default-0",
+    "title": "유산소 일정과 강도",
+    "body": "유산소 일정은 고정되어 있지 않아요. 웨이트와 병행한다면 운동 후 또는 별도 시간에 배치하고, 시간과 강도는 체력과 회복 상태에 맞춰 조절하세요.\n\n하체 운동 다음 날이라고 유산소가 반드시 회복을 돕거나 다리에 부담이 없는 것은 아니에요. 다리 피로가 크거나 다음 웨이트 수행에 영향을 주면 강도·시간을 줄이거나 일정을 옮기세요.\n\n이 메모를 수정해도 요일별 루틴이나 유산소 표시가 자동으로 바뀌지는 않아요."
+  },
+  {
+    "id": "default-1",
+    "title": "목표 세트·횟수·RIR 읽는 법",
+    "body": "각 운동 카드의 세트·회·RIR은 운동 목표예요. 예를 들어 2세트 · 8~12회 · RIR 2라면, 각 세트를 8~12회 범위에서 마치되 바른 자세로 약 2회를 더 할 수 있는 여유를 뜻해요.\n\nRIR은 같은 자세로 더 할 수 있을 것으로 예상하는 반복수예요. RIR 0은 추가 반복 여유가 없는 상태지만, 매번 그 상태까지 운동할 필요는 없어요. 머신과 고립 운동도 무조건 실패까지 수행하는 것은 아니에요.\n\n종목별 목표값을 우선 확인하고, 자세가 무너지면 무게나 횟수를 조절하세요. 목표값이 비어 있다면 루틴 편집에서 설정한 뒤 루틴 저장을 눌러주세요.\n\nkg·회 입력칸에는 실제 수행한 값을 적고 추가를 눌러 기록해요. 목표 세트 수는 기록 추가 횟수와 별개이며, 앱은 완료 세트 수나 실제 RIR을 자동으로 확인하지 않아요."
+  },
+  {
+    "id": "default-2",
+    "title": "무게를 올리는 기준",
+    "body": "반복수 범위가 정해진 운동은 같은 무게로 반복수를 늘린 뒤 무게를 올리는 방식으로 진행할 수 있어요. 이를 더블 프로그레션이라고 해요.\n\n계획한 모든 세트에서 반복수 상한을 바른 자세로 채우고 목표 RIR만큼 여유가 있었는지 확인하세요. 조건이 충족되면 다음 운동에서 장비가 허용하는 작은 단위로 증량을 시도하세요.\n\n증량 후에도 목표 반복수 범위와 자세를 유지할 수 있는지 확인하세요. 하한을 못 채우거나 목표보다 지나치게 힘들면 무게를 유지하거나 낮춰 조절하세요. 종목마다 적절한 증량 폭은 달라요.\n\n앱의 증량 안내는 입력한 무게·횟수에 따른 참고 문구예요. 모든 세트의 수행과 실제 RIR을 확인한 결과는 아니므로, 한 건의 기록만 보고 자동으로 증량하지 마세요."
+  }
+];
+  }
+  // 원문과 완전히 일치하는 기본 메모만 갱신한다. 사용자 수정·삭제·순서는 유지한다.
+  function refreshDefaultMemo(memo) {
+    var legacy=[{"body":"주 2회, 월·목 웨이트 끝난 직후 저강도로 15~20분.\n\n목요일은 수요일(하체) 다음 날이라 능동 회복 방향이라 유산소가 다리에 부담을 더하지 않아요. 반대로 금요일에 넣으면 다음 날(토) 다리 세션 직전이라 잔여 피로가 남을 수 있어 피했어요.","id":"default-0","title":"유산소는 언제"},{"body":"컴파운드 (벤치프레스, 스쿼트, 로우 등) — 6~10회, RIR 1~2. 관절 부담과 CNS 피로를 고려해 여유를 남겨요.\n\n고립 · 머신 (케이블 플라이, 레터럴 레이즈, 레그컬 등) — 10~15(~20)회, RIR 0~1. 전신 피로가 적어 실패 근접까지 밀어붙여도 괜찮아요.","id":"default-1","title":"반복수 · RIR 기준"},{"body":"각 종목의 반복수는 고정값이 아니라 범위예요 (예: 8~10회). 이 범위 안에서 순서대로 진행해요.\n\n정해진 무게로 모든 세트가 범위 상한에 도달하고, 목표 RIR도 만족하면 → 다음 세션에 무게를 올려요.\n\n무게를 올리면 반복수는 다시 범위 하한 근처로 떨어지는 게 정상이에요. 거기서부터 다시 상한까지 채워나가는 걸 반복해요.\n\n상한을 못 채우면 무게는 그대로 두고 같은 무게로 다음 세션에 재도전하세요.\n\n증량 신호는 두 조건을 동시에 만족할 때만 — 반복수를 채웠어도 RIR이 목표보다 힘들게 느껴졌다면 증량하지 마세요.\n\n증량 폭: 컴파운드는 2.5~5kg, 고립·머신은 스택 한 칸 정도의 작은 폭으로.","id":"default-2","title":"더블 프로그레션 — 무게 올리는 법"}];
+    var previous=legacy.find(function(item){return item.id===memo.id && item.title===memo.title && item.body===memo.body;});
+    return previous ? defaultMemos().find(function(item){return item.id===memo.id;}) : Object.assign({},memo);
+  }
+  var memoDraft = [], memoEditingProfile = null;
   function memoKey() { return keyFor('bulk-routine-memos-v1', activeProfile); }
   function getMemos() {
     var stored = readJSON(memoKey(), null);
     return Array.isArray(stored) ? stored.filter(function (m) {
       return m && typeof m.title === 'string' && typeof m.body === 'string';
-    }) : (memoDefaults || []).map(function (m) { return Object.assign({}, m); });
+    }).map(refreshDefaultMemo) : defaultMemos();
   }
   function renderPrinciples() {
     var root = document.getElementById('principles'), opened = {};
     root.querySelectorAll('[data-memo-id]').forEach(function (el) { opened[el.dataset.memoId] = el.open; });
     renderPrinciplesBase();
-    var cards = Array.from(root.querySelectorAll('.principle'));
-    if (!memoDefaults) memoDefaults = cards.slice(1).map(function (card, i) {
-      return { id: 'default-' + i, title: card.querySelector('summary').textContent.trim(),
-        body: Array.from(card.querySelectorAll('.principle-body p, .principle-body li')).map(function (el) { return el.textContent.trim(); }).join('\n\n') };
-    });
-    cards.slice(1).forEach(function (card) { card.remove(); });
     getMemos().forEach(function (memo, i) {
       var card = document.createElement('details');card.className = 'principle memo-card';
       card.dataset.memoId = memo.id || String(i);card.open = !!opened[card.dataset.memoId];
@@ -2051,44 +2313,14 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         requireSecondClick(del, '한 번 더 눌러 삭제', function () {
           var index = memoDraft.indexOf(memo);if (index !== -1) memoDraft.splice(index,1);
           renderMemoEditor();document.getElementById('memoSaveHint').textContent = '메모 저장을 누르면 삭제가 반영됩니다.';
+          showToast('메모 삭제됨 · 메모 저장 필요','pending');
           document.getElementById('btnMemoSave').focus();
         });
       });
       card.appendChild(titleLabel);card.appendChild(bodyLabel);card.appendChild(del);root.appendChild(card);
     });
   }
-  function confirmMemoDelete(memo, trigger, recordAction) {
-    if (document.getElementById('memoDeleteOverlay')) return;
-    var overlay = document.createElement('div');overlay.id = 'memoDeleteOverlay';overlay.className = 'memo-delete-overlay';
-    var dialog = document.createElement('div');dialog.className = 'memo-delete-dialog';
-    dialog.setAttribute('role','alertdialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-labelledby','memoDeleteTitle');dialog.setAttribute('aria-describedby','memoDeleteDescription');
-    var heading = document.createElement('h2');heading.id = 'memoDeleteTitle';heading.textContent = '메모를 삭제할까요?';
-    var description = document.createElement('p');description.id = 'memoDeleteDescription';description.textContent = '“' + (memo.title.trim() || '제목 없는 메모') + '” 항목을 삭제합니다. 메모 저장을 눌러야 최종 반영됩니다.';
-    if (recordAction) { heading.textContent = '운동기록을 삭제할까요?';description.textContent = recordAction.message; }
-    var actions = document.createElement('div');actions.className = 'memo-delete-actions';
-    var cancel = document.createElement('button');cancel.type = 'button';cancel.textContent = '취소';
-    var remove = document.createElement('button');remove.type = 'button';remove.className = 'memo-delete-confirm';remove.textContent = '삭제';
-    var previousOverflow = document.body.style.overflow;
-    var app = document.getElementById('bulkApp');var previousInert = app.inert;app.inert = true;
-    function close() {
-      document.removeEventListener('keydown', keydown);overlay.remove();document.body.style.overflow = previousOverflow;app.inert = previousInert;
-      if (trigger.isConnected) trigger.focus();
-    }
-    function keydown(e) {
-      if (e.key === 'Escape') {e.preventDefault();close();}
-      if (e.key === 'Tab') {e.preventDefault();(document.activeElement === cancel ? remove : cancel).focus();}
-    }
-    cancel.addEventListener('click',close);
-    remove.addEventListener('click',function () {
-      if (recordAction) { close();recordAction.run();return; }
-      var index = memoDraft.indexOf(memo);if (index !== -1) memoDraft.splice(index,1);
-      close();renderMemoEditor();document.getElementById('memoSaveHint').textContent = '메모 저장을 누르면 삭제가 반영됩니다.';
-      document.getElementById('btnMemoSave').focus();
-    });
-    overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
-    actions.appendChild(cancel);actions.appendChild(remove);dialog.appendChild(heading);dialog.appendChild(description);dialog.appendChild(actions);overlay.appendChild(dialog);
-    document.body.appendChild(overlay);document.body.style.overflow = 'hidden';document.addEventListener('keydown',keydown);cancel.focus();
-  }
+
   function loadMemoEditor() {
     memoEditingProfile = activeProfile;memoDraft = getMemos().map(function (m) { return Object.assign({}, m); });
     renderMemoEditor();document.getElementById('memoSaveHint').textContent = '';
@@ -2100,98 +2332,74 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   document.getElementById('btnMemoSave').addEventListener('click', function () {
     var hint = document.getElementById('memoSaveHint');
     if (memoEditingProfile !== activeProfile) { loadMemoEditor();return; }
-    if (memoDraft.some(function (m) { return !m.title.trim(); })) { hint.textContent = '각 항목의 제목을 입력해주세요.';return; }
+    if (memoDraft.some(function (m) { return !m.title.trim(); })) { hint.textContent = '각 항목의 제목을 입력해주세요.';showToast(hint.textContent,'error');return; }
     var ok = writeJSON(memoKey(), memoDraft);
     hint.textContent = ok ? '메모 저장됨 · 오늘 탭에 반영했어요' : '저장하지 못했어요. 다시 시도해주세요.';
+    showToast(ok?'메모 저장 완료':hint.textContent,ok?'success':'error');
     if (ok) renderPrinciples();
   });
 
-  var recPendingDel = null;
   var recFilterFrom = '';
   var recFilterTo = '';
-  function renderRecordsLegacy() {
-    var openStates = {};
-    document.querySelectorAll('#recordsView .rec-group').forEach(function (el, i) { openStates[i] = el.open; });
-    var filterActive = !!(recFilterFrom || recFilterTo);
 
-    var html = '';
-    MUSCLES.forEach(function (m, mi) {
-      var entries = (catalog[m] || []).slice();
-      var knownNames = entries.map(function (c) { return c.n; });
-
-      // 새 기록에는 부위(m)를 함께 저장한다. 종목 관리 목록에서 나중에 삭제해도
-      // 기록 탭에서 해당 운동 기록 자체는 계속 확인할 수 있게 한다.
-      logs.forEach(function (rec) {
-        (rec.entries || []).forEach(function (e) {
-          if (e.m === m && knownNames.indexOf(e.n) === -1) {
-            knownNames.push(e.n);
-            entries.push({ n: e.n });
-          }
-        });
-      });
-
-      var exHtml = '';
-      var trackedCount = 0;
-      entries.forEach(function (c) {
-        var name = c.n;
-        var h = historyFor(name).filter(function (r) {
-          if (recFilterFrom && r.date < recFilterFrom) return false;
-          if (recFilterTo && r.date > recFilterTo) return false;
-          return true;
-        });
-        if (h.length === 0) return;
-        trackedCount += 1;
-        var recent = numberedHistory(h).slice(-6);
-        var rows = recent.map(function (r) {
-          var confirming = recPendingDel === r.id;
-          var mark = r.trend === 'up' ? ' <span class="up">↑</span>' : (r.trend === 'down' ? ' <span class="down">↓</span>' : '');
-          return '<div class="rec-item">' +
-            '<span class="rec-when">' + r.date.slice(5) + '</span>' +
-            '<span class="rec-set">' + r.setNum + '세트</span>' +
-            '<span class="rec-val">' + r.w + '<span class="unit">kg×' + r.reps + '회</span>' + mark + '</span>' +
-            '<button class="btn-hist-del' + (confirming ? ' confirming' : '') + '" type="button" data-id="' + r.id +
-              '" aria-label="이 기록 삭제">' + (confirming ? '확인' : '×') + '</button>' +
-          '</div>';
-        }).join('');
-        exHtml += '<div class="rec-ex"><div class="rec-ex-name">' + name + '</div>' + rows + '</div>';
-      });
-      var hasAny = trackedCount > 0;
-      var isOpen = openStates[mi] === true;
-      var emptyMsg = filterActive ? '선택한 기간에는 기록이 없어요.' : '아직 저장된 기록이 없어요.';
-      html += '<details class="rec-group" style="border-left:3px solid ' + MUSCLE_COLOR[m] + '"' + (isOpen ? ' open' : '') + '>' +
-        '<summary>' +
-          '<span class="rec-head"><span class="rec-title" style="color:' + MUSCLE_COLOR[m] + '">' + m + '</span>' +
-          '<span class="rec-count">' + (hasAny ? trackedCount + '개 종목' : '기록 없음') + '</span></span>' +
-          '<span class="rec-chev"></span>' +
-        '</summary>' +
-        '<div class="rec-body">' + (hasAny ? exHtml : '<p class="rec-empty">' + emptyMsg + '</p>') + '</div>' +
-      '</details>';
-    });
-    recordsListEl.innerHTML = html;
-
-    recordsListEl.querySelectorAll('.btn-hist-del').forEach(function (b) {
-      var id = b.getAttribute('data-id');
-      b.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        if (recPendingDel !== id) { recPendingDel = id; renderRecords(); return; }
-        recPendingDel = null;
-        for (var i = logs.length - 1; i >= 0; i--) {
-          var entries = logs[i].entries || [];
-          var idx = -1;
-          for (var j = 0; j < entries.length; j++) { if (entries[j].id === id) { idx = j; break; } }
-          if (idx !== -1) {
-            entries.splice(idx, 1);
-            if (entries.length === 0) logs.splice(i, 1);
-            break;
-          }
-        }
-        writeJSON(LOG_KEY, logs);
-        renderRecords();
-      });
-    });
+  function validRecordDate(value) {
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(value)||value>todayStr())return false;
+    var d=new Date(value+'T12:00:00');
+    return !isNaN(d.getTime()) && d.getFullYear()===Number(value.slice(0,4)) && d.getMonth()+1===Number(value.slice(5,7)) && d.getDate()===Number(value.slice(8,10));
   }
-
+  function cleanRecordValues(date,weight,reps) {
+    if(!validRecordDate(date))throw new Error('오늘 또는 이전의 올바른 날짜를 선택해주세요.');
+    weight=String(weight==null?'':weight).trim();reps=String(reps==null?'':reps).trim();
+    if(weight==='-')weight='';if(reps==='-')reps='';
+    if(!weight && !reps)throw new Error('무게 또는 횟수를 입력해주세요.');
+    if(weight && (!/^\d+(\.\d+)?$/.test(weight)||Number(weight)>500))throw new Error('무게는 0~500kg 사이의 숫자로 입력해주세요.');
+    if(reps && (!/^\d+$/.test(reps)||Number(reps)>100))throw new Error('횟수는 0~100 사이의 정수로 입력해주세요.');
+    return {date:date,w:weight||'-',reps:reps||'-'};
+  }
+  function editedRecords(source,id,values) {
+    var sameDate=source.some(function(rec){return rec.date===values.date && rec.entries.some(function(e){return e.id===id;});});
+    if(sameDate)return source.map(function(rec){return Object.assign({},rec,{entries:rec.entries.map(function(e){return e.id===id?Object.assign({},e,{w:values.w,reps:values.reps}):Object.assign({},e);})});});
+    var next=JSON.parse(JSON.stringify(source)),edited=null,dayKey=null;
+    next.forEach(function(rec){rec.entries=rec.entries.filter(function(e){
+      if(e.id!==id)return true;
+      edited=Object.assign({},e,{w:values.w,reps:values.reps});dayKey=rec.dayKey;return false;
+    });});
+    if(!edited)throw new Error('해당 기록을 찾을 수 없어요. 다시 열어주세요.');
+    next=next.filter(function(rec){return rec.entries.length;});
+    var target=next.find(function(rec){return rec.date===values.date && rec.dayKey===dayKey;});
+    if(!target){target={date:values.date,dayKey:dayKey,entries:[]};next.push(target);}
+    target.entries.push(edited);next.sort(function(a,b){return a.date.localeCompare(b.date);});
+    return next;
+  }
+  function openRecordEditor(row,entry,trigger) {
+    clearConfirmation();
+    recordsListEl.querySelectorAll('.record-edit-form').forEach(function(form){form.remove();});
+    var form=document.createElement('form');form.className='record-edit-form';
+    var date=document.createElement('input');date.type='date';date.value=entry.date;date.max=todayStr();date.required=true;date.setAttribute('aria-label','기록 날짜 수정');
+    var weight=document.createElement('input');weight.type='number';weight.min='0';weight.max='500';weight.step='any';weight.inputMode='decimal';weight.value=entry.w==='-'?'':entry.w;weight.setAttribute('aria-label','기록 무게 수정');
+    var reps=document.createElement('input');reps.type='number';reps.min='0';reps.max='100';reps.step='1';reps.inputMode='numeric';reps.value=entry.reps==='-'?'':entry.reps;reps.setAttribute('aria-label','기록 횟수 수정');
+    form.appendChild(wrapField('날짜',date));form.appendChild(wrapField('kg',weight));form.appendChild(wrapField('회',reps));
+    var commit=document.createElement('button');commit.type='submit';commit.className='btn-reset btn-save-now';commit.textContent='수정 저장';
+    var cancel=document.createElement('button');cancel.type='button';cancel.className='btn-reset';cancel.textContent='취소';
+    var hint=document.createElement('p');hint.className='save-hint';hint.setAttribute('role','status');
+    form.appendChild(commit);form.appendChild(cancel);form.appendChild(hint);
+    function close(){form.remove();if(trigger.isConnected)trigger.focus();}
+    cancel.addEventListener('click',close);form.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();close();}});
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      try {
+        var values=cleanRecordValues(date.value,weight.value,reps.value);
+        var next=editedRecords(logs,entry.id,values);
+        if(!writeJSON(LOG_KEY,next))throw new Error('저장하지 못했어요. 입력값을 유지했으니 다시 시도해주세요.');
+        logs=next;renderRecords();renderPanel();
+        var message=document.getElementById('recordsActionHint');
+        message.textContent='기록 수정 저장됨'+((recFilterFrom && values.date<recFilterFrom)||(recFilterTo && values.date>recFilterTo)?' · 바뀐 날짜는 현재 조회 기간 밖입니다.':'');
+        showToast(message.textContent);
+      } catch(error){hint.textContent=error.message;showToast(error.message,'error');}
+    });
+    row.insertAdjacentElement('afterend',form);
+    (trigger.classList.contains('record-card-date')?date:weight).focus();
+  }
   function renderRecords() {
     var opened = {};
     recordsListEl.querySelectorAll('details[data-record-key]').forEach(function(el){opened[el.dataset.recordKey]=el.open;});
@@ -2221,9 +2429,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         return Object.assign({}, record, {entries:(record.entries || []).filter(function (entry) { return !test(entry); })});
       }).filter(function (record) { return record.entries.length; });
       if (!writeJSON(LOG_KEY,next)) {
-        var error = document.createElement('p');error.className = 'save-hint save-error';error.setAttribute('role','alert');error.textContent = '삭제를 저장하지 못했어요. 다시 시도해주세요.';recordsListEl.prepend(error);return;
+        var error = document.createElement('p');error.className = 'save-hint save-error';error.setAttribute('role','alert');error.textContent = '삭제를 저장하지 못했어요. 다시 시도해주세요.';recordsListEl.prepend(error);showToast(error.textContent,'error');return;
       }
+      var removed=logs.reduce(function(n,r){return n+r.entries.length;},0)-next.reduce(function(n,r){return n+r.entries.length;},0);
       logs = next;renderRecords();
+      showToast('운동기록 '+removed+'건 삭제 완료');
     }
     groups.forEach(function (all, key) {
       var pair=JSON.parse(key),muscle=pair[0],name=pair[1];
@@ -2247,8 +2457,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       head.appendChild(title);head.appendChild(count);head.appendChild(arrow);card.appendChild(head);
       visible.forEach(function(entry){
         var row=document.createElement('div');row.className='rec-item';
-        var date=document.createElement('span');date.className='record-card-date';date.textContent=entry.date;
-        var value=document.createElement('span');value.className='record-card-value';value.textContent=(entry.w === '-' ? '무게 미입력' : entry.w + 'kg') + ' × ' + (entry.reps === '-' ? '횟수 미입력' : entry.reps + '회');
+        var date=document.createElement('button');date.type='button';date.className='record-card-date record-edit-trigger';date.textContent=entry.date;
+        var value=document.createElement('button');value.type='button';value.className='record-card-value record-edit-trigger';value.textContent=(entry.w === '-' ? '무게 미입력' : entry.w + 'kg') + ' × ' + (entry.reps === '-' ? '횟수 미입력' : entry.reps + '회');
+        date.setAttribute('aria-label',name+' '+entry.date+' 날짜 수정');value.setAttribute('aria-label',name+' '+entry.date+' 무게·횟수 수정');
+        date.addEventListener('click',function(){openRecordEditor(row,entry,date);});
+        value.addEventListener('click',function(){openRecordEditor(row,entry,value);});
         var remove=document.createElement('button');remove.type='button';remove.className='btn-hist-del';remove.textContent='×';remove.setAttribute('aria-label',name+' '+entry.date+' 기록 삭제');
         remove.addEventListener('click',function(){requireSecondClick(remove,'확인',function(){deleteRecords(function(e){return e.id===entry.id;});});});
         row.appendChild(date);row.appendChild(value);row.appendChild(remove);card.appendChild(row);
@@ -2267,6 +2480,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
 
   var catPendingDel = null;
+  function commitCatalog(next) {
+    if(!writeJSON(CATALOG_KEY,next)){showStorageError('catalogSaveHint');return false;}
+    catalog=next;return true;
+  }
+  function readCatalogEdits() {
+    var next=JSON.parse(JSON.stringify(catalog));
+    catalogListEl.querySelectorAll('.cat-edit').forEach(function(input){
+      var m=input.getAttribute('data-muscle'),idx=Number(input.getAttribute('data-idx')),field=input.getAttribute('data-field');
+      if(!next[m] || !next[m][idx] || ['s','r','rir'].indexOf(field)<0)return;
+      next[m][idx][field]=field==='s'?clampNumber(input.value,1,20,1):input.value;
+    });return next;
+  }
   function renderCatalog() {
     var openStates = {};
     document.querySelectorAll('#catalogView .rec-group').forEach(function (el, i) { openStates[i] = el.open; });
@@ -2279,17 +2504,17 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var confirming = catPendingDel === token;
         return '<div class="cat-item">' +
           '<div class="cat-item-top">' +
-            '<span class="cat-name">' + c.n + '</span>' +
+            '<span class="cat-name">' + statsEscape(c.n) + '</span>' +
             '<button class="btn-hist-del' + (confirming ? ' confirming' : '') + '" type="button" data-muscle="' + m +
-              '" data-name="' + String(c.n).replace(/"/g, '&quot;') + '" aria-label="삭제">' + (confirming ? '확인' : '×') + '</button>' +
+              '" data-name="' + statsEscape(c.n) + '" aria-label="삭제">' + (confirming ? '확인' : '×') + '</button>' +
           '</div>' +
           '<div class="cat-item-specs">' +
             '<span class="field"><input type="number" class="in-sets cat-edit" data-muscle="' + m + '" data-idx="' + ci +
-              '" data-field="s" min="1" max="20" step="1" value="' + c.s + '"><label>세트</label></span>' +
+              '" data-field="s" min="1" max="20" step="1" value="' + statsEscape(c.s) + '"><label>세트</label></span>' +
             '<span class="field"><input type="text" class="in-reps cat-edit" data-muscle="' + m + '" data-idx="' + ci +
-              '" data-field="r" value="' + String(c.r).replace(/"/g, '&quot;') + '"><label>회</label></span>' +
+              '" data-field="r" value="' + statsEscape(c.r) + '"><label>회</label></span>' +
             '<span class="field"><input type="text" class="in-rir cat-edit" data-muscle="' + m + '" data-idx="' + ci +
-              '" data-field="rir" value="' + String(c.rir).replace(/"/g, '&quot;') + '"><label>RIR</label></span>' +
+              '" data-field="rir" value="' + statsEscape(c.rir) + '"><label>RIR</label></span>' +
           '</div>' +
         '</div>';
       }).join('') : '<p class="cat-empty">등록된 종목이 없어요.</p>';
@@ -2324,8 +2549,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var field = input.getAttribute('data-field');
         var entry = catalog[m] && catalog[m][idx];
         if (!entry) return;
-        entry[field] = field === 's' ? (parseInt(input.value, 10) || 0) : input.value;
-        writeJSON(CATALOG_KEY, catalog);
+        if(field==='s' && (input.value==='' || !input.validity.valid))return;
+        commitCatalog(readCatalogEdits());
       });
       if (input.getAttribute('data-field') === 's') {
         input.addEventListener('blur', function () {
@@ -2335,8 +2560,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
           if (!entry) return;
           var clamped = clampNumber(input.value, 1, 20, 3);
           input.value = clamped;
-          entry.s = clamped;
-          writeJSON(CATALOG_KEY, catalog);
+          commitCatalog(readCatalogEdits());
         });
       }
     });
@@ -2355,9 +2579,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var s = clampNumber(setsInput.value, 1, 20, 1);
         var r = repsInput.value.trim();
         var rir = rirInput.value.trim();
-        catalog[m].push({ n: v, s: s, r: r, rir: rir });
-        writeJSON(CATALOG_KEY, catalog);
+        var next=readCatalogEdits();next[m].push({ n: v, s: s, r: r, rir: rir });
+        if(!commitCatalog(next))return;
         renderCatalog();
+        showToast('운동 종목 추가 완료');
       }
       btn.addEventListener('click', function (ev) { ev.preventDefault(); doAdd(); });
       [nameInput, setsInput, repsInput, rirInput].forEach(function (el) {
@@ -2371,14 +2596,204 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var token = m + '|' + name;
       b.addEventListener('click', function (ev) {
         ev.preventDefault();
-        if (catPendingDel !== token) { catPendingDel = token; renderCatalog(); return; }
-        catPendingDel = null;
-        var idx = catalog[m].findIndex(function (c) { return c.n === name; });
-        if (idx !== -1) catalog[m].splice(idx, 1);
-        writeJSON(CATALOG_KEY, catalog);
-        renderCatalog();
+        requireSecondClick(b,'확인',function(){
+          var next=JSON.parse(JSON.stringify(catalog));
+          next[m]=next[m].filter(function(entry){return entry.n!==name;});
+          if(!writeJSON(CATALOG_KEY,next)){showStorageError('catalogSaveHint');return;}
+          catalog=next;renderCatalog();showToast('운동 종목 삭제 완료');
+        });
       });
     });
+  }
+
+  function statsEscape(value) {
+    return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+  function statsOffset(date,offset) {
+    var d=new Date(date+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+offset);return d.toISOString().slice(0,10);
+  }
+  function statsNumber(value) {
+    if(value==null || String(value).trim()==='' || value==='-')return null;
+    var n=Number(value);return Number.isFinite(n) && n>=0?n:null;
+  }
+  function buildStats(source,exerciseCatalog,period,asOf,customRange) {
+    var weekday=new Date(asOf+'T00:00:00Z').getUTCDay();
+    var monday=statsOffset(asOf,-((weekday+6)%7));
+    var from=period==='month'?asOf.slice(0,7)+'-01':period==='all'?'':monday;
+    var to=asOf;
+    if(period==='custom' && customRange){from=customRange.from;to=customRange.to;}
+    var muscleByName=new Map();
+    MUSCLES.forEach(function(m){(exerciseCatalog[m] || []).forEach(function(e){if(!muscleByName.has(e.n))muscleByName.set(e.n,m);});});
+    var all=[],order=0;
+    (source || []).forEach(function(rec){
+      if(!rec || !/^\d{4}-\d{2}-\d{2}$/.test(rec.date) || rec.date>asOf)return;
+      var date=new Date(rec.date+'T00:00:00Z');
+      if(isNaN(date.getTime()) || date.toISOString().slice(0,10)!==rec.date)return;
+      (Array.isArray(rec.entries)?rec.entries:[]).forEach(function(e){
+        if(!e || typeof e.n!=='string' || !e.n.trim())return;
+        var muscle=e.m || muscleByName.get(e.n) || '기타';if(MUSCLES.indexOf(muscle)<0)muscle='기타';
+        all.push({date:rec.date,n:e.n,m:muscle,w:statsNumber(e.w),reps:statsNumber(e.reps),order:order++});
+      });
+    });
+    var selected=all.filter(function(e){return (!from || e.date>=from) && e.date<=to;});
+    var muscles={};MUSCLES.concat(['기타']).forEach(function(m){muscles[m]=0;});
+    var grouped=new Map();
+    selected.forEach(function(e){
+      muscles[e.m]++;var key=JSON.stringify([e.m,e.n]);
+      if(!grouped.has(key))grouped.set(key,{key:key,name:e.n,muscle:e.m,entries:[],dates:new Set(),maxWeight:null});
+      var group=grouped.get(key);group.entries.push(e);group.dates.add(e.date);
+      if(e.w!==null && (group.maxWeight===null || e.w>group.maxWeight))group.maxWeight=e.w;
+    });
+    var exercises=Array.from(grouped.values()).map(function(g){
+      g.entries.sort(function(a,b){return b.date.localeCompare(a.date) || b.order-a.order;});
+      var daily=new Map();g.entries.forEach(function(e){
+        if(e.w!==null && (!daily.has(e.date) || e.w>daily.get(e.date)))daily.set(e.date,e.w);
+      });
+      var points=Array.from(daily,function(pair){return {date:pair[0],weight:pair[1]};}).sort(function(a,b){return a.date.localeCompare(b.date);});
+      return {key:g.key,name:g.name,muscle:g.muscle,count:g.entries.length,days:g.dates.size,maxWeight:g.maxWeight,points:points,latest:g.entries[0],previous:g.entries[1] || null};
+    }).sort(function(a,b){return a.name.localeCompare(b.name,'ko') || a.muscle.localeCompare(b.muscle,'ko');});
+    var weeks=[];
+    for(var i=3;i>=0;i--){
+      var start=statsOffset(monday,-7*i),end=statsOffset(start,6);
+      var entries=all.filter(function(e){return e.date>=start && e.date<=end;});
+      weeks.push({start:start,end:end>asOf?asOf:end,current:i===0,count:entries.length,days:new Set(entries.map(function(e){return e.date;})).size});
+    }
+    return {from:from || (all.length?all.map(function(e){return e.date;}).sort()[0]:asOf),to:to,count:selected.length,days:new Set(selected.map(function(e){return e.date;})).size,
+      muscles:muscles,exercises:exercises,weeks:weeks,allDates:Array.from(new Set(all.map(function(e){return e.date;}))).sort(),
+      frequent:exercises.slice().sort(function(a,b){return b.days-a.days || b.count-a.count || a.name.localeCompare(b.name,'ko');}).slice(0,5)};
+  }
+  function statsValue(entry) {
+    if(!entry)return '이전 기록 없음';
+    var parts=[];if(entry.w!==null)parts.push(entry.w+'kg');if(entry.reps!==null)parts.push(entry.reps+'회');
+    return parts.length?parts.join(' · '):'입력값 없음';
+  }
+  function statsMonthOffset(month,offset) {
+    var date=new Date(month+'-01T00:00:00Z');date.setUTCMonth(date.getUTCMonth()+offset);
+    return date.toISOString().slice(0,7);
+  }
+  function statsCalendarData(month,dates,asOf) {
+    var start=month+'-01',next=statsMonthOffset(month,1)+'-01';
+    var length=Number(statsOffset(next,-1).slice(8));
+    var offset=(new Date(start+'T00:00:00Z').getUTCDay()+6)%7;
+    var marked=new Set(dates),cells=[],count=0;
+    for(var i=0;i<offset;i++)cells.push(null);
+    for(var day=1;day<=length;day++){
+      var date=month+'-'+String(day).padStart(2,'0'),recorded=date<=asOf && marked.has(date);
+      if(recorded)count++;
+      cells.push({date:date,day:day,recorded:recorded,today:date===asOf,future:date>asOf});
+    }
+    while(cells.length%7)cells.push(null);
+    return {month:month,cells:cells,count:count};
+  }
+  function chooseStatsDate(date) {
+    if(!validRecordDate(date))return false;
+    if(!statsRangeAnchor){statsRangeAnchor=date;return false;}
+    statsCustomRange={from:date<statsRangeAnchor?date:statsRangeAnchor,to:date>statsRangeAnchor?date:statsRangeAnchor};
+    statsPeriod='custom';statsRangeAnchor='';return true;
+  }
+  function chooseStatsPeriod(period) {
+    if(['week','month','all'].indexOf(period)<0)return;
+    statsPeriod=period;statsCustomRange=null;statsRangeAnchor='';statsCalendarMonth=todayStr().slice(0,7);
+  }
+  function statsCalendarHtml(month,dates,asOf,range,anchor) {
+    var calendar=statsCalendarData(month,dates,asOf);
+    var weekdays=['월','화','수','목','금','토','일'].map(function(d){return '<span class="stats-calendar-weekday" aria-hidden="true">'+d+'</span>';}).join('');
+    var cells=calendar.cells.map(function(c){
+      if(!c)return '<span aria-hidden="true"></span>';
+      var from=anchor || (range && range.from),to=anchor || (range && range.to);
+      var selected=!!from && c.date>=from && c.date<=to,start=c.date===from,end=c.date===to;
+      return '<button type="button" data-stats-date="'+c.date+'" aria-pressed="'+selected+'"'+(c.future?' disabled':'')+(c.today?' aria-current="date"':'')+' aria-label="'+c.date+(c.recorded?' 운동기록 있음':' 기록 없음')+(start?' · 시작일':'')+(end?' · 종료일':'')+'" class="stats-calendar-date'+(c.recorded?' has-record':'')+(c.today?' is-today':'')+(c.future?' is-future':'')+(selected?' in-range':'')+(start?' range-start':'')+(end?' range-end':'')+'">'+c.day+'<span class="stats-calendar-dot" aria-hidden="true"></span></button>';
+    }).join('');
+    return '<section class="stats-card"><h3>조회 기간 선택</h3><div class="stats-calendar-head"><h3>'+month.slice(0,4)+'년 '+Number(month.slice(5))+'월</h3>'+
+      '<button type="button" data-calendar-step="-1" aria-label="이전 달"'+(month==='0001-01'?' disabled':'')+'>‹</button>'+
+      '<button type="button" data-calendar-current aria-label="이번 달로 이동">오늘</button>'+
+      '<button type="button" data-calendar-step="1" aria-label="다음 달"'+(month>=asOf.slice(0,7)?' disabled':'')+'>›</button></div>'+
+      '<div class="stats-calendar-grid" role="group" aria-label="시작일과 종료일 선택">'+weekdays+cells+'</div><p class="stats-note" role="status">'+(anchor?'시작일 '+anchor+' 선택 · 종료일을 눌러주세요. 선택 완료 전까지 통계는 기존 조회 기간을 유지해요.':'시작일 → 종료일 순서로 누르세요. 같은 날짜를 두 번 누르면 하루만 조회해요.')+'</p><p class="stats-note">점: 운동기록이 있는 날 · 테두리: 오늘 · 색칠된 구간: 선택 기간</p></section>';
+  }
+  function statsWeightGraph(exercise) {
+    var points=exercise.points;
+    if(!points.length)return '<p class="stats-note">무게 기록 없음 · 횟수만 저장한 기록은 그래프에 표시하지 않아요.</p>';
+    var maximum=exercise.maxWeight || 1;
+    var step=Math.pow(10,Math.floor(Math.log10(maximum)))/2;
+    var ceiling=Math.ceil(maximum/step)*step;
+    var start=new Date(points[0].date+'T00:00:00Z').getTime();
+    var end=new Date(points[points.length-1].date+'T00:00:00Z').getTime();
+    var plotted=points.map(function(p){
+      var x=start===end?174:44+(new Date(p.date+'T00:00:00Z').getTime()-start)/(end-start)*260;
+      var y=144-p.weight/ceiling*112;
+      return {x:Number(x.toFixed(2)),y:Number(y.toFixed(2)),date:p.date,weight:p.weight};
+    });
+    var grid=[0,ceiling/2,ceiling].map(function(value){
+      var y=144-value/ceiling*112;
+      return '<line class="weight-grid" x1="44" x2="304" y1="'+y+'" y2="'+y+'"/><text x="37" y="'+(y+4)+'" text-anchor="end">'+Number(value.toPrecision(5))+'</text>';
+    }).join('');
+    var line=points.length>1?'<polyline class="weight-line" points="'+plotted.map(function(p){return p.x+','+p.y;}).join(' ')+'"/>':'';
+    var idleRadius=points.length>20?'0':'2.5';
+    var dots=plotted.map(function(p,i){return '<circle class="weight-point" data-weight-point="'+i+'" data-weight-radius="'+idleRadius+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(i===points.length-1?'4.5':idleRadius)+'"><title>'+p.date+' · '+p.weight+'kg</title></circle>';}).join('');
+    function tick(p,anchor){return '<text x="'+p.x+'" y="168" text-anchor="'+anchor+'">'+p.date.slice(2).replace(/-/g,'/')+'</text>';}
+    var ticks=start===end?tick(plotted[0],'middle'):tick(plotted[0],'start')+tick(plotted[plotted.length-1],'end');
+    var options=points.map(function(p,i){return '<option value="'+i+'"'+(i===points.length-1?' selected':'')+'>'+p.date+' · '+p.weight+'kg</option>';}).join('');
+    var last=points[points.length-1];
+    return '<figure class="stats-weight-figure"><svg class="stats-weight-graph" viewBox="0 0 320 184" role="img" aria-label="'+statsEscape(exercise.name)+' 날짜별 최고 입력 무게 그래프">'+
+      '<title>'+statsEscape(exercise.name)+' · '+points[0].date+' ~ '+last.date+' · 최고 '+exercise.maxWeight+'kg</title><text x="44" y="16">kg</text>'+grid+line+dots+ticks+'</svg>'+
+      '<label class="stats-chart-select"><span>기록 날짜 선택</span><select data-weight-date aria-label="'+statsEscape(exercise.name)+' 기록 날짜 선택">'+options+'</select></label>'+
+      '<figcaption><span data-weight-value role="status">'+last.date+' · '+last.weight+'kg</span><br>기록이 있는 날짜의 최고값만 연결해요. 기록 없는 날은 0kg으로 계산하지 않아요.</figcaption></figure>';
+  }
+  function renderStats() {
+    var opened=new Set();statsViewEl.querySelectorAll('details[data-stats-key]').forEach(function(el){if(el.open)opened.add(el.dataset.statsKey);});
+    var asOf=todayStr(),data=buildStats(logs,catalog,statsPeriod,asOf,statsCustomRange);
+    if(!statsCalendarMonth || statsCalendarMonth>asOf.slice(0,7))statsCalendarMonth=asOf.slice(0,7);
+    var muscleMax=Math.max.apply(null,[1].concat(Object.values(data.muscles)));
+    var labels={week:'이번 주',month:'이번 달',all:'전체'};
+    var periods=Object.keys(labels).map(function(key){return '<button type="button" data-stats-period="'+key+'" aria-pressed="'+(!statsRangeAnchor && key===statsPeriod)+'">'+labels[key]+'</button>';}).join('');
+    var muscleBars=MUSCLES.concat(data.muscles['기타']?['기타']:[]).map(function(m){
+      return '<div class="stats-bar-row"><span>'+m+'</span><span class="stats-bar-track" aria-hidden="true"><span class="stats-bar-fill" style="width:'+(data.muscles[m]/muscleMax*100)+'%;background:'+(MUSCLE_COLOR[m] || 'var(--muted)')+'"></span></span><span class="stats-bar-count">'+data.muscles[m]+'건</span></div>';
+    }).join('');
+    var groups=MUSCLES.concat(data.muscles['기타']?['기타']:[]).map(function(m){
+      var muscleKey='muscle:'+m;
+      var exercises=data.exercises.filter(function(g){return g.muscle===m;});
+      var cards=exercises.map(function(g){
+        var key='exercise:'+g.key;
+        return '<details class="stats-exercise" data-stats-key="'+statsEscape(key)+'"'+(opened.has(key)?' open':'')+'><summary><span class="stats-exercise-title">'+statsEscape(g.name)+'</span><span class="rec-count">'+g.count+'건</span></summary><div class="stats-exercise-body">'+
+          '<p class="stats-weight-peak">기간 내 최고<strong'+(g.maxWeight===null?' class="stats-weight-empty"':'')+'>'+(g.maxWeight===null?'무게 기록 없음':g.maxWeight+'kg')+'</strong></p>'+statsWeightGraph(g)+'</div></details>';
+      }).join('');
+      return '<details class="rec-group stats-muscle-group" data-stats-key="'+statsEscape(muscleKey)+'"'+(opened.has(muscleKey)?' open':'')+'><summary><span class="rec-title" style="color:'+(MUSCLE_COLOR[m] || 'var(--muted)')+'">'+m+'</span><span class="rec-count">'+(exercises.length?exercises.length+'개 종목':'기록 없음')+'</span><span class="rec-chev"></span></summary><div class="rec-body">'+
+        (cards || '<p class="stats-note">선택한 기간에 기록된 운동이 없어요.</p>')+'</div></details>';
+    }).join('');
+    statsViewEl.innerHTML='<h2 class="stats-heading">운동 통계</h2><p class="stats-note">'+statsEscape(activeProfile)+' · 저장된 운동기록 기준</p>'+
+      '<div class="stats-periods" role="group" aria-label="통계 조회 기간">'+periods+'</div><div class="stats-range-status"><p class="stats-note" role="status">'+(statsRangeAnchor?'직접 선택 · 종료일 선택 중<br>현재 조회: ':statsPeriod==='custom'?'직접 선택 · ':'')+data.from+' ~ '+data.to+'</p><button type="button" data-stats-reset>기간 초기화</button></div>'+
+      statsCalendarHtml(statsCalendarMonth,data.allDates,asOf,{from:data.from,to:data.to},statsRangeAnchor)+
+      '<section class="stats-card"><div class="stats-attendance"><h3>운동일수</h3><strong>'+data.days+'<small>일</small></strong></div><p class="stats-note">선택 기간에 기록을 남긴 날짜 수예요. 같은 날 여러 번 기록해도 1일로 계산해요.</p></section>'+
+      (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 오늘 탭에서 운동기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
+      '<section class="stats-card"><h3>부위별 기록 건수</h3>'+muscleBars+'<p class="stats-note">운동 비중이 아닌 기록 빈도예요. 기록 1건은 완료 1세트가 아니며, 유산소 켜짐 같은 계획은 집계하지 않아요.</p></section>'+
+      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">부위와 종목을 차례로 펼쳐보세요. 선택 기간의 날짜별 최고 입력 무게이며, 1RM이나 근력 향상을 직접 뜻하지 않아요.</p>'+groups;
+    statsViewEl.querySelectorAll('[data-stats-period]').forEach(function(button){button.addEventListener('click',function(){
+      chooseStatsPeriod(button.dataset.statsPeriod);renderStats();
+      var active=statsViewEl.querySelector('[data-stats-period="'+statsPeriod+'"]');if(active)active.focus({preventScroll:true});
+    });});
+    statsViewEl.querySelectorAll('[data-stats-date]').forEach(function(button){button.addEventListener('click',function(){
+      chooseStatsDate(button.dataset.statsDate);renderStats();
+      var selected=statsViewEl.querySelector('[data-stats-date="'+button.dataset.statsDate+'"]');if(selected)selected.focus({preventScroll:true});
+    });});
+    statsViewEl.querySelectorAll('[data-stats-reset]').forEach(function(button){button.addEventListener('click',function(){
+      chooseStatsPeriod('all');renderStats();var reset=statsViewEl.querySelector('[data-stats-reset]');if(reset)reset.focus({preventScroll:true});
+    });});
+    statsViewEl.querySelectorAll('[data-calendar-step]').forEach(function(button){button.addEventListener('click',function(){
+      var step=Number(button.dataset.calendarStep),next=statsMonthOffset(statsCalendarMonth,step);
+      if(next<'0001-01' || next>todayStr().slice(0,7))return;
+      statsCalendarMonth=next;renderStats();
+      var active=statsViewEl.querySelector('[data-calendar-step="'+step+'"]');
+      if(active && !active.disabled)active.focus({preventScroll:true});
+      else {var current=statsViewEl.querySelector('[data-calendar-current]');if(current)current.focus({preventScroll:true});}
+    });});
+    statsViewEl.querySelectorAll('[data-calendar-current]').forEach(function(button){button.addEventListener('click',function(){
+      statsCalendarMonth=todayStr().slice(0,7);renderStats();var current=statsViewEl.querySelector('[data-calendar-current]');if(current)current.focus({preventScroll:true});
+    });});
+    statsViewEl.querySelectorAll('[data-weight-date]').forEach(function(select){select.addEventListener('change',function(){
+      var figure=select.closest('figure');
+      figure.querySelectorAll('[data-weight-point]').forEach(function(point){point.setAttribute('r',point.dataset.weightPoint===select.value?'4.5':point.dataset.weightRadius);});
+      figure.querySelector('[data-weight-value]').textContent=select.options[select.selectedIndex].textContent;
+    });});
   }
 
   function renderReport() {
@@ -2388,16 +2803,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var daysHtml = days.map(function (d) {
       var exHtml = d.ex.length
         ? '<ul class="rep-ex-list">' + d.ex.map(function (e) {
-            return '<li><span class="rep-ex-name">' + e.n + '</span>' +
-              '<span class="rep-ex-spec"><b>' + e.s + '</b>세트 · ' + e.r + '회 · RIR ' + e.rir + '</span></li>';
+            return '<li><span class="rep-ex-name">' + statsEscape(e.n) + '</span>' +
+              '<span class="rep-ex-spec"><b>' + statsEscape(e.s) + '</b>세트 · ' + statsEscape(e.r) + '회 · RIR ' + statsEscape(e.rir) + '</span></li>';
           }).join('') + '</ul>'
         : '<p class="empty-note">종목이 없어요.</p>';
-      var noteHtml = d.note ? '<p class="rep-note">' + d.note + '</p>' : '';
+      var noteHtml = d.note ? '<p class="rep-note">' + statsEscape(d.note) + '</p>' : '';
       var cardioHtml = d.cardio ? '<div class="cardio-tag">+ 웨이트 후 저강도 유산소 15~20분</div>' : '';
       return '<div class="rep-day">' +
         '<div class="rep-day-head">' +
-          '<span class="rep-day-letter">' + d.letter + '</span>' +
-          '<span class="rep-day-title">' + d.title + '</span>' +
+          '<span class="rep-day-letter">' + statsEscape(d.letter) + '</span>' +
+          '<span class="rep-day-title">' + statsEscape(d.title) + '</span>' +
           '<span class="rep-day-total">' + dayTotal(d) + '<span>세트</span></span>' +
         '</div>' +
         exHtml + noteHtml + cardioHtml +
@@ -2408,7 +2823,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<div class="rep-summary">' +
         '<h2>주간 부위별 볼륨</h2>' +
         '<div class="bars">' + barsHtml + '</div>' +
-        '<p class="bar-legend">루틴에 입력한 부위별 주간 직접 세트 합계 · 빨간 선은 참고 하한 14세트 · 막대 끝은 참고 상한 22세트</p>' +
+        '<p class="bar-legend">편집 중인 루틴의 부위별 세트 합계 · 빨간 선 14세트 · 막대 눈금 최대 22세트 (권장량 기준 아님)</p>' +
       '</div>' +
       daysHtml;
   }
@@ -2418,9 +2833,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   });
 
   document.getElementById('btnCatalogSave').addEventListener('click', function () {
-    var ok = writeJSON(CATALOG_KEY, catalog);
+    var ok = commitCatalog(readCatalogEdits());
     var hint = document.getElementById('catalogSaveHint');
     hint.textContent = ok ? '저장됨' : '저장 실패 (브라우저 저장 불가)';
+    showToast(ok?'운동 종목 저장 완료':'운동 종목 저장 실패 · 다시 시도해주세요.',ok?'success':'error');
     hint.className = ok ? 'save-hint on' : 'save-hint';
     clearTimeout(hint._t);
     hint._t = setTimeout(function () { hint.textContent = ''; hint.className = 'save-hint'; }, 1400);
@@ -2429,9 +2845,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   document.getElementById('btnCatalogReset').addEventListener('click', function () {
     var btn = this;
     requireSecondClick(btn, '초기화 확인', function () {
-      catalog = defaultCatalog();
-      writeJSON(CATALOG_KEY, catalog);
-      renderCatalog();
+      var next=defaultCatalog();
+      if(!writeJSON(CATALOG_KEY,next)){showStorageError('catalogSaveHint');return;}
+      catalog=next;renderCatalog();showToast('기본 종목으로 초기화 완료');
     });
   });
 
@@ -2453,33 +2869,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     });
   })();
 
-  (function () {
-    var armed = false;
-    var timer = null;
-    var btn = document.getElementById('btnRecordsDeleteAll');
-    function reset() {
-      armed = false;
-      btn.textContent = '전체 삭제';
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }
-    btn.addEventListener('click', function () {
-      if (!armed) {
-        armed = true;
-        btn.textContent = '전체 삭제 확인';
-        btn.style.color = '#c1432a';
-        btn.style.borderColor = '#c1432a';
-        clearTimeout(timer);
-        timer = setTimeout(reset, 4000);
-        return;
-      }
-      clearTimeout(timer);
-      reset();
-      logs = [];
-      writeJSON(LOG_KEY, logs);
-      renderRecords();
+  document.getElementById('btnRecordsDeleteAll').addEventListener('click',function(){
+    requireSecondClick(this,'전체 삭제 확인',function(){
+      if(!writeJSON(LOG_KEY,[])){showStorageError('recordsActionHint');return;}
+      logs=[];renderRecords();showToast('전체 운동기록 삭제 완료');
     });
-  })();
+  });
 
   document.getElementById('btnClearDay').addEventListener('click', function () {
     var btn = this;
@@ -2489,20 +2884,26 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       d.title = '';
       d.cardio = false;
       delete d.note;
+      save();
       renderPanel();
       renderPrinciples();
+      showToast('선택한 요일의 루틴 삭제됨 · 루틴 저장 필요','pending');
     });
   });
 
   var resetBtn = document.getElementById('btnReset');
   resetBtn.addEventListener('click', function () {
-    requireSecondClick(resetBtn, '루틴 초기화 확인', function () {
+      clearConfirmation();
+      routineEditing = true;
       days = defaults();
       save();
       renderTabs();
       renderPanel();
       renderPrinciples();
-    });
+      showToast('기본 루틴 불러옴 · 루틴 저장 필요','pending');
+      var saveButton=document.getElementById('btnSaveNow');
+      saveButton.focus({preventScroll:true});
+      saveButton.scrollIntoView({block:'nearest'});
   });
 
   var profileTagEl = document.getElementById('profileTag');
@@ -2519,11 +2920,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var confirming = catDelPendingProfile === name;
       var delBtn = canDelete
         ? '<button class="btn-hist-del' + (confirming ? ' confirming' : '') + '" type="button" data-name="' +
-          String(name).replace(/"/g, '&quot;') + '" aria-label="프로필 삭제">' + (confirming ? '확인' : '×') + '</button>'
+          statsEscape(name) + '" aria-label="프로필 삭제">' + (confirming ? '확인' : '×') + '</button>'
         : '';
       return '<div class="profile-row">' +
-        '<button class="profile-select" type="button" data-name="' + String(name).replace(/"/g, '&quot;') +
-          '" aria-pressed="' + isActive + '">' + name +
+        '<button class="profile-select" type="button" data-name="' + statsEscape(name) +
+          '" aria-pressed="' + isActive + '">' + statsEscape(name) +
           (isActive ? '<span class="current-tag">사용중</span>' : '') +
         '</button>' +
         delBtn +
@@ -2542,41 +2943,42 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var name = b.getAttribute('data-name');
       b.addEventListener('click', function (ev) {
         ev.preventDefault();
-        if (catDelPendingProfile !== name) { catDelPendingProfile = name; renderProfileList(); return; }
-        catDelPendingProfile = null;
-        var idx = profiles.indexOf(name);
-        if (idx !== -1) profiles.splice(idx, 1);
-        writeJSON(PROFILES_KEY, profiles);
-        [
-          keyFor('bulk-routine-v4', name),
-          keyFor('bulk-routine-v5', name),
-          keyFor('bulk-routine-v6', name),
-          keyFor('bulk-routine-v7', name),
-          keyFor('bulk-routine-v8', name),
-          keyFor('bulk-routine-v9', name),
-          keyFor('bulk-routine-catalog-v2', name),
-          keyFor('bulk-routine-catalog-v3', name),
-          keyFor('bulk-routine-log-v1', name),
-          keyFor('bulk-routine-draft-v1', name),
-          keyFor('bulk-routine-draft-v2', name)
-        ].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
-        renderProfileList();
+        requireSecondClick(b,'확인',function(){
+          if(name===activeProfile || profiles.length<=1)return;
+          var next=profiles.filter(function(p){return p!==name;});
+          var operations=profileStorageBases().map(function(base){return {key:keyFor(base,name),remove:true};});
+          operations.push({key:PROFILES_KEY,value:next});
+          if(!storageTransaction(operations)){showStorageError('profileActionHint');return;}
+          profiles=next;renderProfileList();showToast('프로필과 해당 데이터 삭제 완료');
+        });
       });
     });
   }
 
   function switchProfile(name) {
+    clearConfirmation();
+    routineEditing = false;
     activeProfile = name;
     writeJSON(ACTIVE_PROFILE_KEY, activeProfile);
     applyProfileKeys();
     days = load();
-    routineOrderPending = false;
+    routineOrderPending = isRoutine(readJSON(routinePendingKey(),null));
+    selectedRecordDate=todayStr();
+    document.getElementById('routineSaveHint').textContent='';
+    document.getElementById('saveHint').textContent='';
+    document.getElementById('recordsActionHint').textContent='';
+    document.getElementById('recordExportWrap').hidden=true;
+    document.getElementById('recordExportText').value='';
+    document.getElementById('btnRecordExport').textContent='운동기록 내보내기';
     document.getElementById('btnSaveNow').classList.remove('pending-save');
     catalog = loadCatalog();
     applyHypertrophyDefaults();
     ensureCatalogAdditions();
     logs = loadLogs();
+    showRecordDataStatus();
     draft = readJSON(DRAFT_KEY, {});
+    statsCalendarMonth = '';
+    statsPeriod = 'week';statsCustomRange = null;statsRangeAnchor = '';
     loadMemoEditor();
     recFilterFrom = '';
     recFilterTo = '';
@@ -2589,6 +2991,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     if (mode === 'catalog') renderCatalog();
     else if (mode === 'records') renderRecords();
     else if (mode === 'report') renderReport();
+    else if (mode === 'stats') renderStats();
     else { renderTabs(); renderPanel(); renderPrinciples(); }
   }
 
@@ -2614,14 +3017,121 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var input = document.getElementById('newProfileName');
     var v = input.value.trim();
     if (!v || profiles.indexOf(v) !== -1) return;
-    profiles.push(v);
-    writeJSON(PROFILES_KEY, profiles);
+    var next=profiles.concat(v);
+    if(!writeJSON(PROFILES_KEY,next)){showStorageError('profileActionHint');return;}
+    profiles=next;
     input.value = '';
     switchProfile(v);
     renderProfileList();
   });
   document.getElementById('newProfileName').addEventListener('keydown', function (ev) {
     if (ev.key === 'Enter') { ev.preventDefault(); document.getElementById('btnAddProfile').click(); }
+  });
+
+  function validateTransfer(data) {
+    function fail(){throw new Error('이 앱에서 내보낸 올바른 데이터 파일이 아닙니다.');}
+    function text(value,max){return typeof value==='string' && value.length<=max && !/[<>]/.test(value) && !['__proto__','constructor','prototype'].includes(value);}
+    function routine(r){
+      if(!isRoutine(r))fail();
+      var keys=['mon','tue','wed','thu','fri','sat'];
+      r.forEach(function(d,i){
+        if(d.key!==keys[i] || !text(d.title,500) || !text(d.letter,10) || (d.note!=null&&!text(d.note,5000)) || typeof d.cardio!=='boolean' || d.ex.length>1000)fail();
+        d.ex.forEach(function(e){if(!text(e.n,200)||!MUSCLES.includes(e.m)||!Number.isInteger(Number(e.s))||Number(e.s)<1||Number(e.s)>20||!text(String(e.r),100)||!text(String(e.rir),100))fail();});
+      });
+    }
+    if(!data || data.format!=='workout-routine-transfer' || data.version!==1 || !data.profile)fail();
+    var p=data.profile;if(!text(p.name,100))fail();routine(p.routine);
+    if(p.pending!=null)routine(p.pending);
+    if(!p.catalog || typeof p.catalog!=='object')fail();
+    MUSCLES.forEach(function(m){if(!Array.isArray(p.catalog[m])||p.catalog[m].length>2000)fail();p.catalog[m].forEach(function(e){
+      if(!e || !text(e.n,200)||!Number.isInteger(Number(e.s))||Number(e.s)<1||Number(e.s)>20||!text(String(e.r),100)||!text(String(e.rir),100))fail();
+    });});
+    if(!Array.isArray(p.logs)||p.logs.length>50000)fail();
+    var ids=new Set();p.logs.forEach(function(rec){
+      if(!validRecordDate(rec.date)||!['mon','tue','wed','thu','fri','sat'].includes(rec.dayKey)||!Array.isArray(rec.entries))fail();
+      rec.entries.forEach(function(e){
+        if(!e || !text(e.id,200)||!e.id||ids.has(e.id)||!text(e.n,200)||(e.m!=null&&!MUSCLES.includes(e.m)))fail();ids.add(e.id);
+        cleanRecordValues(rec.date,e.w,e.reps);
+      });
+    });
+    if(!Array.isArray(p.memos)||p.memos.length>1000)fail();
+    p.memos.forEach(function(m){if(!m||typeof m.title!=='string'||typeof m.body!=='string'||m.title.length>1000||m.body.length>100000)fail();});
+    if(!p.draft||typeof p.draft!=='object'||Array.isArray(p.draft))fail();
+    Object.keys(p.draft).forEach(function(key){
+      if(!/^(mon|tue|wed|thu|fri|sat)(@\d{4}-\d{2}-\d{2})?$/.test(key))fail();
+      var group=p.draft[key];if(!group||typeof group!=='object'||Array.isArray(group))fail();
+      Object.keys(group).forEach(function(name){var v=group[name];if(!text(name,500)||!v||!text(String(v.w),30)||!text(String(v.reps),30))fail();});
+    });
+    return data;
+  }
+  function transferSnapshot() {
+    return {format:'workout-routine-transfer',version:1,exportedAt:new Date().toISOString(),profile:{
+      name:activeProfile,routine:loadSavedRoutine(),pending:routineOrderPending?days:null,
+      catalog:readJSON(CATALOG_KEY,catalog),logs:logs,memos:getMemos(),draft:draft
+    }};
+  }
+  function importTransfer(data) {
+    validateTransfer(data);
+    var p=data.profile,name=p.name+' (가져옴)',suffix=2;
+    while(profiles.includes(name)){name=p.name+' (가져옴 '+suffix+')';suffix++;}
+    var operations=[
+      {key:keyFor('bulk-routine-v9',name),value:p.routine},
+      {key:keyFor('bulk-routine-catalog-v3',name),value:p.catalog},
+      {key:keyFor('bulk-routine-log-v1',name),value:p.logs},
+      {key:keyFor('bulk-routine-memos-v1',name),value:p.memos},
+      {key:keyFor('bulk-routine-draft-v2',name),value:p.draft},
+      {key:keyFor('bulk-catalog-hypertrophy-v1',name),value:true},
+      {key:keyFor('bulk-catalog-expand-all-v2',name),value:true}
+    ];
+    if(p.pending)operations.push({key:keyFor('bulk-routine-pending-v1',name),value:p.pending});
+    var next=profiles.concat(name);operations.push({key:PROFILES_KEY,value:next});
+    if(!storageTransaction(operations))throw new Error('가져오기를 저장하지 못했어요. 저장 공간을 확인해주세요.');
+    profiles=next;return name;
+  }
+  var importCandidate=null;
+  document.getElementById('btnDataExport').addEventListener('click',function(){
+    var hint=document.getElementById('dataTransferHint');
+    try{
+      var data=transferSnapshot();
+      var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      if(blob.size>5*1024*1024){hint.textContent='현재 프로필은 5MB를 초과해 파일 가져오기 지원 범위를 넘습니다. 운동기록 텍스트 내보내기를 이용해주세요.';return;}
+      var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='workout-data-'+todayStr()+'.json';
+      document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},60000);
+      hint.textContent='파일 다운로드를 요청했어요. 다운로드 폴더 또는 파일 앱에서 확인해주세요. 이 파일은 자동 동기화되지 않습니다.';
+    }catch(e){hint.textContent='파일을 만들지 못했어요. 다시 시도해주세요.';}
+  });
+  document.getElementById('btnRecoveryDownload').addEventListener('click',function(){
+    try {
+      var history=readJSON(logRecoveryKey(),[]);
+      if(!Array.isArray(history))history=[];
+      var raw=localStorage.getItem(LOG_KEY);
+      if(raw!==null && !history.some(function(item){return item && item.raw===raw;}))history=history.concat({savedAt:new Date().toISOString(),raw:raw});
+      var blob=new Blob([JSON.stringify({format:'workout-record-recovery',profile:activeProfile,snapshots:history},null,2)],{type:'application/json'});
+      var url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='workout-record-recovery-'+todayStr()+'.json';
+      document.body.appendChild(link);link.click();link.remove();setTimeout(function(){URL.revokeObjectURL(url);},60000);
+      showToast('복구용 원본 다운로드를 요청했어요. 파일 앱에서 확인해주세요.');
+    } catch(error){showToast('원본 파일을 만들지 못했어요. 저장 권한을 확인해주세요.','error');}
+  });
+  document.getElementById('btnDataImport').addEventListener('click',function(){document.getElementById('dataImportFile').click();});
+  document.getElementById('dataImportFile').addEventListener('change',async function(){
+    var file=this.files[0];this.value='';importCandidate=null;document.getElementById('dataImportPreview').hidden=true;
+    if(!file)return;
+    var hint=document.getElementById('dataTransferHint');
+    try{
+      if(file.size>5*1024*1024)throw new Error('5MB 이하의 데이터 파일을 선택해주세요.');
+      var data=JSON.parse(await file.text(),function(key,value){if(['__proto__','constructor','prototype'].includes(key))throw new Error('허용되지 않는 파일 형식입니다.');return value;});
+      importCandidate=validateTransfer(data);var p=data.profile;
+      document.getElementById('dataImportSummary').textContent=p.name+' · 기록 '+p.logs.reduce(function(n,r){return n+r.entries.length;},0)+'건. 기존 데이터는 유지되며 새 프로필을 만듭니다.';
+      document.getElementById('dataImportPreview').hidden=false;hint.textContent='내용을 확인한 뒤 가져오기를 눌러주세요.';
+    }catch(e){hint.textContent=e.message;}
+  });
+  document.getElementById('btnImportCancel').addEventListener('click',function(){importCandidate=null;document.getElementById('dataImportPreview').hidden=true;});
+  document.getElementById('btnImportConfirm').addEventListener('click',function(){
+    if(!importCandidate)return;
+    try{
+      var name=importTransfer(importCandidate);importCandidate=null;document.getElementById('dataImportPreview').hidden=true;
+      switchProfile(name);renderProfileList();document.getElementById('dataTransferHint').textContent=name+' 프로필로 가져왔어요. 기존 프로필은 그대로 유지됩니다.';
+    }catch(e){document.getElementById('dataTransferHint').textContent=e.message;}
   });
 
   function workoutRecordsText() {
@@ -2647,7 +3157,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   var recordExportWrapEl = document.getElementById('recordExportWrap');
   document.getElementById('btnRecordExport').addEventListener('click', function () {
     recordExportWrapEl.hidden = !recordExportWrapEl.hidden;
-    this.textContent = recordExportWrapEl.hidden ? '운동기록 저장' : '운동기록 닫기';
+    this.textContent = recordExportWrapEl.hidden ? '운동기록 내보내기' : '운동기록 닫기';
     if (!recordExportWrapEl.hidden) {
       document.getElementById('recordExportText').value = workoutRecordsText();
       document.getElementById('recordExportHint').textContent = logs.length ? logs.length + '일의 기록' : '';
@@ -2684,6 +3194,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   renderPanel();
   renderPrinciples();
 
+  showRecordDataStatus();
   if (memoryOnly) {
     var h = document.getElementById('saveHint');
     h.textContent = '이 브라우저에서는 저장이 안 돼요 (창을 닫으면 초기화)';
