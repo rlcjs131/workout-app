@@ -978,7 +978,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     return ['bulk-routine-v4','bulk-routine-v5','bulk-routine-v6','bulk-routine-v7','bulk-routine-v8','bulk-routine-v9',
       'bulk-routine-pending-v1','bulk-routine-catalog-v2','bulk-routine-catalog-v3','bulk-routine-log-v1',
       'bulk-routine-draft-v1','bulk-routine-draft-v2','bulk-routine-log-recovery-v1','bulk-routine-memos-v1','bulk-catalog-hypertrophy-v1',
-      'bulk-catalog-add-bulgarian-v1','bulk-catalog-expand-all-v2'];
+      'bulk-catalog-add-bulgarian-v1','bulk-catalog-expand-all-v2','bulk-catalog-expand-all-v3'];
   }
   function readJSON(key, fallback) {
     try {
@@ -1390,7 +1390,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     if (writeJSON(CATALOG_KEY,catalog)) writeJSON(marker,true);
   }
   function ensureCatalogAdditions() {
-    var marker = keyFor('bulk-catalog-expand-all-v2', activeProfile);
+    var marker = keyFor('bulk-catalog-expand-all-v3', activeProfile);
     if (readJSON(marker, false)) return;
     var seed = defaultCatalog();
     MUSCLES.forEach(function(m) {
@@ -2753,7 +2753,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var options=points.map(function(p,i){return '<option value="'+i+'"'+(i===points.length-1?' selected':'')+'>'+p.date+' · '+p.weight+'kg</option>';}).join('');
     var last=points[points.length-1];
     return '<figure class="stats-weight-figure"><svg class="stats-weight-graph" viewBox="0 0 320 184" role="img" aria-label="'+statsEscape(exercise.name)+' 날짜별 최고 입력 무게 그래프">'+
-      '<title>'+statsEscape(exercise.name)+' · '+points[0].date+' ~ '+last.date+' · 최고 '+exercise.maxWeight+'kg</title><text x="44" y="16">kg</text>'+grid+line+dots+ticks+'</svg>'+
+      '<title>'+statsEscape(exercise.name)+' · '+points[0].date+' ~ '+last.date+' · 최고 '+exercise.maxWeight+'kg</title><text x="37" y="20" text-anchor="end">kg</text>'+grid+line+dots+ticks+'</svg>'+
       '<label class="stats-chart-select"><span>기록 날짜 선택</span><select data-weight-date aria-label="'+statsEscape(exercise.name)+' 기록 날짜 선택">'+options+'</select></label>'+
       '<figcaption><span data-weight-value role="status">'+last.date+' · '+last.weight+'kg</span><br>기록이 있는 날짜의 최고값만 연결해요. 기록 없는 날은 0kg으로 계산하지 않아요.</figcaption></figure>';
   }
