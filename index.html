@@ -1058,6 +1058,39 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
   applyProfileKeys();
 
+  // 배포 후 각 브라우저에서 최초 1회만 실행:
+  // 운동 루틴 + 운동 기록만 초기화한다.
+  // 운동 관리(catalog), 프로필 목록, 메모 등은 그대로 유지한다.
+  (function resetRoutineAndLogsOnceForRelease() {
+    var releaseMarker = 'bulk-release-reset-routine-logs-v1';
+    if (readJSON(releaseMarker, false)) return;
+
+    var profileNames = readJSON(PROFILES_KEY, null);
+    if (!Array.isArray(profileNames) || !profileNames.length) {
+      profileNames = [activeProfile || '기본'];
+    }
+
+    var blankRoutine = [
+      {key:'mon',letter:'월',title:'',cardio:false,ex:[]},
+      {key:'tue',letter:'화',title:'',cardio:false,ex:[]},
+      {key:'wed',letter:'수',title:'',cardio:false,ex:[]},
+      {key:'thu',letter:'목',title:'',cardio:false,ex:[]},
+      {key:'fri',letter:'금',title:'',cardio:false,ex:[]},
+      {key:'sat',letter:'토',title:'',cardio:false,ex:[]}
+    ];
+
+    var ops = [];
+    profileNames.forEach(function(name) {
+      ops.push({key:keyFor('bulk-routine-v9', name), value:blankRoutine});
+      ops.push({key:keyFor('bulk-routine-log-v1', name), value:[]});
+      ops.push({key:keyFor('bulk-routine-pending-v1', name), remove:true});
+    });
+
+    if (storageTransaction(ops)) {
+      writeJSON(releaseMarker, true);
+    }
+  })();
+
   function defaults() {
     return [
       {key:'mon',letter:'월',title:'',cardio:false,ex:[]},
