@@ -905,6 +905,66 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     transform:none;
   }
 
+
+  .bulk-app .stats-metric-switch{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;
+    margin-bottom:14px;
+    padding:4px;
+    border-radius:12px;
+    background:var(--sunken);
+    border:1px solid var(--line);
+  }
+  .bulk-app .stats-metric-switch button{
+    min-width:0;
+    min-height:38px;
+    padding:8px 6px;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:var(--muted);
+    font:700 12px var(--ui);
+    cursor:pointer;
+  }
+  .bulk-app .stats-metric-switch button[aria-pressed="true"]{
+    background:var(--panel);
+    color:var(--primary);
+    box-shadow:0 2px 8px #23345112;
+  }
+  .bulk-app .stats-metric-summary{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+    margin:0 0 12px;
+  }
+  .bulk-app .stats-metric-summary > div{
+    min-width:0;
+    padding:10px 8px;
+    border-radius:10px;
+    background:var(--sunken);
+    text-align:center;
+  }
+  .bulk-app .stats-metric-summary span{
+    display:block;
+    margin-bottom:4px;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:600;
+  }
+  .bulk-app .stats-metric-summary strong{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:var(--ink);
+    font-size:14px;
+  }
+  .bulk-app .stats-metric-summary strong.is-up{color:var(--gain);}
+  .bulk-app .stats-metric-summary strong.is-down{color:var(--drop);}
+  .bulk-app .stats-metric-panel[hidden]{display:none !important;}
+  .bulk-app .stats-metric-empty{margin:4px 0 0 !important;}
+
 </style>
 <style>
 .bulk-app .routine-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;}
@@ -3299,11 +3359,45 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     });
     var exercises=Array.from(grouped.values()).map(function(g){
       g.entries.sort(function(a,b){return b.date.localeCompare(a.date) || b.order-a.order;});
-      var daily=new Map();g.entries.forEach(function(e){
-        if(e.w!==null && (!daily.has(e.date) || e.w>daily.get(e.date)))daily.set(e.date,e.w);
+      var byDate=new Map();
+      g.entries.forEach(function(e){
+        if(!byDate.has(e.date))byDate.set(e.date,[]);
+        byDate.get(e.date).push(e);
       });
-      var points=Array.from(daily,function(pair){return {date:pair[0],weight:pair[1]};}).sort(function(a,b){return a.date.localeCompare(b.date);});
-      return {key:g.key,name:g.name,muscle:g.muscle,count:g.entries.length,days:g.dates.size,maxWeight:g.maxWeight,points:points,latest:g.entries[0],previous:g.entries[1] || null};
+      var weightPoints=[],e1rmPoints=[],volumePoints=[];
+      Array.from(byDate.keys()).sort().forEach(function(date){
+        var dayEntries=byDate.get(date);
+        var weights=dayEntries.filter(function(e){return e.w!==null;}).map(function(e){return e.w;});
+        if(weights.length)weightPoints.push({date:date,value:Math.max.apply(null,weights)});
+
+        var e1rms=dayEntries.filter(function(e){return e.w!==null && e.reps!==null && e.reps>0;}).map(function(e){
+          return e.reps===1 ? e.w : e.w*(1+e.reps/30);
+        });
+        if(e1rms.length)e1rmPoints.push({date:date,value:Number(Math.max.apply(null,e1rms).toFixed(1))});
+
+        var validVolume=dayEntries.filter(function(e){return e.w!==null && e.reps!==null && e.reps>0;});
+        if(validVolume.length){
+          var volume=validVolume.reduce(function(sum,e){return sum+e.w*e.reps;},0);
+          volumePoints.push({date:date,value:Number(volume.toFixed(1))});
+        }
+      });
+      function metricSummary(points){
+        if(!points.length)return {latest:null,best:null,change:null};
+        var latest=points[points.length-1].value;
+        var first=points[0].value;
+        var best=Math.max.apply(null,points.map(function(p){return p.value;}));
+        var change=first>0 ? (latest-first)/first*100 : null;
+        return {latest:latest,best:best,change:change};
+      }
+      return {
+        key:g.key,name:g.name,muscle:g.muscle,count:g.entries.length,days:g.dates.size,maxWeight:g.maxWeight,
+        metrics:{
+          e1rm:{points:e1rmPoints,summary:metricSummary(e1rmPoints)},
+          weight:{points:weightPoints,summary:metricSummary(weightPoints)},
+          volume:{points:volumePoints,summary:metricSummary(volumePoints)}
+        },
+        latest:g.entries[0],previous:g.entries[1] || null
+      };
     }).sort(function(a,b){return a.name.localeCompare(b.name,'ko') || a.muscle.localeCompare(b.muscle,'ko');});
     var weeks=[];
     for(var i=3;i>=0;i--){
@@ -3363,34 +3457,74 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<button type="button" data-calendar-step="1" aria-label="다음 달"'+(month>=asOf.slice(0,7)?' disabled':'')+'>›</button></div>'+
       '<div class="stats-calendar-grid" role="group" aria-label="시작일과 종료일 선택">'+weekdays+cells+'</div><p class="stats-note" role="status">'+(anchor?'시작일 '+anchor+' 선택 · 종료일을 눌러주세요. 선택 완료 전까지 통계는 기존 조회 기간을 유지해요.':'')+'</p><p class="stats-note">점: 운동기록이 있는 날 · 테두리: 오늘 · 색칠된 구간: 선택 기간</p></section>';
   }
-  function statsWeightGraph(exercise) {
-    var points=exercise.points;
-    if(!points.length)return '<p class="stats-note">무게 기록 없음 · 횟수만 저장한 기록은 그래프에 표시하지 않아요.</p>';
-    var maximum=exercise.maxWeight || 1;
-    var step=Math.pow(10,Math.floor(Math.log10(maximum)))/2;
-    var ceiling=Math.ceil(maximum/step)*step;
+  function statsMetricMeta(metric) {
+    if(metric==='weight')return {label:'최고 무게',unit:'kg',decimals:1,aria:'날짜별 최고 입력 무게'};
+    if(metric==='volume')return {label:'총 볼륨',unit:'kg',decimals:0,aria:'날짜별 총 볼륨'};
+    return {label:'추정 1RM',unit:'kg',decimals:1,aria:'날짜별 추정 1RM'};
+  }
+  function statsFormatMetric(value,metric) {
+    if(value===null || value===undefined || !isFinite(value))return '-';
+    if(metric==='volume')return Math.round(value).toLocaleString('ko-KR')+'kg';
+    var rounded=Math.round(value*10)/10;
+    return (Number.isInteger(rounded)?rounded:rounded.toFixed(1))+'kg';
+  }
+  function statsMetricGraph(exercise,metric) {
+    var meta=statsMetricMeta(metric);
+    var metricData=exercise.metrics && exercise.metrics[metric];
+    var points=metricData ? metricData.points : [];
+    if(!points.length){
+      var emptyText=metric==='weight'?'무게 기록이 없어요.':metric==='volume'?'무게와 횟수가 함께 입력된 기록이 없어요.':'무게와 횟수가 함께 입력된 기록이 없어요.';
+      return '<p class="stats-note stats-metric-empty">'+emptyText+'</p>';
+    }
+    var maximum=Math.max.apply(null,points.map(function(p){return p.value;})) || 1;
+    var power=Math.pow(10,Math.floor(Math.log10(maximum)));
+    var step=power/2;
+    if(maximum<10)step=1;
+    var ceiling=Math.ceil(maximum/step)*step || 1;
     var start=new Date(points[0].date+'T00:00:00Z').getTime();
     var end=new Date(points[points.length-1].date+'T00:00:00Z').getTime();
     var plotted=points.map(function(p){
       var x=start===end?174:44+(new Date(p.date+'T00:00:00Z').getTime()-start)/(end-start)*260;
-      var y=144-p.weight/ceiling*112;
-      return {x:Number(x.toFixed(2)),y:Number(y.toFixed(2)),date:p.date,weight:p.weight};
+      var y=144-p.value/ceiling*112;
+      return {x:Number(x.toFixed(2)),y:Number(y.toFixed(2)),date:p.date,value:p.value};
     });
     var grid=[0,ceiling/2,ceiling].map(function(value){
       var y=144-value/ceiling*112;
-      return '<line class="weight-grid" x1="44" x2="304" y1="'+y+'" y2="'+y+'"/><text x="37" y="'+(y+4)+'" text-anchor="end">'+Number(value.toPrecision(5))+'</text>';
+      var display=metric==='volume'?Math.round(value).toLocaleString('ko-KR'):Number((Math.round(value*10)/10).toPrecision(5));
+      return '<line class="weight-grid" x1="44" x2="304" y1="'+y+'" y2="'+y+'"/><text x="37" y="'+(y+4)+'" text-anchor="end">'+display+'</text>';
     }).join('');
     var line=points.length>1?'<polyline class="weight-line" points="'+plotted.map(function(p){return p.x+','+p.y;}).join(' ')+'"/>':'';
     var idleRadius=points.length>20?'0':'2.5';
-    var dots=plotted.map(function(p,i){return '<circle class="weight-point" data-weight-point="'+i+'" data-weight-radius="'+idleRadius+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(i===points.length-1?'4.5':idleRadius)+'"><title>'+p.date+' · '+p.weight+'kg</title></circle>';}).join('');
+    var dots=plotted.map(function(p,i){
+      return '<circle class="weight-point" data-metric-point="'+i+'" data-weight-radius="'+idleRadius+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(i===points.length-1?'4.5':idleRadius)+'"><title>'+p.date+' · '+statsFormatMetric(p.value,metric)+'</title></circle>';
+    }).join('');
     function tick(p,anchor){return '<text x="'+p.x+'" y="168" text-anchor="'+anchor+'">'+p.date.slice(2).replace(/-/g,'/')+'</text>';}
     var ticks=start===end?tick(plotted[0],'middle'):tick(plotted[0],'start')+tick(plotted[plotted.length-1],'end');
-    var options=points.map(function(p,i){return '<option value="'+i+'"'+(i===points.length-1?' selected':'')+'>'+p.date+' · '+p.weight+'kg</option>';}).join('');
+    var options=points.map(function(p,i){return '<option value="'+i+'"'+(i===points.length-1?' selected':'')+'>'+p.date+' · '+statsFormatMetric(p.value,metric)+'</option>';}).join('');
     var last=points[points.length-1];
-    return '<figure class="stats-weight-figure"><svg class="stats-weight-graph" viewBox="0 0 320 184" role="img" aria-label="'+statsEscape(exercise.name)+' 날짜별 최고 입력 무게 그래프">'+
-      '<title>'+statsEscape(exercise.name)+' · '+points[0].date+' ~ '+last.date+' · 최고 '+exercise.maxWeight+'kg</title><text x="37" y="20" text-anchor="end">kg</text>'+grid+line+dots+ticks+'</svg>'+
-      '<label class="stats-chart-select"><span>기록 날짜 선택</span><select data-weight-date aria-label="'+statsEscape(exercise.name)+' 기록 날짜 선택">'+options+'</select></label>'+
-      '<figcaption><span data-weight-value role="status">'+last.date+' · '+last.weight+'kg</span><br>기록이 있는 날짜의 최고값만 연결해요. 기록 없는 날은 0kg으로 계산하지 않아요.</figcaption></figure>';
+    var summary=metricData.summary;
+    var changeText=summary.change===null?'-':(summary.change>0?'+':'')+summary.change.toFixed(1)+'%';
+    return '<div class="stats-metric-summary">'+
+        '<div><span>최근</span><strong>'+statsFormatMetric(summary.latest,metric)+'</strong></div>'+
+        '<div><span>기간 최고</span><strong>'+statsFormatMetric(summary.best,metric)+'</strong></div>'+
+        '<div><span>기간 변화</span><strong class="'+(summary.change>0?'is-up':summary.change<0?'is-down':'')+'">'+changeText+'</strong></div>'+
+      '</div>'+
+      '<figure class="stats-weight-figure" data-metric-figure="'+metric+'"><svg class="stats-weight-graph" viewBox="0 0 320 184" role="img" aria-label="'+statsEscape(exercise.name)+' '+meta.aria+' 그래프">'+
+      '<title>'+statsEscape(exercise.name)+' · '+points[0].date+' ~ '+last.date+' · '+meta.label+' '+statsFormatMetric(summary.best,metric)+'</title><text x="37" y="20" text-anchor="end">'+meta.unit+'</text>'+grid+line+dots+ticks+'</svg>'+
+      '<label class="stats-chart-select"><span>기록 날짜 선택</span><select data-metric-date aria-label="'+statsEscape(exercise.name)+' '+meta.label+' 기록 날짜 선택">'+options+'</select></label>'+
+      '<figcaption><span data-metric-value role="status">'+last.date+' · '+statsFormatMetric(last.value,metric)+'</span><br>'+
+      (metric==='volume'?'해당 날짜에 무게와 횟수가 함께 있는 기록의 무게×횟수를 합산해요.':metric==='e1rm'?'Epley 공식으로 계산한 참고값이며, 고반복 기록일수록 오차가 커질 수 있어요.':'기록이 있는 날짜의 최고 입력 무게만 연결해요.')+
+      '</figcaption></figure>';
+  }
+  function statsExerciseMetricsHtml(exercise) {
+    var metrics=['e1rm','weight','volume'];
+    var buttons=metrics.map(function(metric){
+      return '<button type="button" data-stats-metric="'+metric+'" aria-pressed="'+(metric==='e1rm')+'">'+statsMetricMeta(metric).label+'</button>';
+    }).join('');
+    var panels=metrics.map(function(metric){
+      return '<div class="stats-metric-panel" data-stats-metric-panel="'+metric+'"'+(metric==='e1rm'?'':' hidden')+'>'+statsMetricGraph(exercise,metric)+'</div>';
+    }).join('');
+    return '<div class="stats-metric-switch" role="group" aria-label="'+statsEscape(exercise.name)+' 통계 지표">'+buttons+'</div>'+panels;
   }
   function statsRecordedExerciseNames() {
     var seen = new Set(), names = [];
@@ -3464,7 +3598,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var cards=exercises.map(function(g){
         var key='exercise:'+g.key;
         return '<details class="stats-exercise" data-stats-key="'+statsEscape(key)+'" data-stats-exercise-name="'+statsEscape(g.name)+'"'+(opened.has(key)?' open':'')+'><summary><span class="stats-exercise-title">'+statsEscape(g.name)+'</span><span class="rec-count">'+g.count+'건</span></summary><div class="stats-exercise-body">'+
-          '<p class="stats-weight-peak">기간 내 최고<strong'+(g.maxWeight===null?' class="stats-weight-empty"':'')+'>'+(g.maxWeight===null?'무게 기록 없음':g.maxWeight+'kg')+'</strong></p>'+statsWeightGraph(g)+'</div></details>';
+          statsExerciseMetricsHtml(g)+'</div></details>';
       }).join('');
       return '<details class="rec-group stats-muscle-group" data-stats-key="'+statsEscape(muscleKey)+'"'+(opened.has(muscleKey)?' open':'')+'><summary><span class="rec-title" style="color:'+(MUSCLE_COLOR[m] || 'var(--muted)')+'">'+m+'</span><span class="rec-count">'+(exercises.length?exercises.length+'개 종목':'기록 없음')+'</span><span class="rec-chev"></span></summary><div class="rec-body">'+
         (cards || '<p class="stats-note">선택한 기간에 기록된 운동이 없어요.</p>')+'</div></details>';
@@ -3478,7 +3612,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<section class="stats-card"><div class="stats-attendance"><h3>운동일수</h3><div class="stats-attendance-value"><span class="stats-attendance-context">'+statsEscape(attendanceDisplay.label)+'</span> <strong class="stats-attendance-actual">'+data.days+'</strong><span class="stats-attendance-total">'+(statsPeriod==='all'?'일':' / '+attendanceDisplay.total+'일')+'</span></div></div><p class="stats-note">선택 기간의 운동 기록일 수예요.</p></section>'+
       (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 운동 탭에서 기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
       '<section class="stats-card"><h3>부위별 기록 건수</h3>'+muscleBars+'<p class="stats-note">운동 비중이 아닌 기록 빈도이며, 기록 1건은 완료 1세트가 아니에요.</p></section>'+
-      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">기록된 종목을 검색하거나 부위와 종목을 차례로 펼쳐보세요. 선택 기간의 날짜별 최고 입력 무게이며, 1RM이나 근력 향상을 직접 뜻하지 않아요.</p>'+searchHtml+groups;
+      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">기록된 종목을 검색하고 추정 1RM·최고 무게·총 볼륨으로 변화를 비교해보세요. 추정 1RM과 볼륨은 입력 기록을 바탕으로 한 참고값이에요.</p>'+searchHtml+groups;
     statsViewEl.querySelectorAll('[data-stats-period]').forEach(function(button){button.addEventListener('click',function(){
       chooseStatsPeriod(button.dataset.statsPeriod);renderStats();
       var active=statsViewEl.querySelector('[data-stats-period="'+statsPeriod+'"]');if(active)active.focus({preventScroll:true});
@@ -3507,10 +3641,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       statsSearchInput.addEventListener('change',function(){applyStatsExerciseSearch(statsSearchInput.value);});
       applyStatsExerciseSearch(statsSearchInput.value);
     }
-    statsViewEl.querySelectorAll('[data-weight-date]').forEach(function(select){select.addEventListener('change',function(){
+    statsViewEl.querySelectorAll('[data-stats-metric]').forEach(function(button){button.addEventListener('click',function(){
+      var body=button.closest('.stats-exercise-body');
+      if(!body)return;
+      var metric=button.dataset.statsMetric;
+      body.querySelectorAll('[data-stats-metric]').forEach(function(btn){btn.setAttribute('aria-pressed',btn===button?'true':'false');});
+      body.querySelectorAll('[data-stats-metric-panel]').forEach(function(panel){panel.hidden=panel.dataset.statsMetricPanel!==metric;});
+    });});
+    statsViewEl.querySelectorAll('[data-metric-date]').forEach(function(select){select.addEventListener('change',function(){
       var figure=select.closest('figure');
-      figure.querySelectorAll('[data-weight-point]').forEach(function(point){point.setAttribute('r',point.dataset.weightPoint===select.value?'4.5':point.dataset.weightRadius);});
-      figure.querySelector('[data-weight-value]').textContent=select.options[select.selectedIndex].textContent;
+      figure.querySelectorAll('[data-metric-point]').forEach(function(point){point.setAttribute('r',point.dataset.metricPoint===select.value?'4.5':point.dataset.weightRadius);});
+      var value=figure.querySelector('[data-metric-value]');
+      if(value)value.textContent=select.options[select.selectedIndex].textContent;
     });});
   }
 
