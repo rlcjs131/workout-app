@@ -1004,6 +1004,79 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   .direct-record-actions .btn-reset{flex:1;}
   .direct-record-custom-note{margin:-4px 0 0;font-size:11px;color:var(--faint);line-height:1.45;}
 
+
+  .bulk-app .prev-hint.history-tappable{
+    cursor:pointer;position:relative;padding-right:20px;min-height:18px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .bulk-app .prev-hint.history-tappable:focus-visible{
+    outline:1px solid var(--line-strong);outline-offset:4px;border-radius:6px;
+  }
+  .bulk-app .prev-history-arrow{
+    position:absolute;right:2px;top:1px;color:var(--muted);font-size:17px;line-height:1;
+  }
+  .recent-history-list{display:grid;gap:0;border-top:1px solid var(--line);}
+  .recent-history-row{
+    display:grid;grid-template-columns:82px 1fr;align-items:center;gap:12px;
+    padding:13px 2px;border-bottom:1px solid var(--line);
+  }
+  .recent-history-date{font-family:var(--num);font-size:11.5px;color:var(--faint);}
+  .recent-history-value{font-family:var(--num);font-size:14px;font-weight:650;color:var(--ink);}
+  .recent-history-empty{font-size:12px;color:var(--faint);padding:18px 0 4px;}
+
+
+  .stats-pr-box{
+    margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--sunken);
+  }
+  .stats-pr-title{font-size:11px;color:var(--faint);margin-bottom:7px;font-weight:700;letter-spacing:-0.01em;}
+  .stats-pr-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;}
+  .stats-pr-row span{color:var(--muted);}
+  .stats-pr-row strong{font-family:var(--num);font-size:13px;color:var(--ink);font-weight:700;text-align:right;}
+  .stats-pr-date{font-size:10.5px;color:var(--faint);font-weight:500;margin-left:5px;}
+
+
+  .stats-period-label{
+    display:inline-block;margin-left:4px;font-size:9.5px;font-weight:600;color:var(--faint);
+  }
+  .weight-point.is-pr{
+    stroke:currentColor;stroke-width:2.2px;
+  }
+  .stats-pr-legend{
+    font-size:10.5px;color:var(--faint);margin-top:5px;
+  }
+  .direct-recent{
+    margin:0 0 14px;padding:0;
+  }
+  .direct-recent-title{
+    margin:0 0 7px;font-size:11px;font-weight:700;color:var(--faint);
+  }
+  .direct-recent-chips{
+    display:flex;gap:6px;overflow-x:auto;padding:1px 0 3px;scrollbar-width:none;
+  }
+  .direct-recent-chips::-webkit-scrollbar{display:none;}
+  .direct-recent-chip{
+    flex:0 0 auto;max-width:190px;border:1px solid var(--line);background:var(--sunken);
+    color:var(--ink);border-radius:999px;padding:7px 10px;font-family:var(--ui);
+    font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;
+  }
+  .direct-recent-chip:active{transform:translateY(1px);}
+
+
+.record-undo-toast{
+  position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;z-index:2100;
+  box-sizing:border-box;width:max-content;max-width:calc(100% - 28px);padding:8px 9px 8px 14px;
+  border:1px solid #ffffff30;border-radius:14px;background:#20314d;color:#fff;
+  font:600 14px/1.5 system-ui,sans-serif;box-shadow:0 8px 28px #17243d30;
+  display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;
+  transform:translate(-50%,-8px);transition:opacity .18s,transform .18s;
+}
+.record-undo-toast.is-visible{opacity:1;pointer-events:auto;transform:translate(-50%,0);}
+.record-undo-toast button{
+  border:0;border-radius:10px;padding:7px 10px;background:#fff;color:#20314d;
+  font:700 13px/1 system-ui,sans-serif;cursor:pointer;white-space:nowrap;
+}
+@media(prefers-reduced-motion:reduce){.record-undo-toast{transition:none;}}
+
 </style>
 <style>
 .bulk-app .routine-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;}
@@ -1404,6 +1477,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 </head>
 <body>
 <div id="appToast" class="app-toast" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="recordUndoToast" class="record-undo-toast" role="status" aria-live="polite" aria-atomic="true" hidden><span id="recordUndoMessage"></span><button id="recordUndoButton" type="button">되돌리기</button></div>
 
 <div class="bulk-app" id="bulkApp">
   <div class="masthead">
@@ -1608,6 +1682,36 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       showToast._hide=setTimeout(function(){toast.classList.remove('is-visible');toast.textContent='';},kind==='error'?5000:3500);
     },30);
   }
+
+  var recordUndoState=null;
+  function clearRecordUndo() {
+    if(recordUndoState && recordUndoState.timer)clearTimeout(recordUndoState.timer);
+    recordUndoState=null;
+    var toast=document.getElementById('recordUndoToast');
+    if(toast){toast.classList.remove('is-visible');toast.hidden=true;}
+  }
+  function offerRecordUndo(beforeLogs,removedCount) {
+    clearRecordUndo();
+    var toast=document.getElementById('recordUndoToast'),message=document.getElementById('recordUndoMessage'),button=document.getElementById('recordUndoButton');
+    if(!toast || !message || !button)return;
+    recordUndoState={logs:JSON.parse(JSON.stringify(beforeLogs)),timer:null};
+    message.textContent='운동기록 '+removedCount+'건 삭제됨';
+    toast.hidden=false;
+    requestAnimationFrame(function(){toast.classList.add('is-visible');});
+    button.onclick=function(){
+      if(!recordUndoState)return;
+      var restore=recordUndoState.logs;
+      if(!writeJSON(LOG_KEY,restore)){
+        clearRecordUndo();showToast('기록을 복구하지 못했어요.','error');return;
+      }
+      logs=restore;
+      clearRecordUndo();
+      renderRecords();renderPanel();
+      showToast('삭제한 운동기록을 되돌렸어요.');
+    };
+    recordUndoState.timer=setTimeout(clearRecordUndo,6000);
+  }
+
   function showStorageError(id) {
     var hint=document.getElementById(id);
     hint.textContent='저장하지 못했어요. 기존 데이터는 유지됩니다. 저장 공간을 확인하고 다시 시도하세요.';
@@ -2118,7 +2222,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     }
     var result=[],ids=new Set();
     source.forEach(function(rec){
-      if(!rec || typeof rec.date!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(rec.date) || !['mon','tue','wed','thu','fri','sat'].includes(rec.dayKey) || !Array.isArray(rec.entries)){damaged=true;return;}
+      if(!rec || typeof rec.date!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(rec.date) || !['sun','mon','tue','wed','thu','fri','sat'].includes(rec.dayKey) || !Array.isArray(rec.entries)){damaged=true;return;}
       var date=new Date(rec.date+'T00:00:00Z');
       if(isNaN(date.getTime()) || date.toISOString().slice(0,10)!==rec.date){damaged=true;return;}
       var entries=[];
@@ -2207,6 +2311,66 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     if(!isFinite(w) || !isFinite(r) || w<0 || r<=0)return null;
     return r===1 ? w : w*(1+r/30);
   }
+
+  function prSnapshotFor(name,source,asOfDate) {
+    var bestWeight=null,bestWeightDate='',bestE1rm=null,bestE1rmDate='';
+    (source || []).forEach(function(group){
+      if(!group || (asOfDate && group.date>asOfDate))return;
+      (group.entries || []).forEach(function(entry){
+        if(!entry || entry.n!==name)return;
+        var w=parseFloat(entry.w),r=parseFloat(entry.reps);
+        if(isFinite(w) && (bestWeight===null || w>bestWeight || (w===bestWeight && (!bestWeightDate || group.date<bestWeightDate)))){
+          bestWeight=w;bestWeightDate=group.date;
+        }
+        var e=estimated1RM(w,r);
+        if(e!==null && (bestE1rm===null || e>bestE1rm+1e-9 || (Math.abs(e-bestE1rm)<1e-9 && (!bestE1rmDate || group.date<bestE1rmDate)))){
+          bestE1rm=e;bestE1rmDate=group.date;
+        }
+      });
+    });
+    return {
+      weight:bestWeight===null?null:{value:bestWeight,date:bestWeightDate},
+      e1rm:bestE1rm===null?null:{value:Number(bestE1rm.toFixed(1)),date:bestE1rmDate}
+    };
+  }
+  function detectPrUpdates(entries,source) {
+    var grouped=new Map();
+    (entries || []).forEach(function(entry){
+      if(!entry || !entry.n)return;
+      if(!grouped.has(entry.n))grouped.set(entry.n,[]);
+      grouped.get(entry.n).push(entry);
+    });
+    var updates=[];
+    grouped.forEach(function(items,name){
+      var old=prSnapshotFor(name,source);
+      var newWeight=null,newE1rm=null;
+      items.forEach(function(entry){
+        var w=parseFloat(entry.w),r=parseFloat(entry.reps),e=estimated1RM(w,r);
+        if(isFinite(w) && (newWeight===null || w>newWeight))newWeight=w;
+        if(e!==null && (newE1rm===null || e>newE1rm))newE1rm=e;
+      });
+      var weightPr=old.weight!==null && newWeight!==null && newWeight>old.weight.value;
+      var e1rmPr=old.e1rm!==null && newE1rm!==null && newE1rm>old.e1rm.value+0.05;
+      if(weightPr || e1rmPr)updates.push({
+        name:name,weightPr:weightPr,e1rmPr:e1rmPr,
+        newWeight:newWeight,newE1rm:newE1rm,
+        oldWeight:old.weight?old.weight.value:null,oldE1rm:old.e1rm?old.e1rm.value:null
+      });
+    });
+    return updates;
+  }
+  function prToastMessage(updates,fallback) {
+    if(!updates || !updates.length)return fallback;
+    if(updates.length>1)return '🏆 '+updates.length+'개 종목 PR 달성';
+    var p=updates[0],label='';
+    if(p.weightPr && p.e1rmPr)label='최고 무게 + 추정 1RM PR';
+    else if(p.weightPr)label='최고 무게 PR · '+p.newWeight+'kg';
+    else {
+      var pct=p.oldE1rm>0 ? (p.newE1rm-p.oldE1rm)/p.oldE1rm*100 : null;
+      label='추정 1RM PR · '+Number(p.newE1rm.toFixed(1))+'kg'+(pct!==null?' ('+formatSigned(pct,'%',1)+')':'');
+    }
+    return '🏆 '+p.name+' · '+label;
+  }
   function formatSigned(value,suffix,decimals) {
     if(value===null || value===undefined || !isFinite(value))return '';
     var rounded=Number(value.toFixed(decimals==null?1:decimals));
@@ -2242,6 +2406,83 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       });
     });
     return out;
+  }
+
+  function recentHistoryFor(name,onOrBeforeDate,limit) {
+    return historyFor(name)
+      .filter(function(item){return !onOrBeforeDate || item.date<=onOrBeforeDate;})
+      .reverse()
+      .slice(0,limit || 5);
+  }
+  function decorateHistoryHint(hint,name,date) {
+    var recent=recentHistoryFor(name,date,5);
+    if(recent.length<2)return;
+    hint.classList.add('history-tappable');
+    hint.tabIndex=0;
+    hint.setAttribute('role','button');
+    hint.setAttribute('aria-label',name+' 최근 기록 보기');
+    var arrow=document.createElement('span');
+    arrow.className='prev-history-arrow';
+    arrow.setAttribute('aria-hidden','true');
+    arrow.textContent='›';
+    hint.appendChild(arrow);
+  }
+  function openRecentHistoryModal(name,date,trigger) {
+    var recent=recentHistoryFor(name,date,5);
+    if(recent.length<2)return;
+
+    var overlay=document.createElement('div');
+    overlay.className='direct-record-overlay';
+    var modal=document.createElement('section');
+    modal.className='direct-record-modal';
+    modal.setAttribute('role','dialog');
+    modal.setAttribute('aria-modal','true');
+    modal.setAttribute('aria-labelledby','recentHistoryTitle');
+
+    var head=document.createElement('div');
+    head.className='direct-record-head';
+    var title=document.createElement('h2');
+    title.id='recentHistoryTitle';
+    title.textContent=name+' 최근 기록';
+    var closeBtn=document.createElement('button');
+    closeBtn.type='button';
+    closeBtn.className='btn-reset direct-record-close';
+    closeBtn.textContent='×';
+    closeBtn.setAttribute('aria-label','닫기');
+    head.appendChild(title);head.appendChild(closeBtn);
+    modal.appendChild(head);
+
+    var list=document.createElement('div');
+    list.className='recent-history-list';
+    recent.forEach(function(item){
+      var row=document.createElement('div');
+      row.className='recent-history-row';
+      var d=document.createElement('span');
+      d.className='recent-history-date';
+      d.textContent=item.date;
+      var value=document.createElement('span');
+      value.className='recent-history-value';
+      value.textContent=(item.w==='-'?'–':item.w+'kg')+' × '+(item.reps==='-'?'–':item.reps+'회');
+      row.appendChild(d);row.appendChild(value);list.appendChild(row);
+    });
+    modal.appendChild(list);
+    overlay.appendChild(modal);
+
+    function close(){
+      document.removeEventListener('keydown',keydown);
+      overlay.remove();
+      document.body.style.overflow='';
+      var app=document.querySelector('.bulk-app');if(app)app.inert=false;
+      if(trigger && trigger.isConnected)trigger.focus({preventScroll:true});
+    }
+    function keydown(e){if(e.key==='Escape'){e.preventDefault();close();}}
+    closeBtn.addEventListener('click',close);
+    overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+    var app=document.querySelector('.bulk-app');if(app)app.inert=true;
+    document.body.style.overflow='hidden';
+    document.body.appendChild(overlay);
+    document.addEventListener('keydown',keydown);
+    closeBtn.focus();
   }
 
   var modeToggleEl = document.getElementById('modeToggle');
@@ -2778,14 +3019,23 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       if (prev) {
         var hint = document.createElement('p');
         hint.className = 'prev-hint record-compare-hint';
-        updatePreviousComparison(hint,prev,dr.w,dr.reps);
-        function refreshPreviousComparison(){
+        function renderPreviousHint(){
           updatePreviousComparison(hint,prev,wIn.value,doneIn.value);
+          decorateHistoryHint(hint,ex.n,selectedRecordDate);
         }
-        wIn.addEventListener('input',refreshPreviousComparison);
-        doneIn.addEventListener('input',refreshPreviousComparison);
-        wIn.addEventListener('change',refreshPreviousComparison);
-        doneIn.addEventListener('change',refreshPreviousComparison);
+        renderPreviousHint();
+        hint.addEventListener('click',function(){
+          if(hint.classList.contains('history-tappable'))openRecentHistoryModal(ex.n,selectedRecordDate,hint);
+        });
+        hint.addEventListener('keydown',function(e){
+          if((e.key==='Enter' || e.key===' ') && hint.classList.contains('history-tappable')){
+            e.preventDefault();openRecentHistoryModal(ex.n,selectedRecordDate,hint);
+          }
+        });
+        wIn.addEventListener('input',renderPreviousHint);
+        doneIn.addEventListener('input',renderPreviousHint);
+        wIn.addEventListener('change',renderPreviousHint);
+        doneIn.addEventListener('change',renderPreviousHint);
         li.appendChild(hint);
 
         var suggestion = suggestNext(ex, ex.n);
@@ -2880,6 +3130,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       writeJSON(DRAFT_KEY, draft);
 
       var date = selectedRecordDate;
+      var prUpdates = detectPrUpdates(entries, logs);
       var nextLogs = logs.map(function (rec) {
         return {
           date: rec.date,
@@ -2916,7 +3167,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
       hint = document.getElementById('saveHint');
       hint.textContent = date+' · '+entries.length + '개 운동 기록 저장됨';
-      showToast('운동기록 '+entries.length+'건 저장 완료');
+      showToast(prToastMessage(prUpdates,'운동기록 '+entries.length+'건 저장 완료'));
       hint.className = 'save-hint on';
       clearTimeout(hint._t);
       hint._t = setTimeout(function () {
@@ -3119,6 +3370,27 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     });
     return out.sort(function(a,b){return a.name.localeCompare(b.name,'ko') || a.muscle.localeCompare(b.muscle,'ko');});
   }
+
+  function recentExerciseChoices(limit) {
+    var out=[],seen=new Set(),max=limit || 4;
+    for(var i=logs.length-1;i>=0 && out.length<max;i--){
+      var entries=logs[i].entries || [];
+      for(var j=entries.length-1;j>=0 && out.length<max;j--){
+        var e=entries[j],name=String(e && e.n || '').trim();
+        if(!name)continue;
+        var key=name.toLocaleLowerCase('ko-KR');
+        if(seen.has(key))continue;
+        seen.add(key);
+        var muscle=(e.m && MUSCLES.concat(['기타']).includes(e.m))?e.m:'';
+        if(!muscle){
+          var cat=catalogExerciseOptions().find(function(item){return item.name===name;});
+          muscle=cat?cat.muscle:'기타';
+        }
+        out.push({name:name,muscle:muscle});
+      }
+    }
+    return out;
+  }
   function weekdayKeyForDate(date) {
     var keys=['sun','mon','tue','wed','thu','fri','sat'];
     var day=new Date(date+'T12:00:00').getDay();
@@ -3127,6 +3399,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   function saveDirectRecord(name,muscle,date,weight,reps) {
     var values=cleanRecordValues(date,weight,reps);
     var entry={id:genId(),n:name,m:muscle,w:values.w,reps:values.reps};
+    var prUpdates=detectPrUpdates([entry],logs);
     var next=logs.map(function(rec){return {date:rec.date,dayKey:rec.dayKey,entries:(rec.entries||[]).map(function(e){return Object.assign({},e);})};});
     var dayKey=weekdayKeyForDate(date);
     var target=next.find(function(rec){return rec.date===date && rec.dayKey===dayKey;});
@@ -3135,7 +3408,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     next.sort(function(a,b){return a.date.localeCompare(b.date);});
     if(!writeJSON(LOG_KEY,next))throw new Error('기록을 저장하지 못했어요. 다시 시도해주세요.');
     logs=next;
-    return entry;
+    return {entry:entry,prUpdates:prUpdates};
   }
   function openDirectRecordModal() {
     clearConfirmation();
@@ -3148,6 +3421,28 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     head.appendChild(title);head.appendChild(closeBtn);modal.appendChild(head);
 
     var form=document.createElement('form');form.className='direct-record-form';
+
+    var recentChoices=recentExerciseChoices(4);
+    var recentWrap=null;
+    if(recentChoices.length){
+      recentWrap=document.createElement('div');recentWrap.className='direct-recent';
+      var recentTitle=document.createElement('p');recentTitle.className='direct-recent-title';recentTitle.textContent='최근 기록';
+      var recentChips=document.createElement('div');recentChips.className='direct-recent-chips';
+      recentChoices.forEach(function(item){
+        var chip=document.createElement('button');chip.type='button';chip.className='direct-recent-chip';
+        chip.textContent=item.name;chip.title=item.name;chip.setAttribute('aria-label',item.name+' 선택');
+        chip.addEventListener('click',function(){
+          name.value=item.name;
+          muscle.value=item.muscle;
+          previousName='';
+          refreshExercise();
+          reps.focus();
+        });
+        recentChips.appendChild(chip);
+      });
+      recentWrap.appendChild(recentTitle);recentWrap.appendChild(recentChips);form.appendChild(recentWrap);
+    }
+
     var nameLabel=document.createElement('label');nameLabel.textContent='운동 종목';
     var name=document.createElement('input');name.type='search';name.autocomplete='off';name.placeholder='운동을 검색하거나 직접 입력';name.setAttribute('list','directRecordExerciseList');name.required=true;
     var datalist=document.createElement('datalist');datalist.id='directRecordExerciseList';
@@ -3214,9 +3509,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var exerciseName=name.value.trim();
       if(!exerciseName){hint.textContent='운동 종목을 입력해주세요.';showToast(hint.textContent,'error');name.focus();return;}
       try{
-        saveDirectRecord(exerciseName,muscle.value,date.value,weight.value,reps.value);
+        var saved=saveDirectRecord(exerciseName,muscle.value,date.value,weight.value,reps.value);
         close();renderPanel();renderPrinciples();
-        showToast(exerciseName+' 기록 저장 완료');
+        showToast(prToastMessage(saved.prUpdates,exerciseName+' 기록 저장 완료'));
       }catch(error){hint.textContent=error.message;hint.className='save-hint save-error';showToast(error.message,'error');}
     });
 
@@ -3311,16 +3606,17 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         groups.get(key).push(Object.assign({}, entry, {date:record.date}));
       });
     });
-    function deleteRecords(test) {
+    function deleteRecords(test,allowUndo) {
+      var before=JSON.parse(JSON.stringify(logs));
       var next = logs.map(function (record) {
         return Object.assign({}, record, {entries:(record.entries || []).filter(function (entry) { return !test(entry); })});
       }).filter(function (record) { return record.entries.length; });
       if (!writeJSON(LOG_KEY,next)) {
         var error = document.createElement('p');error.className = 'save-hint save-error';error.setAttribute('role','alert');error.textContent = '삭제를 저장하지 못했어요. 다시 시도해주세요.';recordsListEl.prepend(error);showToast(error.textContent,'error');return;
       }
-      var removed=logs.reduce(function(n,r){return n+r.entries.length;},0)-next.reduce(function(n,r){return n+r.entries.length;},0);
+      var removed=before.reduce(function(n,r){return n+r.entries.length;},0)-next.reduce(function(n,r){return n+r.entries.length;},0);
       logs = next;renderRecords();
-      showToast('운동기록 '+removed+'건 삭제 완료');
+      if(removed>0){if(allowUndo)offerRecordUndo(before,removed);else showToast('운동기록 '+removed+'건 삭제 완료');}
     }
     groups.forEach(function (all, key) {
       var pair=JSON.parse(key),muscle=pair[0],name=pair[1];
@@ -3361,7 +3657,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         date.addEventListener('click',function(){openRecordEditor(row,entry,date);});
         value.addEventListener('click',function(){openRecordEditor(row,entry,value);});
         var remove=document.createElement('button');remove.type='button';remove.className='btn-hist-del';remove.textContent='×';remove.setAttribute('aria-label',name+' '+entry.date+' '+entry._setNo+'세트 기록 삭제');
-        remove.addEventListener('click',function(){requireSecondClick(remove,'확인',function(){deleteRecords(function(e){return e.id===entry.id;});});});
+        remove.addEventListener('click',function(){requireSecondClick(remove,'확인',function(){deleteRecords(function(e){return e.id===entry.id;},true);});});
         row.appendChild(date);row.appendChild(setBadge);row.appendChild(value);row.appendChild(remove);card.appendChild(row);
       });
       var footer=document.createElement('div');footer.className='record-delete-footer';footer.appendChild(del);card.appendChild(footer);
@@ -3579,6 +3875,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       }
       return {
         key:g.key,name:g.name,muscle:g.muscle,count:g.entries.length,days:g.dates.size,maxWeight:g.maxWeight,
+        pr:prSnapshotFor(g.name,source,asOf),
         metrics:{
           e1rm:{points:e1rmPoints,summary:metricSummary(e1rmPoints)},
           weight:{points:weightPoints,summary:metricSummary(weightPoints)},
@@ -3683,8 +3980,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     }).join('');
     var line=points.length>1?'<polyline class="weight-line" points="'+plotted.map(function(p){return p.x+','+p.y;}).join(' ')+'"/>':'';
     var idleRadius=points.length>20?'0':'2.5';
+    var lifetimePr=exercise.pr && exercise.pr[metric];
     var dots=plotted.map(function(p,i){
-      return '<circle class="weight-point" data-metric-point="'+i+'" data-weight-radius="'+idleRadius+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(i===points.length-1?'4.5':idleRadius)+'"><title>'+p.date+' · '+statsFormatMetric(p.value,metric)+'</title></circle>';
+      var isPr=!!(lifetimePr && lifetimePr.date===p.date && Math.abs(lifetimePr.value-p.value)<0.06);
+      return '<circle class="weight-point'+(isPr?' is-pr':'')+'" data-metric-point="'+i+'" data-weight-radius="'+idleRadius+'" cx="'+p.x+'" cy="'+p.y+'" r="'+(isPr?'5.2':(i===points.length-1?'4.5':idleRadius))+'"><title>'+p.date+' · '+statsFormatMetric(p.value,metric)+(isPr?' · 현재 PR':'')+'</title></circle>';
     }).join('');
     function tick(p,anchor){return '<text x="'+p.x+'" y="168" text-anchor="'+anchor+'">'+p.date.slice(2).replace(/-/g,'/')+'</text>';}
     var ticks=start===end?tick(plotted[0],'middle'):tick(plotted[0],'start')+tick(plotted[plotted.length-1],'end');
@@ -3694,25 +3993,31 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var changeText=summary.change===null?'-':(summary.change>0?'+':'')+summary.change.toFixed(1)+'%';
     return '<div class="stats-metric-summary">'+
         '<div><span>최근</span><strong>'+statsFormatMetric(summary.latest,metric)+'</strong></div>'+
-        '<div><span>기간 최고</span><strong>'+statsFormatMetric(summary.best,metric)+'</strong></div>'+
-        '<div><span>기간 변화</span><strong class="'+(summary.change>0?'is-up':summary.change<0?'is-down':'')+'">'+changeText+'</strong></div>'+
+        '<div><span>선택 기간 최고</span><strong>'+statsFormatMetric(summary.best,metric)+'</strong></div>'+
+        '<div><span>선택 기간 변화</span><strong class="'+(summary.change>0?'is-up':summary.change<0?'is-down':'')+'">'+changeText+'</strong></div>'+
       '</div>'+
       '<figure class="stats-weight-figure" data-metric-figure="'+metric+'"><svg class="stats-weight-graph" viewBox="0 0 320 184" role="img" aria-label="'+statsEscape(exercise.name)+' '+meta.aria+' 그래프">'+
       '<title>'+statsEscape(exercise.name)+' · '+points[0].date+' ~ '+last.date+' · '+meta.label+' '+statsFormatMetric(summary.best,metric)+'</title><text x="37" y="20" text-anchor="end">'+meta.unit+'</text>'+grid+line+dots+ticks+'</svg>'+
       '<label class="stats-chart-select"><span>기록 날짜 선택</span><select data-metric-date aria-label="'+statsEscape(exercise.name)+' '+meta.label+' 기록 날짜 선택">'+options+'</select></label>'+
       '<figcaption><span data-metric-value role="status">'+last.date+' · '+statsFormatMetric(last.value,metric)+'</span><br>'+
       (metric==='volume'?'기록한 세트만 기준으로 무게×횟수를 합산해요. 실제 전체 운동량과 다를 수 있어요.':metric==='e1rm'?'Epley 공식으로 계산한 참고값이며, 고반복 기록일수록 오차가 커질 수 있어요.':'기록이 있는 날짜의 최고 입력 무게만 연결해요.')+
+      ((metric==='e1rm' || metric==='weight') && lifetimePr && points.some(function(p){return p.date===lifetimePr.date && Math.abs(p.value-lifetimePr.value)<0.06;})?'<div class="stats-pr-legend">● 현재 PR 지점</div>':'')+
       '</figcaption></figure>';
   }
   function statsExerciseMetricsHtml(exercise) {
     var metrics=['e1rm','weight','volume'];
+    var pr=exercise.pr || {weight:null,e1rm:null};
+    var prHtml='<div class="stats-pr-box"><div class="stats-pr-title">역대 PR · 전체 기록 기준</div>'+
+      '<div class="stats-pr-row"><span>최고 무게</span><strong>'+(pr.weight?statsFormatMetric(pr.weight.value,'weight')+'<small class="stats-pr-date">'+statsEscape(pr.weight.date)+'</small>':'-')+'</strong></div>'+
+      '<div class="stats-pr-row"><span>추정 1RM</span><strong>'+(pr.e1rm?statsFormatMetric(pr.e1rm.value,'e1rm')+'<small class="stats-pr-date">'+statsEscape(pr.e1rm.date)+'</small>':'-')+'</strong></div>'+
+      '</div>';
     var buttons=metrics.map(function(metric){
       return '<button type="button" data-stats-metric="'+metric+'" aria-pressed="'+(metric==='e1rm')+'">'+statsMetricMeta(metric).label+'</button>';
     }).join('');
     var panels=metrics.map(function(metric){
       return '<div class="stats-metric-panel" data-stats-metric-panel="'+metric+'"'+(metric==='e1rm'?'':' hidden')+'>'+statsMetricGraph(exercise,metric)+'</div>';
     }).join('');
-    return '<div class="stats-metric-switch" role="group" aria-label="'+statsEscape(exercise.name)+' 통계 지표">'+buttons+'</div>'+panels;
+    return prHtml+'<div class="stats-metric-switch" role="group" aria-label="'+statsEscape(exercise.name)+' 통계 지표">'+buttons+'</div>'+panels;
   }
   function statsRecordedExerciseNames() {
     var seen = new Set(), names = [];
@@ -3800,7 +4105,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<section class="stats-card"><div class="stats-attendance"><h3>운동일수</h3><div class="stats-attendance-value"><span class="stats-attendance-context">'+statsEscape(attendanceDisplay.label)+'</span> <strong class="stats-attendance-actual">'+data.days+'</strong><span class="stats-attendance-total">'+(statsPeriod==='all'?'일':' / '+attendanceDisplay.total+'일')+'</span></div></div><p class="stats-note">선택 기간의 운동 기록일 수예요.</p></section>'+
       (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 운동 탭에서 기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
       '<section class="stats-card"><h3>부위별 기록 건수</h3>'+muscleBars+'<p class="stats-note">운동 비중이 아닌 기록 빈도이며, 기록 1건은 완료 1세트가 아니에요.</p></section>'+
-      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">기록된 종목을 검색하고 추정 1RM·최고 무게·기록 볼륨으로 변화를 비교해보세요. 추정 1RM과 볼륨은 입력 기록을 바탕으로 한 참고값이에요.</p>'+searchHtml+groups;
+      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">선택한 기간의 추정 1RM·최고 무게·기록 볼륨 변화를 비교해보세요. 카드의 역대 PR은 조회 기간과 관계없이 전체 기록 기준이며, 그래프의 ‘선택 기간 최고’는 현재 조회 기간 안의 최고값이에요. 추정 1RM과 기록 볼륨은 입력한 기록을 바탕으로 한 참고값이에요.</p>'+searchHtml+groups;
     statsViewEl.querySelectorAll('[data-stats-period]').forEach(function(button){button.addEventListener('click',function(){
       chooseStatsPeriod(button.dataset.statsPeriod);renderStats();
       var active=statsViewEl.querySelector('[data-stats-period="'+statsPeriod+'"]');if(active)active.focus({preventScroll:true});
@@ -3939,6 +4244,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var ok=window.confirm('현재 프로필의 운동기록을 모두 삭제할까요?\n\n삭제한 기록은 되돌릴 수 없어요.');
     if(!ok)return;
     if(!writeJSON(LOG_KEY,[])){showStorageError('recordsActionHint');return;}
+    clearRecordUndo();
     logs=[];
     renderRecords();
     showToast('전체 운동기록을 삭제했어요.');
@@ -4659,9 +4965,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     });});
     if(!Array.isArray(p.logs)||p.logs.length>50000)fail();
     var ids=new Set();p.logs.forEach(function(rec){
-      if(!validRecordDate(rec.date)||!['mon','tue','wed','thu','fri','sat'].includes(rec.dayKey)||!Array.isArray(rec.entries))fail();
+      if(!validRecordDate(rec.date)||!['sun','mon','tue','wed','thu','fri','sat'].includes(rec.dayKey)||!Array.isArray(rec.entries))fail();
       rec.entries.forEach(function(e){
-        if(!e || !text(e.id,200)||!e.id||ids.has(e.id)||!text(e.n,200)||(e.m!=null&&!MUSCLES.includes(e.m)))fail();ids.add(e.id);
+        if(!e || !text(e.id,200)||!e.id||ids.has(e.id)||!text(e.n,200)||(e.m!=null&&!MUSCLES.concat(['기타']).includes(e.m)))fail();ids.add(e.id);
         cleanRecordValues(rec.date,e.w,e.reps);
       });
     });
