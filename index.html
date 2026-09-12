@@ -712,6 +712,17 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   line-height:1.55;
   text-align:center;
 }
+
+.bulk-app .base-routine-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.48);}
+.bulk-app .base-routine-dialog{box-sizing:border-box;width:min(420px,100%);padding:20px;border-radius:18px;background:var(--surface,#fff);color:var(--ink);box-shadow:0 18px 50px rgba(0,0,0,.25);}
+.bulk-app .base-routine-dialog h3{margin:0 0 8px;font-size:21px;}
+.bulk-app .base-routine-dialog>p{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.55;}
+.bulk-app .base-routine-options{display:grid;gap:10px;}
+.bulk-app .base-routine-options button{display:flex;flex-direction:column;gap:3px;width:100%;padding:14px 15px;text-align:left;border:1px solid var(--line);border-radius:13px;background:var(--sunken);color:var(--ink);font:inherit;}
+.bulk-app .base-routine-options button strong{font-size:17px;}
+.bulk-app .base-routine-options button span{font-size:13px;color:var(--muted);}
+.bulk-app .base-routine-options button:active{transform:translateY(1px);}
+.bulk-app .base-routine-cancel{width:100%;min-height:44px;margin-top:12px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-weight:700;}
 .bulk-app .empty-routine-edit-btn{
   display:block;width:100%;margin:12px 0 6px;min-height:48px;
   font-size:16px;font-weight:800;
@@ -940,7 +951,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="reset-row">
         <button class="btn-reset btn-save-now" id="btnSaveNow" type="button">루틴 저장</button>
         <button class="btn-reset routine-edit-only" id="btnClearDay" type="button">운동 초기화</button>
-        <button class="btn-reset routine-edit-only" id="btnReset" type="button">기본 루틴 적용</button>
+        <button class="btn-reset routine-edit-only" id="btnReset" type="button">기본 루틴 설정</button>
       </div>
 
       <div class="record-date-row routine-read-only">
@@ -2290,7 +2301,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         hint.className = 'save-hint';
       }, 2800);
     }
-    actions.appendChild(logBtn);
+    // 등록된 루틴 운동이 있을 때만 전체 기록 추가 버튼을 보여준다.
+    if (d.ex.length > 0) actions.appendChild(logBtn);
 
     panelEl.appendChild(actions);
 
@@ -3010,33 +3022,149 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   });
 
   document.getElementById('btnClearDay').addEventListener('click', function () {
-    var btn = this;
-    requireSecondClick(btn, '운동 초기화 확인', function () {
-      var d = days[activeIndex];
-      d.ex = [];
-      d.title = '';
-      d.cardio = false;
-      delete d.note;
-      save();
-      renderPanel();
-      renderPrinciples();
-      showToast('선택한 요일의 루틴 삭제됨 · 루틴 저장 필요','pending');
-    });
+    clearConfirmation();
+    var accepted = window.confirm('운동 루틴을 전부 초기화할까요?\n\n월~토의 모든 운동 루틴이 삭제됩니다. 운동 관리의 종목과 기존 운동 기록은 삭제되지 않습니다.');
+    if (!accepted) return;
+    days = defaults();
+    save();
+    renderTabs();
+    renderPanel();
+    renderPrinciples();
+    showToast('전체 운동 루틴 초기화됨 · 루틴 저장 필요','pending');
+    var saveButton=document.getElementById('btnSaveNow');
+    saveButton.hidden=false;
   });
+
+
+  function baseRoutineExercise(muscle, name, sets, reps, rir) {
+    return {uid:'row-'+genId(), n:name, m:muscle, s:sets, r:reps, rir:rir};
+  }
+
+  function makeBaseSplitRoutine(split) {
+    var r = defaults();
+    function setDay(index, title, exercises) {
+      r[index].title = title;
+      r[index].ex = exercises.map(function(e) {
+        return baseRoutineExercise(e[0], e[1], e[2], e[3], e[4]);
+      });
+    }
+    var upper = [
+      ['가슴','플랫 벤치 프레스(바벨)',3,'6~10','1~2'],
+      ['등','랫풀다운(와이드 그립)',3,'8~12','1~2'],
+      ['가슴','인클라인 벤치 프레스(덤벨)',3,'8~12','1~2'],
+      ['등','시티드 로우(뉴트럴 그립)',3,'8~12','1~2'],
+      ['어깨','머신 숄더 프레스(뉴트럴 그립)',2,'8~12','1~2'],
+      ['어깨','사이드 레터럴 레이즈(덤벨)',2,'12~15','1~2'],
+      ['삼두','로프 푸시다운',2,'10~15','1~2'],
+      ['이두','EZ바 컬',2,'10~15','1~2']
+    ];
+    var lower = [
+      ['하체','백 스쿼트',3,'6~10','2'],
+      ['하체','루마니안 데드리프트',3,'8~10','2'],
+      ['하체','레그 프레스',3,'8~12','1~2'],
+      ['하체','레그 컬',2,'12~15','1~2'],
+      ['하체','레그 익스텐션',2,'12~15','1~2'],
+      ['하체','카프 레이즈',3,'12~15','1~2']
+    ];
+    var push = [
+      ['가슴','플랫 벤치 프레스(바벨)',3,'6~10','1~2'],
+      ['가슴','인클라인 벤치 프레스(덤벨)',3,'8~12','1~2'],
+      ['어깨','머신 숄더 프레스(뉴트럴 그립)',3,'8~12','1~2'],
+      ['어깨','사이드 레터럴 레이즈(덤벨)',3,'12~15','1~2'],
+      ['삼두','로프 푸시다운',3,'10~15','1~2']
+    ];
+    var pull = [
+      ['등','랫풀다운(와이드 그립)',3,'8~12','1~2'],
+      ['등','시티드 로우(뉴트럴 그립)',3,'8~12','1~2'],
+      ['등','바벨 로우',3,'6~10','1~2'],
+      ['어깨','리어 델트 플라이(머신)',3,'12~15','1~2'],
+      ['이두','EZ바 컬',3,'10~15','1~2']
+    ];
+    var legs = lower;
+    var chestTri = [
+      ['가슴','플랫 벤치 프레스(바벨)',3,'6~10','1~2'],
+      ['가슴','인클라인 벤치 프레스(덤벨)',3,'8~12','1~2'],
+      ['가슴','체스트 프레스(머신)',3,'8~12','1~2'],
+      ['가슴','케이블 플라이',3,'12~15','1~2'],
+      ['삼두','로프 푸시다운',3,'10~15','1~2'],
+      ['삼두','오버헤드 케이블 익스텐션',2,'10~15','1~2']
+    ];
+    var backBi = [
+      ['등','랫풀다운(와이드 그립)',3,'8~12','1~2'],
+      ['등','시티드 로우(뉴트럴 그립)',3,'8~12','1~2'],
+      ['등','바벨 로우',3,'6~10','1~2'],
+      ['등','스트레이트 암 풀다운',2,'12~15','1~2'],
+      ['이두','EZ바 컬',3,'10~15','1~2'],
+      ['이두','덤벨 해머 컬',2,'10~15','1~2']
+    ];
+    var shoulder = [
+      ['어깨','머신 숄더 프레스(뉴트럴 그립)',3,'8~12','1~2'],
+      ['어깨','사이드 레터럴 레이즈(덤벨)',3,'12~15','1~2'],
+      ['어깨','리어 델트 플라이(머신)',3,'12~15','1~2'],
+      ['어깨','프론트 레이즈(덤벨)',2,'12~15','1~2']
+    ];
+
+    if (split === 2) {
+      setDay(0,'상체',upper); setDay(1,'하체',lower);
+      setDay(3,'상체',upper); setDay(4,'하체',lower);
+    } else if (split === 3) {
+      setDay(0,'Push · 가슴/어깨/삼두',push);
+      setDay(1,'Pull · 등/이두',pull);
+      setDay(2,'Legs · 하체',legs);
+      setDay(3,'Push · 가슴/어깨/삼두',push);
+      setDay(4,'Pull · 등/이두',pull);
+      setDay(5,'Legs · 하체',legs);
+    } else {
+      setDay(0,'가슴/삼두',chestTri);
+      setDay(1,'등/이두',backBi);
+      setDay(2,'하체',legs);
+      setDay(3,'어깨',shoulder);
+    }
+    return ensureRoutineIds(r);
+  }
+
+  function chooseBaseRoutineSplit() {
+    var old = document.getElementById('baseRoutineChooser');
+    if (old) old.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'baseRoutineChooser';
+    overlay.className = 'base-routine-overlay';
+    overlay.innerHTML =
+      '<div class="base-routine-dialog" role="dialog" aria-modal="true" aria-labelledby="baseRoutineTitle">' +
+        '<h3 id="baseRoutineTitle">기본 루틴 설정</h3>' +
+        '<p>원하는 분할을 선택하세요. 현재 루틴 전체가 선택한 기본 루틴으로 변경됩니다.</p>' +
+        '<div class="base-routine-options">' +
+          '<button type="button" data-split="2"><strong>2분할</strong><span>상체 / 하체 · 주 4회</span></button>' +
+          '<button type="button" data-split="3"><strong>3분할</strong><span>Push / Pull / Legs · 주 6회</span></button>' +
+          '<button type="button" data-split="4"><strong>4분할</strong><span>가슴·삼두 / 등·이두 / 하체 / 어깨 · 주 4회</span></button>' +
+        '</div>' +
+        '<button type="button" class="base-routine-cancel">취소</button>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+    function close(){ overlay.remove(); }
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) close(); });
+    overlay.querySelector('.base-routine-cancel').addEventListener('click', close);
+    overlay.querySelectorAll('[data-split]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var split = parseInt(btn.getAttribute('data-split'),10);
+        days = makeBaseSplitRoutine(split);
+        save();
+        renderTabs(); renderPanel(); renderPrinciples();
+        close();
+        showToast(split+'분할 기본 루틴 적용됨 · 루틴 저장 필요','pending');
+        var saveButton=document.getElementById('btnSaveNow');
+        saveButton.hidden=false;
+      });
+    });
+    overlay.querySelector('[data-split="2"]').focus();
+  }
 
   var resetBtn = document.getElementById('btnReset');
   resetBtn.addEventListener('click', function () {
-      clearConfirmation();
-      days = defaults();
-      save();
-      renderTabs();
-      renderPanel();
-      renderPrinciples();
-      showToast('기본 루틴 불러옴 · 루틴 저장 필요','pending');
-      var saveButton=document.getElementById('btnSaveNow');
-      saveButton.hidden=false;
-      saveButton.focus({preventScroll:true});
-      saveButton.scrollIntoView({block:'nearest'});
+    clearConfirmation();
+    chooseBaseRoutineSplit();
   });
 
   var profileTagEl = document.getElementById('profileTag');
