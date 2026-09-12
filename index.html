@@ -887,7 +887,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     </div>
     <div class="settings-head" style="margin-top:18px;">기기 변경 · 데이터 보관</div>
     <div class="settings-card">
-      <p class="record-export-note">데이터는 이 브라우저에 저장됩니다. 현재 프로필의 저장된 루틴·종목·운동기록·메모와 임시 루틴·기록 입력값을 파일로 보관하세요. 아직 저장하지 않은 메모·종목 수정은 먼저 저장해주세요. 가져오기는 기존 데이터를 덮어쓰지 않고 새 프로필로 복원합니다.</p>
+      <p class="record-export-note">데이터는 이 브라우저에 저장됩니다. 현재 프로필의 저장된 루틴·종목·운동기록·메모와 임시 루틴·기록 입력값을 파일로 보관하세요. 파일을 선택한 뒤 새 프로필로 복원하거나, 현재 프로필에는 기존 기록을 유지한 채 없는 운동기록만 추가할 수 있어요.</p>
       <div class="transfer-actions">
         <button class="btn-reset" id="btnDataExport" type="button">현재 프로필 파일 내보내기</button>
         <button class="btn-reset" id="btnDataImport" type="button">파일 가져오기</button>
@@ -895,6 +895,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       </div>
       <div id="dataImportPreview" hidden>
         <p id="dataImportSummary" class="record-export-note"></p>
+        <button class="btn-reset btn-save-now" id="btnImportMergeCurrent" type="button">현재 프로필에 기록 추가</button>
         <button class="btn-reset" id="btnImportConfirm" type="button">새 프로필로 가져오기</button>
         <button class="btn-reset" id="btnImportCancel" type="button">취소</button>
       </div>
@@ -1063,13 +1064,13 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       {key:'tue',letter:'화',title:'등 · 이두',items:[
         ['등','랫풀다운(와이드 그립)'],['등','랫풀다운(뉴트럴 그립)'],['등','시티드 로우(와이드 그립)'],['등','시티드 로우(뉴트럴 그립)'],['등','스트레이트 암 풀다운'],['이두','EZ바 프리처 컬'],['이두','케이블 해머 컬(로프)']]},
       {key:'wed',letter:'수',title:'하체',items:[
-        ['하체','레그 컬'],['하체','레그 익스텐션'],['하체','컨벤셔널 데드리프트'],['하체','백 스쿼트'],['하체','힙 쓰러스트'],['하체','불가리안 스플릿 스쿼트']]},
+        ['하체','레그 컬'],['하체','레그 익스텐션'],['하체','컨벤셔널 데드리프트'],['하체','백 스쿼트'],['하체','힙 쓰러스트'],['하체','불가리안 스플릿 스쿼트'],['하체','카프 레이즈']]},
       {key:'thu',letter:'목',title:'어깨 · 삼두',items:[
         ['어깨','시티드 오버헤드 프레스(바벨)'],['어깨','시티드 오버헤드 프레스(덤벨)'],['어깨','머신 숄더 프레스(뉴트럴 그립)'],['어깨','사이드 레터럴 레이즈(케이블)'],['어깨','리어 델트 플라이'],['삼두','스컬 크러셔'],['삼두','케이블 V바 푸시다운']]},
       {key:'fri',letter:'금',title:'가슴 · 등',items:[
-        ['가슴','체스트 프레스(머신)'],['가슴','플랫 벤치 프레스(스미스)'],['가슴','케이블 플라이'],['등','풀업'],['등','랫풀다운(뉴트럴 그립)'],['등','시티드 로우(와이드 그립)']]},
+        ['가슴','플랫 벤치 프레스(스미스)'],['등','풀업'],['가슴','체스트 프레스(머신)'],['등','랫풀다운(뉴트럴 그립)'],['가슴','케이블 플라이'],['등','시티드 로우(와이드 그립)']]},
       {key:'sat',letter:'토',title:'하체 · 어깨 · 이두',items:[
-        ['하체','레그 프레스'],['하체','루마니안 데드리프트'],['하체','카프 레이즈'],['어깨','사이드 레터럴 레이즈(덤벨)'],['어깨','리어 델트 플라이'],['이두','EZ바 컬'],['이두','인클라인 덤벨 컬']]}
+        ['하체','레그 프레스'],['하체','루마니안 데드리프트'],['하체','레그 익스텐션'],['하체','카프 레이즈'],['어깨','사이드 레터럴 레이즈(덤벨)'],['어깨','리어 델트 플라이'],['이두','EZ바 컬'],['이두','인클라인 덤벨 컬']]}
     ];
     var seed = defaultCatalog();
     return plan.map(function(day) {
@@ -3315,6 +3316,96 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       catalog:readJSON(CATALOG_KEY,catalog),logs:logs,memos:getMemos(),draft:draft
     }};
   }
+  function recordSignature(date,dayKey,entry) {
+    return JSON.stringify([
+      date,
+      dayKey,
+      String(entry.n || ''),
+      String(entry.m || ''),
+      String(entry.w == null ? '-' : entry.w),
+      String(entry.reps == null ? '-' : entry.reps)
+    ]);
+  }
+  function analyzeCurrentRecordMerge(data) {
+    validateTransfer(data);
+    var existingCounts=new Map();
+    (logs || []).forEach(function(rec){
+      (rec.entries || []).forEach(function(entry){
+        var sig=recordSignature(rec.date,rec.dayKey,entry);
+        existingCounts.set(sig,(existingCounts.get(sig)||0)+1);
+      });
+    });
+
+    var importedSeen=new Map(),addCount=0,duplicateCount=0;
+    data.profile.logs.forEach(function(rec){
+      (rec.entries || []).forEach(function(entry){
+        var sig=recordSignature(rec.date,rec.dayKey,entry);
+        var seen=(importedSeen.get(sig)||0)+1;
+        importedSeen.set(sig,seen);
+        if(seen <= (existingCounts.get(sig)||0)) duplicateCount++;
+        else addCount++;
+      });
+    });
+    return {add:addCount,duplicates:duplicateCount,total:addCount+duplicateCount};
+  }
+  function mergeRecordsIntoCurrent(data) {
+    validateTransfer(data);
+
+    // 같은 날짜·요일·운동·부위·무게·횟수의 '개수'까지 비교한다.
+    // 예: 같은 100kg×12가 기존에 1세트, 파일에 2세트면 1세트만 추가.
+    var existingCounts=new Map();
+    var usedIds=new Set();
+    (logs || []).forEach(function(rec){
+      (rec.entries || []).forEach(function(entry){
+        var sig=recordSignature(rec.date,rec.dayKey,entry);
+        existingCounts.set(sig,(existingCounts.get(sig)||0)+1);
+        if(entry.id)usedIds.add(entry.id);
+      });
+    });
+
+    var importedSeen=new Map();
+    var nextLogs=(logs || []).map(function(rec){
+      return {date:rec.date,dayKey:rec.dayKey,entries:(rec.entries || []).map(function(e){return Object.assign({},e);})};
+    });
+    var added=0,skipped=0;
+
+    data.profile.logs.forEach(function(rec){
+      var target=nextLogs.find(function(x){return x.date===rec.date && x.dayKey===rec.dayKey;});
+      if(!target){
+        target={date:rec.date,dayKey:rec.dayKey,entries:[]};
+        nextLogs.push(target);
+      }
+
+      (rec.entries || []).forEach(function(entry){
+        var sig=recordSignature(rec.date,rec.dayKey,entry);
+        var seen=(importedSeen.get(sig)||0)+1;
+        importedSeen.set(sig,seen);
+
+        if(seen <= (existingCounts.get(sig)||0)){
+          skipped++;
+          return;
+        }
+
+        var copy=Object.assign({},entry);
+        if(!copy.id || usedIds.has(copy.id))copy.id='merge-'+Date.now().toString(36)+'-'+genId();
+        usedIds.add(copy.id);
+        target.entries.push(copy);
+        added++;
+      });
+    });
+
+    nextLogs=nextLogs.filter(function(rec){return rec.entries && rec.entries.length;});
+    nextLogs.sort(function(a,b){return a.date.localeCompare(b.date) || a.dayKey.localeCompare(b.dayKey);});
+
+    if(!storageTransaction([{key:LOG_KEY,value:nextLogs}]))throw new Error('현재 프로필에 기록을 추가하지 못했어요. 저장 공간을 확인해주세요.');
+    var persisted=readJSON(LOG_KEY,null);
+    if(!Array.isArray(persisted))throw new Error('기록 저장 확인에 실패했어요. 기존 데이터 보호를 위해 다시 확인해주세요.');
+
+    logs=persisted;
+    showRecordDataStatus();
+    return {added:added,skipped:skipped};
+  }
+
   function importTransfer(data) {
     validateTransfer(data);
     var p=data.profile,name=p.name+' (가져옴)',suffix=2;
@@ -3366,11 +3457,37 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       if(file.size>5*1024*1024)throw new Error('5MB 이하의 데이터 파일을 선택해주세요.');
       var data=JSON.parse(await file.text(),function(key,value){if(['__proto__','constructor','prototype'].includes(key))throw new Error('허용되지 않는 파일 형식입니다.');return value;});
       importCandidate=validateTransfer(data);var p=data.profile;
-      document.getElementById('dataImportSummary').textContent=p.name+' · 기록 '+p.logs.reduce(function(n,r){return n+r.entries.length;},0)+'건. 기존 데이터는 유지되며 새 프로필을 만듭니다.';
-      document.getElementById('dataImportPreview').hidden=false;hint.textContent='내용을 확인한 뒤 가져오기를 눌러주세요.';
+      var mergeInfo=analyzeCurrentRecordMerge(importCandidate);
+      document.getElementById('dataImportSummary').textContent=
+        p.name+' · 파일 기록 '+mergeInfo.total+'건 · 현재 프로필에 추가 '+mergeInfo.add+'건 · 중복 '+mergeInfo.duplicates+'건 무시. 새 프로필로 가져오기도 선택할 수 있어요.';
+      document.getElementById('dataImportPreview').hidden=false;hint.textContent='내용을 확인한 뒤 가져오기 방식을 선택해주세요.';
     }catch(e){hint.textContent=e.message;}
   });
   document.getElementById('btnImportCancel').addEventListener('click',function(){importCandidate=null;document.getElementById('dataImportPreview').hidden=true;});
+  document.getElementById('btnImportMergeCurrent').addEventListener('click',function(){
+    if(!importCandidate)return;
+    var hint=document.getElementById('dataTransferHint');
+    try{
+      var info=analyzeCurrentRecordMerge(importCandidate);
+      var message='현재 프로필 ['+activeProfile+']에 운동기록을 추가할까요?\n\n'
+        +'추가: '+info.add+'건\n'
+        +'중복으로 무시: '+info.duplicates+'건\n\n'
+        +'현재 루틴·종목·메모는 덮어쓰지 않습니다. 운동기록만 병합합니다.';
+      if(!window.confirm(message)){
+        hint.textContent='가져오기를 취소했어요. 현재 데이터는 변경되지 않았습니다.';
+        return;
+      }
+      var result=mergeRecordsIntoCurrent(importCandidate);
+      importCandidate=null;
+      document.getElementById('dataImportPreview').hidden=true;
+      hint.textContent='현재 프로필에 '+result.added+'건 추가했어요. 같은 기록 '+result.skipped+'건은 무시했습니다.';
+      showToast(result.added ? result.added+'건의 운동기록을 추가했어요.' : '추가할 새 운동기록이 없어요.');
+      if(mode==='records')renderRecords();
+      if(mode==='report')renderReport();
+      renderPanel();
+    }catch(e){hint.textContent=e.message;}
+  });
+
   document.getElementById('btnImportConfirm').addEventListener('click',function(){
     if(!importCandidate)return;
     try{
