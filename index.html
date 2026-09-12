@@ -3918,16 +3918,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     profiles = nextProfiles;
     activeProfile = nextName;
     applyProfileKeys();
-    (function(){
-    var badge=document.getElementById('currentModeBadge');
-    var settings=document.getElementById('settingsView');
-    if(!badge || !settings)return;
-    function sync(){badge.hidden=!settings.hidden;}
-    new MutationObserver(sync).observe(settings,{attributes:true,attributeFilter:['hidden']});
-    sync();
-  })();
-
-  updateProfileLabel();
+    updateProfileLabel();
     renderProfileList();
 
     hint.textContent = '프로필 이름이 변경됐어요.';
@@ -4023,20 +4014,49 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   var settingsViewEl = document.getElementById('settingsView');
   var mainViewsEl = document.getElementById('mainViews');
   var backBtnInlineEl = document.getElementById('btnSettingsBack');
-  document.getElementById('btnSettings').addEventListener('click', function () {
+  var currentModeBadgeEl = document.getElementById('currentModeBadge');
+  var settingsHistoryActive = false;
+
+  function openSettingsView(pushHistory) {
     mainViewsEl.hidden = true;
     settingsViewEl.hidden = false;
     backBtnInlineEl.hidden = false;
+    if (currentModeBadgeEl) currentModeBadgeEl.hidden = true;
+    document.getElementById('btnSettings').hidden = true;
     modeToggleEl.hidden = true;
     loadMemoEditor();
     renderProfileList();
     setProfileEditor(null);
-  });
-  backBtnInlineEl.addEventListener('click', function () {
+    if (pushHistory !== false) {
+      history.pushState({workoutSettings:true}, '', location.href);
+      settingsHistoryActive = true;
+    }
+  }
+
+  function closeSettingsView() {
     settingsViewEl.hidden = true;
     mainViewsEl.hidden = false;
     backBtnInlineEl.hidden = true;
+    if (currentModeBadgeEl) {
+      currentModeBadgeEl.hidden = false;
+      updateCurrentModeBadge();
+    }
+    document.getElementById('btnSettings').hidden = false;
     modeToggleEl.hidden = false;
+    settingsHistoryActive = false;
+  }
+
+  document.getElementById('btnSettings').addEventListener('click', function () {
+    openSettingsView(true);
+  });
+
+  backBtnInlineEl.addEventListener('click', function () {
+    if (settingsHistoryActive) history.back();
+    else closeSettingsView();
+  });
+
+  window.addEventListener('popstate', function () {
+    if (!settingsViewEl.hidden) closeSettingsView();
   });
 
   document.getElementById('btnShowAddProfile').addEventListener('click', function () {
@@ -4531,7 +4551,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   function exportTimestampName(){
     var d=new Date();
     function pad(n){return String(n).padStart(2,'0');}
-    return 'workout_'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+
+    var profileName=String(activeProfile || '기본').trim() || '기본';
+    profileName=profileName.replace(/[\\/:*?"<>|]/g,'_');
+    return profileName+'_'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+
       '_'+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())+'.json';
   }
 
