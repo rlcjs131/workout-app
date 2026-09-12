@@ -1059,28 +1059,14 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   applyProfileKeys();
 
   function defaults() {
-    var plan = [
-      {key:'mon',letter:'월',title:'가슴 · 삼두',items:[
-        ['가슴','체스트 프레스(머신)'],['가슴','플랫 벤치 프레스(스미스)'],['가슴','인클라인 벤치 프레스(덤벨)'],['가슴','머신 플라이'],['가슴','가슴 딥스'],['삼두','오버헤드 케이블 익스텐션'],['삼두','로프 푸시다운']]},
-      {key:'tue',letter:'화',title:'등 · 이두',items:[
-        ['등','랫풀다운(와이드 그립)'],['등','랫풀다운(뉴트럴 그립)'],['등','시티드 로우(와이드 그립)'],['등','시티드 로우(뉴트럴 그립)'],['등','스트레이트 암 풀다운'],['이두','EZ바 프리처 컬'],['이두','케이블 해머 컬(로프)']]},
-      {key:'wed',letter:'수',title:'하체',items:[
-        ['하체','레그 컬'],['하체','레그 익스텐션'],['하체','컨벤셔널 데드리프트'],['하체','백 스쿼트'],['하체','힙 쓰러스트'],['하체','불가리안 스플릿 스쿼트'],['하체','카프 레이즈']]},
-      {key:'thu',letter:'목',title:'어깨 · 삼두',items:[
-        ['어깨','시티드 오버헤드 프레스(바벨)'],['어깨','시티드 오버헤드 프레스(덤벨)'],['어깨','머신 숄더 프레스(뉴트럴 그립)'],['어깨','사이드 레터럴 레이즈(케이블)'],['어깨','리어 델트 플라이'],['삼두','스컬 크러셔'],['삼두','케이블 V바 푸시다운']]},
-      {key:'fri',letter:'금',title:'가슴 · 등',items:[
-        ['가슴','플랫 벤치 프레스(스미스)'],['등','풀업'],['가슴','체스트 프레스(머신)'],['등','랫풀다운(뉴트럴 그립)'],['가슴','케이블 플라이'],['등','시티드 로우(와이드 그립)']]},
-      {key:'sat',letter:'토',title:'하체 · 어깨 · 이두',items:[
-        ['하체','레그 프레스'],['하체','루마니안 데드리프트'],['하체','레그 익스텐션'],['하체','카프 레이즈'],['어깨','사이드 레터럴 레이즈(덤벨)'],['어깨','리어 델트 플라이'],['이두','EZ바 컬'],['이두','인클라인 덤벨 컬']]}
+    return [
+      {key:'mon',letter:'월',title:'',cardio:false,ex:[]},
+      {key:'tue',letter:'화',title:'',cardio:false,ex:[]},
+      {key:'wed',letter:'수',title:'',cardio:false,ex:[]},
+      {key:'thu',letter:'목',title:'',cardio:false,ex:[]},
+      {key:'fri',letter:'금',title:'',cardio:false,ex:[]},
+      {key:'sat',letter:'토',title:'',cardio:false,ex:[]}
     ];
-    var seed = defaultCatalog();
-    return plan.map(function(day) {
-      return {key:day.key,letter:day.letter,title:day.title,cardio:false,ex:day.items.map(function(item) {
-        var preset = (seed[item[0]] || []).find(function(ex) { return ex.n === item[1]; }) || {r:'',rir:''};
-        var sets = day.key === 'sat' && (item[1] === '사이드 레터럴 레이즈(덤벨)' || item[1] === '리어 델트 플라이') ? 3 : 2;
-        return {n:item[1],m:item[0],s:sets,r:preset.r,rir:preset.rir};
-      })};
-    });
   }
 
   var memoryOnly = false;
@@ -1123,7 +1109,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   var routineOrderPending = isRoutine(readJSON(routinePendingKey(),null));
 
   // 각 항목은 { n: 이름, s: 세트, r: 반복수, rir: RIR } — 종목 관리에서 직접 등록/수정 가능
-  function defaultCatalog() {
+  function catalogPreset() {
     var names = {
   "가슴": [
     "체스트 프레스(머신)",
@@ -1328,6 +1314,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     return result;
   }
 
+  // 신규 설치/새 프로필도 운동 관리의 기본 운동 목록은 유지한다.
+  // 기존 사용자는 CATALOG_KEY에 저장된 localStorage 데이터가 우선되어 그대로 유지된다.
+  function defaultCatalog() {
+    return catalogPreset();
+  }
+
   function catalogEntry(muscle, name) {
     var arr = catalog[muscle] || [];
     for (var i = 0; i < arr.length; i++) { if (arr[i].n === name) return arr[i]; }
@@ -1410,7 +1402,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       writeJSON(CATALOG_KEY, cat);
     } else {
       // 이전 버전(이름 문자열 배열)으로 저장된 데이터를 {n,s,r,rir} 객체 구조로 변환
-      var seedDefaults = defaultCatalog();
+      var seedDefaults = catalogPreset();
       var migrated = false;
       MUSCLES.forEach(function (m) {
         if (!Array.isArray(cat[m])) { cat[m] = []; return; }
@@ -1444,7 +1436,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   function applyHypertrophyDefaults() {
     var marker = keyFor('bulk-catalog-hypertrophy-v1', activeProfile);
     if (readJSON(marker, false)) return;
-    var seed = defaultCatalog();
+    var seed = catalogPreset();
     MUSCLES.forEach(function(m) {
       catalog[m] = (catalog[m] || []).map(function(e) {
         var preset = seed[m].find(function(p){return p.n===e.n;});
