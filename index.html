@@ -776,6 +776,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     margin:0 0 5px!important;letter-spacing:-.02em;
   }
   .bulk-app .principle-body .weekly-set-title + .bar-legend{margin-top:0;}
+  .bulk-app .fixed-guide .principle-body > .bar-legend:first-child{margin-top:0;}
 
   /* 설정 화면 헤더: 설정은 왼쪽, 닫기는 오른쪽 */
   .bulk-app.settings-open .masthead-actions{
@@ -1936,7 +1937,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var toast=document.getElementById('recordUndoToast'),message=document.getElementById('recordUndoMessage'),button=document.getElementById('recordUndoButton');
     if(!toast || !message || !button)return;
     recordUndoState={logs:JSON.parse(JSON.stringify(beforeLogs)),timer:null};
-    message.textContent='운동기록 '+removedCount+'건 삭제됨';
+    message.textContent='운동기록 '+removedCount+'세트 삭제됨';
     toast.hidden=false;
     requestAnimationFrame(function(){toast.classList.add('is-visible');});
     button.onclick=function(){
@@ -2306,8 +2307,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     return Math.round(Math.max(0, value) * 10) / 10;
   }
 
-  function suggestNext(ex, name) {
-    var h = historyFor(name);
+  function suggestNext(ex, name, onOrBeforeDate) {
+    var h = historyFor(name).filter(function(item){
+      return !onOrBeforeDate || item.date <= onOrBeforeDate;
+    });
     if (h.length === 0) return null;
     var last = h[h.length - 1];
     var range = parseRepRange(ex.r);
@@ -3279,7 +3282,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         doneIn.addEventListener('change',renderPreviousHint);
         li.appendChild(hint);
 
-        var suggestion = suggestNext(ex, ex.n);
+        var suggestion = suggestNext(ex, ex.n, selectedRecordDate);
         if (suggestion) {
           var sugClass = suggestion.type === 'up' ? ' suggest-up' : (suggestion.type === 'down' ? ' suggest-down' : '');
           var sugIcon = suggestion.type === 'up' ? '<span class="up">↑</span> ' : (suggestion.type === 'down' ? '<span class="down">↓</span> ' : '');
@@ -3408,7 +3411,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
       hint = document.getElementById('saveHint');
       hint.textContent = date+' · '+entries.length + '개 운동 기록 저장됨';
-      showToast(prToastMessage(prUpdates,'운동기록 '+entries.length+'건 저장 완료'));
+      showToast(prToastMessage(prUpdates,'운동기록 '+entries.length+'세트 저장 완료'));
       hint.className = 'save-hint on';
       clearTimeout(hint._t);
       hint._t = setTimeout(function () {
@@ -3489,9 +3492,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
     document.getElementById('principles').innerHTML =
       '<details class="principle fixed-guide"' + (openStates[0] !== false ? ' open' : '') + '>' +
-        '<summary>주간볼륨<span class="chev"></span></summary>' +
+        '<summary>주간 세트 합계<span class="chev"></span></summary>' +
         '<div class="principle-body">' +
-          '<p class="weekly-set-title">주간 세트 합계</p>' +
           '<p class="bar-legend">근비대 참고구간 · 가슴/등/어깨/하체 12–16 · 이두/삼두 6–10</p>' +
           '<div class="bars">' + barsHtml + '</div>' +
           '<p class="bar-legend">두 세로선 사이는 근비대 참고구간입니다.<br>적정 훈련량은 개인의 회복 수준에 따라 달라집니다.</p>' +
@@ -3514,7 +3516,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   {
     "id": "default-2",
     "title": "무게를 올리는 기준",
-    "body": "반복수 범위가 정해진 운동은 같은 무게로 반복수를 늘린 뒤 무게를 올리는 방식으로 진행할 수 있어요. 이를 더블 프로그레션이라고 해요.\n\n계획한 모든 세트에서 반복수 상한을 바른 자세로 채우고 목표 RIR만큼 여유가 있었는지 확인하세요. 조건이 충족되면 다음 운동에서 장비가 허용하는 작은 단위로 증량을 시도하세요.\n\n증량 후에도 목표 반복수 범위와 자세를 유지할 수 있는지 확인하세요. 하한을 못 채우거나 목표보다 지나치게 힘들면 무게를 유지하거나 낮춰 조절하세요. 종목마다 적절한 증량 폭은 달라요.\n\n앱의 증량 안내는 입력한 무게·횟수에 따른 참고 문구예요. 모든 세트의 수행과 실제 RIR을 확인한 결과는 아니므로, 한 건의 기록만 보고 자동으로 증량하지 마세요."
+    "body": "반복수 범위가 정해진 운동은 같은 무게로 반복수를 늘린 뒤 무게를 올리는 방식으로 진행할 수 있어요. 이를 더블 프로그레션이라고 해요.\n\n계획한 모든 세트에서 반복수 상한을 바른 자세로 채우고 목표 RIR만큼 여유가 있었는지 확인하세요. 조건이 충족되면 다음 운동에서 장비가 허용하는 작은 단위로 증량을 시도하세요.\n\n증량 후에도 목표 반복수 범위와 자세를 유지할 수 있는지 확인하세요. 하한을 못 채우거나 목표보다 지나치게 힘들면 무게를 유지하거나 낮춰 조절하세요. 종목마다 적절한 증량 폭은 달라요.\n\n앱의 증량 안내는 입력한 무게·횟수에 따른 참고 문구예요. 모든 세트의 수행과 실제 RIR을 확인한 결과는 아니므로, 한 세트 기록만 보고 자동으로 증량하지 마세요."
   }
 ];
   }
@@ -3861,7 +3863,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       }
       var removed=before.reduce(function(n,r){return n+r.entries.length;},0)-next.reduce(function(n,r){return n+r.entries.length;},0);
       logs = next;renderRecords();
-      if(removed>0){if(allowUndo)offerRecordUndo(before,removed);else showToast('운동기록 '+removed+'건 삭제 완료');}
+      if(removed>0){if(allowUndo)offerRecordUndo(before,removed);else showToast('운동기록 '+removed+'세트 삭제 완료');}
     }
     groups.forEach(function (all, key) {
       var pair=JSON.parse(key),muscle=pair[0],name=pair[1];
@@ -3882,8 +3884,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         });
       });
       var arrow=document.createElement('span');arrow.className='exercise-record-chevron';
-      var count = document.createElement('span');count.className = 'record-count-badge';count.textContent = visible.length === all.length ? all.length + '건' : visible.length + ' / ' + all.length + '건';
-      count.setAttribute('aria-label','현재 조회 ' + visible.length + '건, 전체 ' + all.length + '건');
+      var count = document.createElement('span');count.className = 'record-count-badge';count.textContent = visible.length === all.length ? all.length + '세트' : visible.length + ' / ' + all.length + '세트';
+      count.setAttribute('aria-label','현재 조회 ' + visible.length + '세트, 전체 ' + all.length + '세트');
       head.appendChild(title);head.appendChild(count);head.appendChild(arrow);card.appendChild(head);
       var setSeen={};
       all.forEach(function(entry){
@@ -3903,12 +3905,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         var numeric=dayEntries.filter(function(entry){return entry.w !== '-' && Number.isFinite(Number(entry.w));});
         var best=null;
         numeric.forEach(function(entry){
-          if(!best || Number(entry.w)>Number(best.w) || (Number(entry.w)===Number(best.w) && Number(entry.reps)>Number(best.reps)))best=entry;
+          var entryWeight=Number(entry.w);
+          var entryReps=(entry.reps!=='-' && Number.isFinite(Number(entry.reps))) ? Number(entry.reps) : -Infinity;
+          var bestWeight=best ? Number(best.w) : -Infinity;
+          var bestReps=(best && best.reps!=='-' && Number.isFinite(Number(best.reps))) ? Number(best.reps) : -Infinity;
+          if(!best || entryWeight>bestWeight || (entryWeight===bestWeight && entryReps>bestReps))best=entry;
         });
         var bestValue=document.createElement('span');bestValue.className='record-day-summary-value';
-        bestValue.textContent=best ? (best.w+'kg × '+(best.reps==='-'?'횟수 미입력':best.reps+'회')) : '무게 미입력';
+        bestValue.textContent=best ? ('최고 '+best.w+'kg × '+(best.reps==='-'?'횟수 미입력':best.reps+'회')) : '무게 미입력';
         var dayArrow=document.createElement('span');dayArrow.className='record-day-chevron';
-        daySummary.setAttribute('aria-label',name+' '+dayDate+' '+dayEntries.length+'세트, 최고 기록 '+bestValue.textContent+', 세트 상세 보기');
+        daySummary.setAttribute('aria-label',name+' '+dayDate+' '+dayEntries.length+'세트, '+bestValue.textContent+', 세트 상세 보기');
         daySummary.appendChild(dayDateEl);daySummary.appendChild(dayCount);daySummary.appendChild(bestValue);daySummary.appendChild(dayArrow);dayGroup.appendChild(daySummary);
         dayEntries.forEach(function(entry){
           var row=document.createElement('div');row.className='rec-item';
@@ -4346,14 +4352,14 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var labels={week:'이번 주',month:'이번 달',all:'전체'};
     var periods=Object.keys(labels).map(function(key){return '<button type="button" data-stats-period="'+key+'" aria-pressed="'+(!statsRangeAnchor && key===statsPeriod)+'">'+labels[key]+'</button>';}).join('');
     var muscleBars=MUSCLES.concat(data.muscles['기타']?['기타']:[]).map(function(m){
-      return '<div class="stats-bar-row"><span>'+m+'</span><span class="stats-bar-track" aria-hidden="true"><span class="stats-bar-fill" style="width:'+(data.muscles[m]/muscleMax*100)+'%;background:'+(MUSCLE_COLOR[m] || 'var(--muted)')+'"></span></span><span class="stats-bar-count">'+data.muscles[m]+'건</span></div>';
+      return '<div class="stats-bar-row"><span>'+m+'</span><span class="stats-bar-track" aria-hidden="true"><span class="stats-bar-fill" style="width:'+(data.muscles[m]/muscleMax*100)+'%;background:'+(MUSCLE_COLOR[m] || 'var(--muted)')+'"></span></span><span class="stats-bar-count">'+data.muscles[m]+'세트</span></div>';
     }).join('');
     var groups=MUSCLES.concat(data.muscles['기타']?['기타']:[]).map(function(m){
       var muscleKey='muscle:'+m;
       var exercises=data.exercises.filter(function(g){return g.muscle===m;});
       var cards=exercises.map(function(g){
         var key='exercise:'+g.key;
-        return '<details class="stats-exercise" data-stats-key="'+statsEscape(key)+'" data-stats-exercise-name="'+statsEscape(g.name)+'"'+(opened.has(key)?' open':'')+'><summary><span class="stats-exercise-title">'+statsEscape(g.name)+'</span><span class="rec-count">'+g.count+'건</span></summary><div class="stats-exercise-body">'+
+        return '<details class="stats-exercise" data-stats-key="'+statsEscape(key)+'" data-stats-exercise-name="'+statsEscape(g.name)+'"'+(opened.has(key)?' open':'')+'><summary><span class="stats-exercise-title">'+statsEscape(g.name)+'</span><span class="rec-count">'+g.count+'세트</span></summary><div class="stats-exercise-body">'+
           statsExerciseMetricsHtml(g)+'</div></details>';
       }).join('');
       return '<details class="rec-group stats-muscle-group" data-stats-key="'+statsEscape(muscleKey)+'"'+(opened.has(muscleKey)?' open':'')+'><summary><span class="rec-title" style="color:'+(MUSCLE_COLOR[m] || 'var(--muted)')+'">'+m+'</span><span class="rec-count">'+(exercises.length?exercises.length+'개 종목':'기록 없음')+'</span><span class="rec-chev"></span></summary><div class="rec-body">'+
@@ -4367,7 +4373,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       statsCalendarHtml(statsCalendarMonth,data.allDates,asOf,{from:data.from,to:data.to},statsRangeAnchor)+
       '<section class="stats-card"><div class="stats-attendance"><h3>운동일수</h3><div class="stats-attendance-value"><span class="stats-attendance-context">'+statsEscape(attendanceDisplay.label)+'</span> <strong class="stats-attendance-actual">'+data.days+'</strong><span class="stats-attendance-total">'+(statsPeriod==='all'?'일':' / '+attendanceDisplay.total+'일')+'</span></div></div><p class="stats-note">선택 기간의 운동 기록일 수예요.</p></section>'+
       (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 운동 탭에서 기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
-      '<section class="stats-card"><h3>부위별 기록 건수</h3>'+muscleBars+'<p class="stats-note">운동 비중이 아닌 기록 빈도이며, 기록 1건은 완료 1세트가 아니에요.</p></section>'+
+      '<section class="stats-card"><h3>부위별 기록 세트</h3>'+muscleBars+'<p class="stats-note">저장한 운동 기록 1개를 1세트로 집계해요.</p></section>'+
       '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">선택한 기간의 추정 1RM·최고 무게·기록 볼륨 변화를 비교해보세요. 카드의 역대 PR은 조회 기간과 관계없이 전체 기록 기준이며, 그래프의 ‘선택 기간 최고’는 현재 조회 기간 안의 최고값이에요. 추정 1RM과 기록 볼륨은 입력한 기록을 바탕으로 한 참고값이에요.</p>'+searchHtml+groups;
     statsViewEl.querySelectorAll('[data-stats-period]').forEach(function(button){button.addEventListener('click',function(){
       chooseStatsPeriod(button.dataset.statsPeriod);renderStats();
@@ -5483,8 +5489,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '적용 완료!\n\n' +
       '운동 루틴: JSON 파일의 루틴으로 덮어쓰기 완료\n' +
       '운동 관리: 신규 운동 ' + catalogAdds.length + '개 추가\n' +
-      '운동 기록: ' + analysis.addRecordCount + '건 추가' +
-      (analysis.duplicateRecordCount ? ' · 중복 ' + analysis.duplicateRecordCount + '건 제외' : '');
+      '운동 기록: ' + analysis.addRecordCount + '세트 추가' +
+      (analysis.duplicateRecordCount ? ' · 중복 ' + analysis.duplicateRecordCount + '세트 제외' : '');
     document.getElementById('dataTransferHint').textContent =
       resultMsg.replace(/\n+/g, ' · ').replace(/^ · | · $/g, '');
     window.alert(resultMsg);
@@ -5535,8 +5541,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<h2 id="importChoiceTitle">파일 가져오기</h2>' +
       '<p class="import-choice-summary">' +
         '<strong>' + statsEscape(p.name) + '</strong> · 운동기록 ' +
-        mergeInfo.importedRecordCount + '건' +
-        (mergeInfo.duplicateRecordCount ? ' · 중복 ' + mergeInfo.duplicateRecordCount + '건' : '') +
+        mergeInfo.importedRecordCount + '세트' +
+        (mergeInfo.duplicateRecordCount ? ' · 중복 ' + mergeInfo.duplicateRecordCount + '세트' : '') +
       '</p>' +
       '<p class="import-choice-question">이 파일을 어떻게 가져올까요?</p>' +
       '<div class="import-choice-actions">' +
@@ -5599,7 +5605,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         if (!result || !result.ok) return;
         showToast(
           result.added
-            ? result.added + '건의 운동기록을 추가했어요.'
+            ? result.added + '세트의 운동기록을 추가했어요.'
             : '루틴과 운동 관리 데이터를 적용했어요.'
         );
       } catch(e) {
