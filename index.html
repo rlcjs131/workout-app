@@ -1245,6 +1245,42 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
 }
 
+/* v54: direct-record sheet viewport hardening */
+@media(max-width:600px){
+  .direct-record-overlay{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    height:100dvh !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    align-items:flex-end !important;
+    justify-content:stretch !important;
+  }
+  .direct-record-modal{
+    position:relative !important;
+    left:auto !important;right:auto !important;bottom:auto !important;
+    width:100% !important;max-width:none !important;min-width:0 !important;
+    margin:0 !important;
+    max-height:calc(100dvh - max(10px, env(safe-area-inset-top, 0px))) !important;
+    padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px)) !important;
+    border-left:0 !important;border-right:0 !important;border-bottom:0 !important;
+    border-radius:24px 24px 0 0 !important;
+    overflow-x:hidden !important;overflow-y:auto !important;
+    transform:none !important;
+  }
+  .direct-record-head{width:100%;min-width:0;}
+  .direct-record-head h2{min-width:0;margin:0;}
+  .direct-record-form{width:100%;min-width:0;}
+  .direct-record-form label,.direct-record-values,.direct-record-actions{min-width:0;}
+  .direct-recent{width:100%;min-width:0;overflow:hidden;}
+  .direct-recent-chips{
+    width:100%;max-width:100%;margin:0 !important;padding:1px 0 4px !important;
+    overflow-x:auto;overscroll-behavior-x:contain;
+  }
+}
+
 </style>
 <style>
 .bulk-app .routine-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;}
