@@ -3280,7 +3280,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
           var target = days[activeIndex];
           var label = target ? target.letter + '요일' : '선택한 요일';
           var accepted = window.confirm(
-            label + ' 운동 루틴을 초기화할까요?\\n\\n' +
+            label + ' 운동 루틴을 초기화할까요?\n\n' +
             label + '에 등록된 운동이 모두 삭제됩니다. 운동 관리의 종목과 기존 운동 기록은 삭제되지 않습니다.'
           );
           if (!accepted) return;
@@ -3296,7 +3296,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
           showToast(label + ' 운동 루틴 초기화됨 · 루틴 저장 필요','pending');
         } else {
           var acceptedAll = window.confirm(
-            '전체 요일의 운동 루틴을 초기화할까요?\\n\\n' +
+            '전체 요일의 운동 루틴을 초기화할까요?\n\n' +
             '월~토의 모든 운동 루틴이 삭제됩니다. 운동 관리의 종목과 기존 운동 기록은 삭제되지 않습니다.'
           );
           if (!acceptedAll) return;
@@ -3391,7 +3391,40 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       ['어깨','프론트 레이즈(덤벨)',2,'12~15','1~2']
     ];
 
-    if (split === 2) {
+    var fullBody = [
+      ['하체','백 스쿼트',3,'6~10','2'],
+      ['가슴','플랫 벤치 프레스(바벨)',3,'6~10','1~2'],
+      ['등','랫풀다운(와이드 그립)',3,'8~12','1~2'],
+      ['등','시티드 로우(뉴트럴 그립)',2,'8~12','1~2'],
+      ['어깨','머신 숄더 프레스(뉴트럴 그립)',2,'8~12','1~2'],
+      ['하체','루마니안 데드리프트',2,'8~10','2'],
+      ['삼두','로프 푸시다운',2,'10~15','1~2'],
+      ['이두','EZ바 컬',2,'10~15','1~2']
+    ];
+    var chest = [
+      ['가슴','플랫 벤치 프레스(바벨)',3,'6~10','1~2'],
+      ['가슴','인클라인 벤치 프레스(덤벨)',3,'8~12','1~2'],
+      ['가슴','체스트 프레스(머신)',3,'8~12','1~2'],
+      ['가슴','케이블 플라이',3,'12~15','1~2']
+    ];
+    var back = [
+      ['등','랫풀다운(와이드 그립)',3,'8~12','1~2'],
+      ['등','시티드 로우(뉴트럴 그립)',3,'8~12','1~2'],
+      ['등','바벨 로우',3,'6~10','1~2'],
+      ['등','스트레이트 암 풀다운',2,'12~15','1~2']
+    ];
+    var arms = [
+      ['삼두','로프 푸시다운',3,'10~15','1~2'],
+      ['삼두','오버헤드 케이블 익스텐션',3,'10~15','1~2'],
+      ['이두','EZ바 컬',3,'10~15','1~2'],
+      ['이두','덤벨 해머 컬',3,'10~15','1~2']
+    ];
+
+    if (split === 1) {
+      setDay(0,'전신 A',fullBody);
+      setDay(2,'전신 B',fullBody);
+      setDay(4,'전신 C',fullBody);
+    } else if (split === 2) {
       setDay(0,'상체',upper); setDay(1,'하체',lower);
       setDay(3,'상체',upper); setDay(4,'하체',lower);
     } else if (split === 3) {
@@ -3401,11 +3434,32 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       setDay(3,'Push · 가슴/어깨/삼두',push);
       setDay(4,'Pull · 등/이두',pull);
       setDay(5,'Legs · 하체',legs);
-    } else {
+    } else if (split === 4) {
       setDay(0,'가슴/삼두',chestTri);
       setDay(1,'등/이두',backBi);
       setDay(2,'하체',legs);
       setDay(3,'어깨',shoulder);
+    } else if (split === 5) {
+      setDay(0,'가슴',chest);
+      setDay(1,'등',back);
+      setDay(2,'하체',legs);
+      setDay(3,'어깨',shoulder);
+      setDay(4,'팔',arms);
+    } else if (split === 6) {
+      setDay(0,'가슴',chest);
+      setDay(1,'등',back);
+      setDay(2,'하체',legs);
+      setDay(3,'어깨',shoulder);
+      setDay(4,'삼두',[
+        ['삼두','로프 푸시다운',3,'10~15','1~2'],
+        ['삼두','오버헤드 케이블 익스텐션',3,'10~15','1~2'],
+        ['삼두','딥스',3,'6~12','1~2']
+      ]);
+      setDay(5,'이두',[
+        ['이두','EZ바 컬',3,'10~15','1~2'],
+        ['이두','덤벨 해머 컬',3,'10~15','1~2'],
+        ['이두','인클라인 덤벨 컬',3,'10~15','1~2']
+      ]);
     }
     return ensureRoutineIds(r);
   }
@@ -3430,6 +3484,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         '<p>분할을 선택하면 현재 운동 루틴 전체가 선택한 기본 루틴으로 변경됩니다.</p>' +
       '</div>' +
       '<div class="base-routine-options">' +
+        '<button class="base-routine-option" type="button" data-split="1">' +
+          '<span class="base-routine-number">1</span>' +
+          '<span class="base-routine-copy"><strong>1분할</strong><span>전신 운동 · 주 3회</span></span>' +
+          '<span class="base-routine-chevron" aria-hidden="true"></span>' +
+        '</button>' +
         '<button class="base-routine-option" type="button" data-split="2">' +
           '<span class="base-routine-number">2</span>' +
           '<span class="base-routine-copy"><strong>2분할</strong><span>상체 / 하체 · 주 4회</span></span>' +
@@ -3443,6 +3502,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         '<button class="base-routine-option" type="button" data-split="4">' +
           '<span class="base-routine-number">4</span>' +
           '<span class="base-routine-copy"><strong>4분할</strong><span>가슴·삼두 / 등·이두 / 하체 / 어깨 · 주 4회</span></span>' +
+          '<span class="base-routine-chevron" aria-hidden="true"></span>' +
+        '</button>' +
+        '<button class="base-routine-option" type="button" data-split="5">' +
+          '<span class="base-routine-number">5</span>' +
+          '<span class="base-routine-copy"><strong>5분할</strong><span>가슴 / 등 / 하체 / 어깨 / 팔 · 주 5회</span></span>' +
+          '<span class="base-routine-chevron" aria-hidden="true"></span>' +
+        '</button>' +
+        '<button class="base-routine-option" type="button" data-split="6">' +
+          '<span class="base-routine-number">6</span>' +
+          '<span class="base-routine-copy"><strong>6분할</strong><span>가슴 / 등 / 하체 / 어깨 / 삼두 / 이두 · 주 6회</span></span>' +
           '<span class="base-routine-chevron" aria-hidden="true"></span>' +
         '</button>' +
       '</div>' +
@@ -3504,7 +3573,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       });
     });
 
-    sheet.querySelector('[data-split="2"]').focus();
+    sheet.querySelector('[data-split="1"]').focus();
   }
 
   var resetBtn = document.getElementById('btnReset');
