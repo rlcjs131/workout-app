@@ -731,6 +731,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .bulk-app .record-date-row label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
 .bulk-app .record-date-row input{font-size:16px;max-width:170px;min-width:0;}
 .bulk-app .record-edit-trigger{border:0;background:transparent;padding:0;text-align:left;font-family:inherit;cursor:pointer;}
+.bulk-app .record-set-badge{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:4px 7px;border:1px solid var(--line);border-radius:999px;background:var(--sunken);color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap;}
 .bulk-app .record-edit-trigger:focus-visible{outline:2px solid var(--primary);outline-offset:3px;}
 .bulk-app .record-edit-form{display:flex;flex-wrap:wrap;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);}
 .bulk-app .record-edit-form .field{min-width:0;display:flex;gap:4px;align-items:center;}
@@ -1343,6 +1344,30 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     return null;
   }
 
+  // 종목별 권장 증감 단위. 목록에 없는 신규/사용자 추가 종목은 2.5kg가 기본값입니다.
+  function weightStepFor(name) {
+    name = String(name || '');
+
+    // 큰 하체 장비: 실제 장비에서 작은 변화가 어려워 조금 더 큰 단위를 사용
+    if (/레그 프레스/.test(name)) return 5;
+    if (/핵 스쿼트|벨트 스쿼트/.test(name)) return 5;
+
+    // 일반 머신/스택 장비
+    if (/머신|펙덱|랫풀다운|시티드 로우|하이 로우|어시스트/.test(name)) return 5;
+
+    // 덤벨은 한 손에 드는 중량을 기록한다고 보고 일반적인 2kg 간격 사용
+    if (/덤벨|고블릿/.test(name)) return 2;
+
+    // 케이블·로프 계열은 비교적 미세 조절
+    if (/케이블|푸시다운|페이스 풀|우드촙/.test(name)) return 2.5;
+
+    // 바벨/EZ바/스미스 및 그 외 종목. 신규 종목도 이 기본값을 사용
+    return 2.5;
+  }
+  function cleanWeightNumber(value) {
+    return Math.round(Math.max(0, value) * 10) / 10;
+  }
+
   function suggestNext(ex, name) {
     var h = historyFor(name);
     if (h.length === 0) return null;
@@ -1352,11 +1377,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var doneReps = parseInt(last.reps, 10);
     var lastW = parseFloat(last.w);
     if (isNaN(doneReps) || isNaN(lastW)) return null;
-    var isCompound = range.hi <= 10;
-    var bump = isCompound ? 2.5 : 1;
+    var bump = weightStepFor(name);
 
     if (doneReps >= range.hi) {
-      return { text: '반복수 상한(' + range.hi + '회) 도달 · RIR도 목표대로였다면 다음엔 ' + (lastW + bump) + 'kg 시도', type: 'up' };
+      return { text: '반복수 상한(' + range.hi + '회) 도달 · RIR도 목표대로였다면 다음엔 ' + cleanWeightNumber(lastW + bump) + 'kg 시도', type: 'up' };
     }
 
     if (doneReps < range.lo) {
@@ -1369,7 +1393,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         misses++;
       }
       if (misses >= 2) {
-        return { text: '반복수 하한(' + range.lo + '회) ' + misses + '회 연속 미달 · 무게를 ' + (lastW - bump) + 'kg로 낮춰보세요', type: 'down' };
+        return { text: '반복수 하한(' + range.lo + '회) ' + misses + '회 연속 미달 · 무게를 ' + cleanWeightNumber(lastW - bump) + 'kg로 낮춰보세요', type: 'down' };
       }
       return { text: '반복수 하한(' + range.lo + '회) 미달 · 같은 무게 ' + lastW + 'kg로 한 번 더 시도 (다음에도 미달이면 낮추세요)', type: 'hold' };
     }
@@ -1619,7 +1643,15 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     if(!validRecordDate(this.value)){this.value=selectedRecordDate;return;}
     selectedRecordDate=this.value;renderPanel();
   });
-  document.getElementById('btnRecordToday').addEventListener('click',function(){selectedRecordDate=todayStr();renderPanel();});
+  document.getElementById('btnRecordToday').addEventListener('click',function(){
+    selectedRecordDate=todayStr();
+    var currentDay=new Date().getDay();
+    todayIndex=currentDay===0?null:currentDay-1;
+    if(todayIndex!==null)activeIndex=todayIndex;
+    restNoteEl.hidden=todayIndex!==null;
+    renderTabs();
+    renderPanel();
+  });
   var mode = 'day';
   var routineEditing = false;
   function updateRoutineMode() {
@@ -2511,16 +2543,25 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var count = document.createElement('span');count.className = 'record-count-badge';count.textContent = visible.length === all.length ? all.length + '건' : visible.length + ' / ' + all.length + '건';
       count.setAttribute('aria-label','현재 조회 ' + visible.length + '건, 전체 ' + all.length + '건');
       head.appendChild(title);head.appendChild(count);head.appendChild(arrow);card.appendChild(head);
+      var setTotals={};
+      all.forEach(function(entry){setTotals[entry.date]=(setTotals[entry.date]||0)+1;});
+      var setSeen={};
+      all.forEach(function(entry){
+        setSeen[entry.date]=(setSeen[entry.date]||0)+1;
+        entry._setNo=setSeen[entry.date];
+      });
       visible.forEach(function(entry){
         var row=document.createElement('div');row.className='rec-item';
         var date=document.createElement('button');date.type='button';date.className='record-card-date record-edit-trigger';date.textContent=entry.date;
+        var setBadge=document.createElement('span');setBadge.className='record-set-badge';setBadge.textContent=entry._setNo+'세트';
+        setBadge.setAttribute('aria-label',entry._setNo+'세트');
         var value=document.createElement('button');value.type='button';value.className='record-card-value record-edit-trigger';value.textContent=(entry.w === '-' ? '무게 미입력' : entry.w + 'kg') + ' × ' + (entry.reps === '-' ? '횟수 미입력' : entry.reps + '회');
-        date.setAttribute('aria-label',name+' '+entry.date+' 날짜 수정');value.setAttribute('aria-label',name+' '+entry.date+' 무게·횟수 수정');
+        date.setAttribute('aria-label',name+' '+entry.date+' 날짜 수정');value.setAttribute('aria-label',name+' '+entry.date+' '+entry._setNo+'세트 무게·횟수 수정');
         date.addEventListener('click',function(){openRecordEditor(row,entry,date);});
         value.addEventListener('click',function(){openRecordEditor(row,entry,value);});
-        var remove=document.createElement('button');remove.type='button';remove.className='btn-hist-del';remove.textContent='×';remove.setAttribute('aria-label',name+' '+entry.date+' 기록 삭제');
+        var remove=document.createElement('button');remove.type='button';remove.className='btn-hist-del';remove.textContent='×';remove.setAttribute('aria-label',name+' '+entry.date+' '+entry._setNo+'세트 기록 삭제');
         remove.addEventListener('click',function(){requireSecondClick(remove,'확인',function(){deleteRecords(function(e){return e.id===entry.id;});});});
-        row.appendChild(date);row.appendChild(value);row.appendChild(remove);card.appendChild(row);
+        row.appendChild(date);row.appendChild(setBadge);row.appendChild(value);row.appendChild(remove);card.appendChild(row);
       });
       var footer=document.createElement('div');footer.className='record-delete-footer';footer.appendChild(del);card.appendChild(footer);
       (sections.get(muscle) || sections.get('기타')).body.appendChild(card);
