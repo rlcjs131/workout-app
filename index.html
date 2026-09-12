@@ -896,7 +896,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       </div>
       <div id="dataImportPreview" hidden>
         <p id="dataImportSummary" class="record-export-note"></p>
-        <button class="btn-reset btn-save-now" id="btnImportMergeCurrent" type="button">현재 프로필에 기록 추가</button>
+        <button class="btn-reset btn-save-now" id="btnImportMergeCurrent" type="button">현재 프로필에 루틴 덮어쓰기 + 데이터 추가</button>
         <button class="btn-reset" id="btnImportConfirm" type="button">새 프로필로 가져오기</button>
         <button class="btn-reset" id="btnImportCancel" type="button">취소</button>
       </div>
@@ -1057,39 +1057,6 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     DRAFT_KEY = keyFor('bulk-routine-draft-v2', activeProfile);
   }
   applyProfileKeys();
-
-  // 배포 후 각 브라우저에서 최초 1회만 실행:
-  // 운동 루틴 + 운동 기록만 초기화한다.
-  // 운동 관리(catalog), 프로필 목록, 메모 등은 그대로 유지한다.
-  (function resetRoutineAndLogsOnceForRelease() {
-    var releaseMarker = 'bulk-release-reset-routine-logs-v1';
-    if (readJSON(releaseMarker, false)) return;
-
-    var profileNames = readJSON(PROFILES_KEY, null);
-    if (!Array.isArray(profileNames) || !profileNames.length) {
-      profileNames = [activeProfile || '기본'];
-    }
-
-    var blankRoutine = [
-      {key:'mon',letter:'월',title:'',cardio:false,ex:[]},
-      {key:'tue',letter:'화',title:'',cardio:false,ex:[]},
-      {key:'wed',letter:'수',title:'',cardio:false,ex:[]},
-      {key:'thu',letter:'목',title:'',cardio:false,ex:[]},
-      {key:'fri',letter:'금',title:'',cardio:false,ex:[]},
-      {key:'sat',letter:'토',title:'',cardio:false,ex:[]}
-    ];
-
-    var ops = [];
-    profileNames.forEach(function(name) {
-      ops.push({key:keyFor('bulk-routine-v9', name), value:blankRoutine});
-      ops.push({key:keyFor('bulk-routine-log-v1', name), value:[]});
-      ops.push({key:keyFor('bulk-routine-pending-v1', name), remove:true});
-    });
-
-    if (storageTransaction(ops)) {
-      writeJSON(releaseMarker, true);
-    }
-  })();
 
   function defaults() {
     return [
@@ -3352,84 +3319,218 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       String(entry.reps == null ? '-' : entry.reps)
     ]);
   }
-  function analyzeCurrentRecordMerge(data) {
-    validateTransfer(data);
-    var existingCounts=new Map();
-    (logs || []).forEach(function(rec){
-      (rec.entries || []).forEach(function(entry){
-        var sig=recordSignature(rec.date,rec.dayKey,entry);
-        existingCounts.set(sig,(existingCounts.get(sig)||0)+1);
-      });
-    });
-
-    var importedSeen=new Map(),addCount=0,duplicateCount=0;
-    data.profile.logs.forEach(function(rec){
-      (rec.entries || []).forEach(function(entry){
-        var sig=recordSignature(rec.date,rec.dayKey,entry);
-        var seen=(importedSeen.get(sig)||0)+1;
-        importedSeen.set(sig,seen);
-        if(seen <= (existingCounts.get(sig)||0)) duplicateCount++;
-        else addCount++;
-      });
-    });
-    return {add:addCount,duplicates:duplicateCount,total:addCount+duplicateCount};
+  function exerciseRoutineSignature(dayKey, ex) {
+    return JSON.stringify([
+      String(dayKey || ''),
+      String(ex && ex.n || ''),
+      String(ex && ex.m || ''),
+      String(ex && ex.s == null ? '' : ex.s),
+      String(ex && ex.r == null ? '' : ex.r),
+      String(ex && ex.rir == null ? '' : ex.rir)
+    ]);
   }
-  function mergeRecordsIntoCurrent(data) {
-    validateTransfer(data);
 
-    // 같은 날짜·요일·운동·부위·무게·횟수의 '개수'까지 비교한다.
-    // 예: 같은 100kg×12가 기존에 1세트, 파일에 2세트면 1세트만 추가.
-    var existingCounts=new Map();
-    var usedIds=new Set();
-    (logs || []).forEach(function(rec){
-      (rec.entries || []).forEach(function(entry){
-        var sig=recordSignature(rec.date,rec.dayKey,entry);
-        existingCounts.set(sig,(existingCounts.get(sig)||0)+1);
-        if(entry.id)usedIds.add(entry.id);
+  function analyzeCurrentRecordMerge(data) {
+    var imported = data && data.profile ? data.profile : null;
+    var currentLogs = readLogs();
+    var existingCounts = {};
+    var addLogs = [];
+    var duplicateCount = 0;
+
+    currentLogs.forEach(function(group) {
+      (group.entries || []).forEach(function(entry) {
+        var sig = recordSignature(group.date, group.dayKey, entry);
+        existingCounts[sig] = (existingCounts[sig] || 0) + 1;
       });
     });
 
-    var importedSeen=new Map();
-    var nextLogs=(logs || []).map(function(rec){
-      return {date:rec.date,dayKey:rec.dayKey,entries:(rec.entries || []).map(function(e){return Object.assign({},e);})};
+    var seenImported = {};
+    (imported && Array.isArray(imported.logs) ? imported.logs : []).forEach(function(group) {
+      var newEntries = [];
+      (group.entries || []).forEach(function(entry) {
+        var sig = recordSignature(group.date, group.dayKey, entry);
+        seenImported[sig] = (seenImported[sig] || 0) + 1;
+        if (seenImported[sig] <= (existingCounts[sig] || 0)) {
+          duplicateCount++;
+        } else {
+          newEntries.push(entry);
+        }
+      });
+      if (newEntries.length) {
+        addLogs.push({date:group.date, dayKey:group.dayKey, entries:newEntries});
+      }
     });
-    var added=0,skipped=0;
 
-    data.profile.logs.forEach(function(rec){
-      var target=nextLogs.find(function(x){return x.date===rec.date && x.dayKey===rec.dayKey;});
-      if(!target){
-        target={date:rec.date,dayKey:rec.dayKey,entries:[]};
+    var currentRoutine = Array.isArray(routine) ? routine : [];
+    var currentRoutineCounts = {};
+    currentRoutine.forEach(function(day) {
+      (day.ex || []).forEach(function(ex) {
+        var sig = exerciseRoutineSignature(day.key, ex);
+        currentRoutineCounts[sig] = (currentRoutineCounts[sig] || 0) + 1;
+      });
+    });
+
+    var importedRoutineCounts = {};
+    var routineAdds = [];
+    (imported && Array.isArray(imported.routine) ? imported.routine : []).forEach(function(day) {
+      (day.ex || []).forEach(function(ex) {
+        var sig = exerciseRoutineSignature(day.key, ex);
+        importedRoutineCounts[sig] = (importedRoutineCounts[sig] || 0) + 1;
+        if (importedRoutineCounts[sig] > (currentRoutineCounts[sig] || 0)) {
+          routineAdds.push({
+            dayKey: day.key,
+            dayLetter: day.letter || day.key,
+            dayTitle: day.title || '',
+            cardio: !!day.cardio,
+            exercise: ex
+          });
+        }
+      });
+    });
+
+    var importedRecordCount = 0;
+    (imported && Array.isArray(imported.logs) ? imported.logs : []).forEach(function(group) {
+      importedRecordCount += (group.entries || []).length;
+    });
+
+    var importedRoutineCount = 0;
+    (imported && Array.isArray(imported.routine) ? imported.routine : []).forEach(function(day) {
+      importedRoutineCount += (day.ex || []).length;
+    });
+
+    return {
+      importedRecordCount: importedRecordCount,
+      addRecordCount: addLogs.reduce(function(sum, g) { return sum + g.entries.length; }, 0),
+      duplicateRecordCount: duplicateCount,
+      addLogs: addLogs,
+      importedRoutineCount: importedRoutineCount,
+      addRoutineCount: routineAdds.length,
+      routineAdds: routineAdds
+    };
+  }
+
+  function mergeRecordsIntoCurrent(data) {
+    var analysis = analyzeCurrentRecordMerge(data);
+    var imported = data && data.profile ? data.profile : null;
+
+    // 현재 운동 관리 데이터에 JSON에만 있는 운동종류를 추가할 목록 계산
+    var currentCatalog = readCatalog();
+    var nextCatalog = JSON.parse(JSON.stringify(currentCatalog));
+    var catalogAdds = [];
+
+    MUSCLES.forEach(function(muscle) {
+      if (!Array.isArray(nextCatalog[muscle])) nextCatalog[muscle] = [];
+      var existingNames = {};
+      nextCatalog[muscle].forEach(function(item) {
+        existingNames[String(item && item.n || '')] = true;
+      });
+
+      var importedList = imported && imported.catalog && Array.isArray(imported.catalog[muscle])
+        ? imported.catalog[muscle] : [];
+
+      importedList.forEach(function(item) {
+        var name = String(item && item.n || '');
+        if (!name || existingNames[name]) return;
+        var copy = JSON.parse(JSON.stringify(item));
+        nextCatalog[muscle].push(copy);
+        existingNames[name] = true;
+        catalogAdds.push({muscle:muscle, item:copy});
+      });
+    });
+
+    var addRoutineText = analysis.routineAdds.length
+      ? analysis.routineAdds.map(function(item) {
+          var ex = item.exercise || {};
+          return '• ' + (item.dayLetter || item.dayKey) + '요일 · ' +
+            String(ex.n || '') + ' / ' + String(ex.s == null ? '-' : ex.s) + '세트 / ' +
+            String(ex.r == null ? '-' : ex.r) + '회 / RIR ' +
+            String(ex.rir == null ? '-' : ex.rir);
+        }).join('\n')
+      : '추가되는 운동 루틴 없음';
+
+    var addCatalogText = catalogAdds.length
+      ? catalogAdds.map(function(x) {
+          return '• ' + x.muscle + ' · ' + String(x.item.n || '');
+        }).join('\n')
+      : '추가되는 운동종류 없음';
+
+    var message =
+      '현재 프로필: ' + activeProfile + '\n\n' +
+      '[운동 루틴]\n' +
+      '현재 루틴을 JSON 파일의 루틴으로 완전히 덮어씁니다.\n' +
+      '파일 루틴 운동: ' + analysis.importedRoutineCount + '개\n\n' +
+      (imported && Array.isArray(imported.routine)
+        ? imported.routine.map(function(day) {
+            var names = (day.ex || []).map(function(ex) { return ex.n; }).join(', ');
+            return '• ' + (day.letter || day.key) + '요일: ' + (names || '운동 없음');
+          }).join('\n')
+        : '파일에 루틴 없음') + '\n\n' +
+      '[운동 관리]\n' +
+      '신규 운동종류 추가 예정: ' + catalogAdds.length + '개\n' +
+      addCatalogText + '\n\n' +
+      '[운동 기록]\n' +
+      '파일 기록: ' + analysis.importedRecordCount + '세트\n' +
+      '추가 예정: ' + analysis.addRecordCount + '세트\n' +
+      '중복 제외: ' + analysis.duplicateRecordCount + '세트\n\n' +
+      '기존 운동 관리 데이터는 수정/삭제하지 않고, JSON에만 있는 운동종류만 추가합니다.\n' +
+      '계속할까요?';
+
+    if (!window.confirm(message)) return false;
+
+    // 운동 루틴은 병합하지 않고 JSON의 루틴으로 완전히 덮어쓴다.
+    var nextRoutine = JSON.parse(JSON.stringify(
+      imported && Array.isArray(imported.routine) ? imported.routine : defaults()
+    ));
+
+    var currentLogs = readLogs();
+    var nextLogs = JSON.parse(JSON.stringify(currentLogs));
+    var existingIds = {};
+    nextLogs.forEach(function(group) {
+      (group.entries || []).forEach(function(entry) {
+        if (entry && entry.id) existingIds[entry.id] = true;
+      });
+    });
+
+    analysis.addLogs.forEach(function(group) {
+      var target = nextLogs.find(function(g) {
+        return g.date === group.date && g.dayKey === group.dayKey;
+      });
+      if (!target) {
+        target = {date:group.date, dayKey:group.dayKey, entries:[]};
         nextLogs.push(target);
       }
-
-      (rec.entries || []).forEach(function(entry){
-        var sig=recordSignature(rec.date,rec.dayKey,entry);
-        var seen=(importedSeen.get(sig)||0)+1;
-        importedSeen.set(sig,seen);
-
-        if(seen <= (existingCounts.get(sig)||0)){
-          skipped++;
-          return;
+      group.entries.forEach(function(entry) {
+        var copy = JSON.parse(JSON.stringify(entry));
+        if (!copy.id || existingIds[copy.id]) {
+          copy.id = 'merge-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
         }
-
-        var copy=Object.assign({},entry);
-        if(!copy.id || usedIds.has(copy.id))copy.id='merge-'+Date.now().toString(36)+'-'+genId();
-        usedIds.add(copy.id);
+        existingIds[copy.id] = true;
         target.entries.push(copy);
-        added++;
       });
     });
 
-    nextLogs=nextLogs.filter(function(rec){return rec.entries && rec.entries.length;});
-    nextLogs.sort(function(a,b){return a.date.localeCompare(b.date) || a.dayKey.localeCompare(b.dayKey);});
+    var ok = storageTransaction([
+      {key:ROUTINE_KEY, value:nextRoutine},
+      {key:CATALOG_KEY, value:nextCatalog},
+      {key:LOG_KEY, value:nextLogs}
+    ]);
+    if (!ok) {
+      setHint('가져오기에 실패했어요. 저장 공간을 확인해주세요.');
+      return false;
+    }
 
-    if(!storageTransaction([{key:LOG_KEY,value:nextLogs}]))throw new Error('현재 프로필에 기록을 추가하지 못했어요. 저장 공간을 확인해주세요.');
-    var persisted=readJSON(LOG_KEY,null);
-    if(!Array.isArray(persisted))throw new Error('기록 저장 확인에 실패했어요. 기존 데이터 보호를 위해 다시 확인해주세요.');
+    routine = nextRoutine;
+    catalog = nextCatalog;
+    renderAll();
+    renderRecords();
+    renderReport();
+    closeImportPreview();
 
-    logs=persisted;
-    showRecordDataStatus();
-    return {added:added,skipped:skipped};
+    var resultMsg =
+      '루틴 덮어쓰기 완료, 운동종류 ' + catalogAdds.length +
+      '개, 기록 ' + analysis.addRecordCount + '세트를 추가했어요.';
+    setHint(resultMsg);
+    return true;
   }
 
   function importTransfer(data) {
