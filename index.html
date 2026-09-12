@@ -327,13 +327,13 @@
   .bulk-app .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
   .bulk-app .bar-label { width: 32px; flex-shrink: 0; font-size: 12px; color: var(--ink); letter-spacing: -0.01em; }
   .bulk-app .bar-track { position: relative; flex: 1; height: 6px; background: var(--sunken); border-radius: 999px; }
+  .bulk-app .bar-range {
+    position:absolute;top:0;bottom:0;border-radius:999px;background:var(--line-strong);opacity:.42;z-index:1;
+  }
   .bulk-app .bar-fill {
     position: absolute; top: 0; left: 0; bottom: 0; background: var(--ink);
-    border-radius: 999px; transition: width .25s ease;
+    border-radius: 999px; transition: width .25s ease; z-index:2;
   }
-  .bulk-app .bar-fill.under { background: var(--faint); }
-  .bulk-app .bar-fill.over { background: var(--warn); }
-  .bulk-app .bar-mark { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--line-strong); }
   .bulk-app .bar-val {
     width: 24px; flex-shrink: 0; font-family: var(--num); font-size: 12px; font-weight: 600;
     font-variant-numeric: tabular-nums; color: var(--muted); text-align: right;
@@ -710,18 +710,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   .bulk-app .masthead-actions{display:flex;align-items:center;gap:8px;}
   .bulk-app .current-mode-badge{
     display:flex;align-items:center;gap:7px;
-    min-height:46px;padding:0 12px;
-    border:1px solid var(--line);border-radius:16px;
-    background:var(--panel);color:var(--ink);
-    font-size:14px;font-weight:700;white-space:nowrap;
-    box-shadow:0 8px 28px #2334510a;
+    min-height:46px;padding:0 2px;
+    border:0;border-radius:0;
+    background:transparent;color:var(--ink);
+    font-size:14px;font-weight:800;white-space:nowrap;
+    box-shadow:none;
   }
   .bulk-app .current-mode-icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;}
   .bulk-app .current-mode-icon svg{width:20px;height:20px;display:block;}
   .bulk-app .current-mode-label{line-height:1;}
   @media(max-width:480px){
     .bulk-app .masthead-actions{gap:6px;}
-    .bulk-app .current-mode-badge{min-height:42px;padding:0 10px;border-radius:14px;font-size:13px;gap:6px;}
+    .bulk-app .current-mode-badge{min-height:42px;padding:0 2px;border-radius:0;font-size:13px;gap:6px;}
     .bulk-app .current-mode-icon,.bulk-app .current-mode-icon svg{width:18px;height:18px;}
   }
 
@@ -758,6 +758,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     margin-bottom:0;
   }
 
+
+
+  .bulk-app .bar-legend + .bar-legend{margin-top:4px;}
+  .bulk-app .bar-legend:empty{display:none!important;margin:0!important;padding:0!important;}
 
   /* 설정 화면 헤더: 설정은 왼쪽, 닫기는 오른쪽 */
   .bulk-app.settings-open .masthead-actions{
@@ -1877,7 +1881,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     '이두': 'var(--m-bi)',
     '복근': 'var(--m-abs)'
   };
-  var MEV = 14, MRV = 22;
+  var VOLUME_MAX = 25;
+  var VOLUME_RANGES = {가슴:[12,16],등:[12,16],어깨:[12,16],하체:[12,16],이두:[6,10],삼두:[6,10]};
   var recordDataLocked = false, recordDataWarning = '';
 
   function storageTransaction(operations) {
@@ -3444,15 +3449,15 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   function volumeBarsHtml(vol) {
     return VOLUME_MUSCLES.map(function (m) {
       var v = vol[m];
-      var pct = Math.min(100, (v / MRV) * 100);
-      var mevPct = (MEV / MRV) * 100;
-      var cls = v < MEV ? 'under' : (v > MRV ? 'over' : '');
-      var fillStyle = 'width:' + pct + '%' + (cls ? '' : ';background:' + MUSCLE_COLOR[m]);
+      var pct = Math.min(100, (v / VOLUME_MAX) * 100);
+      var range = VOLUME_RANGES[m] || [12,16];
+      var rangeLeft = (range[0] / VOLUME_MAX) * 100;
+      var rangeWidth = ((range[1] - range[0]) / VOLUME_MAX) * 100;
       return '<div class="bar-row">' +
         '<span class="bar-label" style="color:' + MUSCLE_COLOR[m] + '">' + m + '</span>' +
         '<span class="bar-track">' +
-        '<span class="bar-fill ' + cls + '" style="' + fillStyle + '"></span>' +
-        '<span class="bar-mark" style="left:' + mevPct + '%"></span>' +
+        '<span class="bar-range" style="left:' + rangeLeft + '%;width:' + rangeWidth + '%"></span>' +
+        '<span class="bar-fill" style="width:' + pct + '%;background:' + MUSCLE_COLOR[m] + '"></span>' +
         '</span>' +
         '<span class="bar-val">' + v + '</span>' +
         '</div>';
@@ -3471,9 +3476,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         '<summary>주간볼륨<span class="chev"></span></summary>' +
         '<div class="principle-body">' +
           '<div class="bars">' + barsHtml + '</div>' +
-          '<p class="bar-legend">편집 중인 루틴의 부위별 세트 합계 · 빨간 선 14세트 · 막대 눈금 최대 22세트</p>' +
-          '<p style="margin-top:12px">이 그래프는 <b>현재 화면의 루틴에 계획된 세트 수</b>를 종목에 지정된 부위별로 합산해요. 저장 전 변경도 반영되며, 실제 완료 세트나 다른 부위의 간접 자극을 계산한 값은 아니에요.</p>' +
-          '<p>14·22세트는 이 앱의 비교용 눈금이지, 모두에게 적용되는 최소·최대 권장량이 아니에요. 막대 색만으로 부족하거나 과하다고 판단하지 마세요. 22세트를 넘으면 막대 길이는 같지만 옆 숫자에는 전체 세트 수가 표시돼요. 세트 수는 수행 기록과 회복 상태를 함께 보며 조절하세요.</p>' +
+          '<p class="bar-legend"><b>주간 세트 합계</b></p>' +
+          '<p class="bar-legend">근비대 참고구간 · 대근육 12–16 · 이두/삼두 6–10</p>' +
+          '<p class="bar-legend">음영 영역은 근비대를 위한 주간 본세트 참고구간입니다.<br>훈련량이 늘수록 추가 효과는 점차 감소하며, 개인의 회복 수준에 따라 달라질 수 있습니다.</p>' +
         '</div>' +
       '</details>';
   }
@@ -3646,7 +3651,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
     var form=document.createElement('form');form.className='direct-record-form';
 
-    var recentChoices=recentExerciseChoices(4);
+    var recentChoices=recentExerciseChoices(3);
     var recentWrap=null;
     if(recentChoices.length){
       recentWrap=document.createElement('div');recentWrap.className='direct-recent';
@@ -4418,7 +4423,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<div class="rep-summary">' +
         '<h2>주간 부위별 볼륨</h2>' +
         '<div class="bars">' + barsHtml + '</div>' +
-        '<p class="bar-legend">편집 중인 루틴의 부위별 세트 합계 · 빨간 선 14세트 · 막대 눈금 최대 22세트 (권장량 기준 아님)</p>' +
+        '<p class="bar-legend"><b>주간 세트 합계</b></p>' +
+        '<p class="bar-legend">근비대 참고구간 · 대근육 12–16 · 이두/삼두 6–10</p>' +
+        '<p class="bar-legend">음영 영역은 근비대를 위한 주간 본세트 참고구간입니다.<br>훈련량이 늘수록 추가 효과는 점차 감소하며, 개인의 회복 수준에 따라 달라질 수 있습니다.</p>' +
       '</div>' +
       daysHtml;
   }
