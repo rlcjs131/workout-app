@@ -4645,7 +4645,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
           if(allowed){
             try{
               await saveBlobToDirectory(dirHandle,fileName,blob);
-              hint.textContent=fileName+' 파일을 지정한 백업 폴더에 저장했어요.';
+              hint.textContent=(dirHandle.name || '백업 폴더')+' / '+fileName+' 에 저장했어요.';
               return;
             }catch(dirError){
               // 폴더 저장 실패 시 아래 저장창/다운로드 방식으로 자동 대체
@@ -4664,7 +4664,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
           var writable=await handle.createWritable();
           await writable.write(blob);
           await writable.close();
-          hint.textContent='파일을 저장했어요. 선택한 폴더에서 확인해주세요.';
+          hint.textContent=fileName+' 파일을 저장했어요.';
           return;
         }catch(saveError){
           if(saveError && saveError.name==='AbortError'){
@@ -4682,7 +4682,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       a.click();
       a.remove();
       setTimeout(function(){URL.revokeObjectURL(url);},60000);
-      hint.textContent='파일 다운로드를 요청했어요. 다운로드 폴더 또는 파일 앱에서 확인해주세요.';
+      hint.textContent=fileName+' 다운로드를 요청했어요.';
     }catch(e){
       hint.textContent='파일을 만들지 못했어요. 다시 시도해주세요.';
     }
