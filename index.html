@@ -327,8 +327,10 @@
   .bulk-app .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
   .bulk-app .bar-label { width: 32px; flex-shrink: 0; font-size: 12px; color: var(--ink); letter-spacing: -0.01em; }
   .bulk-app .bar-track { position: relative; flex: 1; height: 6px; background: var(--sunken); border-radius: 999px; }
-  .bulk-app .bar-range {
-    position:absolute;top:0;bottom:0;border-radius:999px;background:rgba(255,255,255,.16);border-left:1px solid var(--line-strong);border-right:1px solid var(--line-strong);z-index:3;pointer-events:none;
+  .bulk-app .bar-range-line {
+    position:absolute;top:-2px;bottom:-2px;width:2px;border-radius:2px;
+    background:var(--ink);opacity:.62;z-index:3;pointer-events:none;
+    transform:translateX(-1px);
   }
   .bulk-app .bar-fill {
     position: absolute; top: 0; left: 0; bottom: 0; background: var(--ink);
@@ -762,6 +764,18 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
   .bulk-app .bar-legend + .bar-legend{margin-top:4px;}
   .bulk-app .bar-legend:empty{display:none!important;margin:0!important;padding:0!important;}
+  /* 주간 세트 합계: 제목 계층과 상단 여백 정리 */
+  .bulk-app .rep-summary{padding-top:14px;}
+  .bulk-app .rep-summary h2{
+    font-size:18px;font-weight:800;color:var(--ink);line-height:1.25;
+    margin:0 0 5px;letter-spacing:-.02em;
+  }
+  .bulk-app .rep-summary h2 + .bar-legend{margin-top:0;}
+  .bulk-app .principle-body .weekly-set-title{
+    font-size:18px;font-weight:800;color:var(--ink);line-height:1.25;
+    margin:0 0 5px!important;letter-spacing:-.02em;
+  }
+  .bulk-app .principle-body .weekly-set-title + .bar-legend{margin-top:0;}
 
   /* 설정 화면 헤더: 설정은 왼쪽, 닫기는 오른쪽 */
   .bulk-app.settings-open .masthead-actions{
@@ -3453,11 +3467,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var pct = Math.min(100, (v / volumeMax) * 100);
       var range = VOLUME_RANGES[m] || [12,16];
       var rangeLeft = (range[0] / volumeMax) * 100;
-      var rangeWidth = ((range[1] - range[0]) / volumeMax) * 100;
+      var rangeRight = (range[1] / volumeMax) * 100;
       return '<div class="bar-row">' +
         '<span class="bar-label" style="color:' + MUSCLE_COLOR[m] + '">' + m + '</span>' +
         '<span class="bar-track">' +
-        '<span class="bar-range" style="left:' + rangeLeft + '%;width:' + rangeWidth + '%"></span>' +
+        '<span class="bar-range-line" style="left:' + rangeLeft + '%"></span>' +
+        '<span class="bar-range-line" style="left:' + rangeRight + '%"></span>' +
         '<span class="bar-fill" style="width:' + pct + '%;background:' + MUSCLE_COLOR[m] + '"></span>' +
         '</span>' +
         '<span class="bar-val">' + v + '</span>' +
@@ -3476,10 +3491,10 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<details class="principle fixed-guide"' + (openStates[0] !== false ? ' open' : '') + '>' +
         '<summary>주간볼륨<span class="chev"></span></summary>' +
         '<div class="principle-body">' +
-          '<p class="bar-legend"><b>주간 세트 합계</b></p>' +
-          '<p class="bar-legend">근비대 참고구간 · 대근육 12–16 · 이두/삼두 6–10</p>' +
+          '<p class="weekly-set-title">주간 세트 합계</p>' +
+          '<p class="bar-legend">근비대 참고구간 · 가슴/등/어깨/하체 12–16 · 이두/삼두 6–10</p>' +
           '<div class="bars">' + barsHtml + '</div>' +
-          '<p class="bar-legend">표시 영역은 근비대 참고구간입니다.<br>적정 훈련량은 개인의 회복 수준에 따라 달라집니다.</p>' +
+          '<p class="bar-legend">두 세로선 사이는 근비대 참고구간입니다.<br>적정 훈련량은 개인의 회복 수준에 따라 달라집니다.</p>' +
         '</div>' +
       '</details>';
   }
@@ -4423,9 +4438,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     reportViewEl.innerHTML =
       '<div class="rep-summary">' +
         '<h2>주간 세트 합계</h2>' +
-        '<p class="bar-legend">근비대 참고구간 · 대근육 12–16 · 이두/삼두 6–10</p>' +
+        '<p class="bar-legend">근비대 참고구간 · 가슴/등/어깨/하체 12–16 · 이두/삼두 6–10</p>' +
         '<div class="bars">' + barsHtml + '</div>' +
-        '<p class="bar-legend">표시 영역은 근비대 참고구간입니다.<br>적정 훈련량은 개인의 회복 수준에 따라 달라집니다.</p>' +
+        '<p class="bar-legend">두 세로선 사이는 근비대 참고구간입니다.<br>적정 훈련량은 개인의 회복 수준에 따라 달라집니다.</p>' +
       '</div>' +
       daysHtml;
   }
