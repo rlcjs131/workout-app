@@ -696,6 +696,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 </style>
 <style>
 .bulk-app .routine-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;}
+.bulk-app #dayView.routine-editing .reset-row{margin-bottom:24px;}
 .bulk-app .routine-mode-note{margin:0;color:var(--muted);font-size:13px;line-height:1.6;}
 .bulk-app #btnRoutineEdit{flex-shrink:0;min-height:44px;}
 .bulk-app #btnRoutineEdit[aria-pressed=true]{background:var(--primary);color:var(--on-primary);}
@@ -3425,15 +3426,38 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     profiles=next;return name;
   }
   var importCandidate=null;
-  document.getElementById('btnDataExport').addEventListener('click',function(){
+  document.getElementById('btnDataExport').addEventListener('click',async function(){
     var hint=document.getElementById('dataTransferHint');
     try{
       var data=transferSnapshot();
-      var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      var json=JSON.stringify(data,null,2);
+      var blob=new Blob([json],{type:'application/json'});
       if(blob.size>5*1024*1024){hint.textContent='현재 프로필은 5MB를 초과해 파일 가져오기 지원 범위를 넘습니다. 운동기록 텍스트 내보내기를 이용해주세요.';return;}
-      var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='workout-data-'+todayStr()+'.json';
+      var fileName='workout-data-'+todayStr()+'.json';
+
+      if(typeof window.showSaveFilePicker==='function'){
+        try{
+          var handle=await window.showSaveFilePicker({
+            suggestedName:fileName,
+            types:[{description:'운동 루틴 JSON',accept:{'application/json':['.json']}}]
+          });
+          var writable=await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          hint.textContent='파일을 저장했어요. 선택한 폴더에서 확인해주세요.';
+          return;
+        }catch(saveError){
+          if(saveError && saveError.name==='AbortError'){
+            hint.textContent='파일 저장을 취소했어요.';
+            return;
+          }
+          // 저장창 API가 실행 환경에서 실패하면 기존 다운로드 방식으로 대체
+        }
+      }
+
+      var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=fileName;
       document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},60000);
-      hint.textContent='파일 다운로드를 요청했어요. 다운로드 폴더 또는 파일 앱에서 확인해주세요. 이 파일은 자동 동기화되지 않습니다.';
+      hint.textContent='파일 다운로드를 요청했어요. 다운로드 폴더 또는 파일 앱에서 확인해주세요.';
     }catch(e){hint.textContent='파일을 만들지 못했어요. 다시 시도해주세요.';}
   });
   document.getElementById('btnRecoveryDownload').addEventListener('click',function(){
