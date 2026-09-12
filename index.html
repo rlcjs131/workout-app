@@ -731,6 +731,180 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   .bulk-app .stats-attendance-actual{font-size:30px;line-height:1;font-weight:900;color:var(--primary);letter-spacing:-.03em;}
   .bulk-app .stats-attendance-total{font-size:16px;font-weight:700;color:var(--muted);}
 
+
+  .bulk-app .masthead-actions{display:flex;align-items:center;gap:8px;}
+  .bulk-app #btnSettingsBack{order:1;flex:0 0 auto;}
+  .bulk-app #currentModeBadge{order:2;flex:0 0 auto;}
+  .bulk-app #btnSettings{order:3;flex:0 0 auto;}
+  .bulk-app #currentModeBadge .current-mode-icon{flex:0 0 20px;width:20px;height:20px;}
+  .bulk-app #currentModeBadge .current-mode-icon svg{display:block;width:20px!important;height:20px!important;min-width:20px;min-height:20px;}
+  @media(max-width:480px){
+    .bulk-app #currentModeBadge .current-mode-icon{flex-basis:18px;width:18px;height:18px;}
+    .bulk-app #currentModeBadge .current-mode-icon svg{width:18px!important;height:18px!important;min-width:18px;min-height:18px;}
+  }
+
+
+  .bulk-app .stats-card .stats-attendance{
+    align-items:center;
+    padding-top:8px;
+    margin-bottom:12px;
+  }
+  .bulk-app .stats-card .stats-attendance-value{
+    margin-top:0;
+    transform:translateY(4px);
+  }
+  .bulk-app .stats-card .stats-attendance + .stats-note{
+    margin-top:0;
+    margin-bottom:0;
+  }
+
+
+  /* 설정 화면 헤더: 설정은 왼쪽, 닫기는 오른쪽 */
+  .bulk-app.settings-open .masthead-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .bulk-app.settings-open #currentModeBadge{order:1;}
+  .bulk-app.settings-open #btnSettingsBack{order:2;}
+  .bulk-app.settings-open #btnSettings{display:none !important;}
+
+  /* 카드/패널 하단의 과한 빈 공간 정리 */
+  .bulk-app .settings-card,
+  .bulk-app .stats-card,
+  .bulk-app .record-muscle-group,
+  .bulk-app .catalog-muscle-group,
+  .bulk-app .routine-card,
+  .bulk-app .principle-card{
+    padding-bottom:14px;
+  }
+
+  .bulk-app .settings-card > :last-child,
+  .bulk-app .stats-card > :last-child,
+  .bulk-app .record-muscle-group > :last-child,
+  .bulk-app .catalog-muscle-group > :last-child,
+  .bulk-app .routine-card > :last-child,
+  .bulk-app .principle-card > :last-child{
+    margin-bottom:0 !important;
+  }
+
+  .bulk-app .stats-card{
+    padding-top:16px;
+    padding-bottom:14px;
+  }
+
+  .bulk-app .stats-card .stats-attendance{
+    padding-top:2px;
+    margin-bottom:8px;
+  }
+
+  .bulk-app .stats-card .stats-attendance-value{
+    transform:translateY(1px);
+  }
+
+  .bulk-app .stats-card > .stats-note{
+    margin-top:8px;
+    margin-bottom:0;
+  }
+
+  .bulk-app .settings-card .save-hint:empty,
+  .bulk-app .stats-card .save-hint:empty,
+  .bulk-app .record-muscle-group .save-hint:empty{
+    display:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    min-height:0 !important;
+  }
+
+  .bulk-app .record-muscle-group{
+    padding-bottom:10px;
+  }
+  .bulk-app .record-muscle-group .exercise-record-card:last-child{
+    margin-bottom:0;
+  }
+
+  .bulk-app .catalog-muscle-group{
+    padding-bottom:10px;
+  }
+  .bulk-app .catalog-muscle-group > :last-child{
+    margin-bottom:0 !important;
+  }
+
+  .bulk-app .settings-card .record-export-note:last-child,
+  .bulk-app .settings-card .save-hint:last-child{
+    margin-bottom:0 !important;
+  }
+
+  .bulk-app .reset-row:last-child{
+    margin-bottom:0;
+  }
+
+
+  /* 상태 메시지가 비어 있을 때 공간을 차지하지 않게 함 */
+  .bulk-app .save-hint:empty{
+    display:none !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  /* 운동 탭: 마지막 기록 추가 버튼 아래의 과한 빈 공간 축소 */
+  .bulk-app #dayView .day-panel{
+    margin-bottom:12px;
+  }
+  .bulk-app #dayView .panel-actions{
+    margin-bottom:0;
+  }
+  .bulk-app #dayView .panel-actions:last-child{
+    padding-bottom:0;
+  }
+  .bulk-app #dayView #principles{
+    margin-top:0;
+  }
+
+  /* 카드 내부 마지막 요소 아래 여백 제거 */
+  .bulk-app .day-panel > :last-child,
+  .bulk-app .settings-card > :last-child,
+  .bulk-app .stats-card > :last-child,
+  .bulk-app .rec-filter > :last-child,
+  .bulk-app .rep-summary > :last-child,
+  .bulk-app .rep-day > :last-child,
+  .bulk-app .rec-group > :last-child,
+  .bulk-app .memo-editor-card > :last-child{
+    margin-bottom:0 !important;
+  }
+
+  /* 설정 카드끼리의 간격도 제목과 중복되지 않게 축소 */
+  .bulk-app .settings-card{
+    margin-bottom:16px;
+  }
+  .bulk-app .settings-head{
+    margin-top:16px !important;
+    margin-bottom:10px;
+  }
+  .bulk-app .settings-view > .settings-head:first-child{
+    margin-top:0 !important;
+  }
+
+  /* 기록/통계/운동관리에서 카드 아래에 남는 여백 정리 */
+  .bulk-app #recordsView .rec-filter{
+    margin-bottom:12px;
+  }
+  .bulk-app #recordsView .record-muscle-group:last-child,
+  .bulk-app #catalogView .catalog-muscle-group:last-child,
+  .bulk-app #statsView .stats-card:last-child{
+    margin-bottom:0;
+  }
+
+  /* 운동일수 카드의 세로 균형 */
+  .bulk-app .stats-card .stats-attendance{
+    padding-top:0;
+    margin-bottom:8px;
+  }
+  .bulk-app .stats-card .stats-attendance-value{
+    transform:none;
+  }
+
 </style>
 <style>
 .bulk-app .routine-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;}
@@ -1189,7 +1363,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
     <div class="settings-head" style="margin-top:18px;">운동 메모 관리</div>
     <div class="settings-card">
-      <p class="record-export-note">오늘 탭에 표시할 안내와 메모를 편집하세요. 메모 내용은 운동 추천 계산에 영향을 주지 않아요.</p>
+      <p class="record-export-note">운동 탭에 표시할 메모를 편집하세요. 메모는 운동기록·통계 계산에 영향을 주지 않아요.</p>
       <div id="memoEditor"></div>
       <button class="btn-reset" id="btnMemoAdd" type="button">+ 항목 추가</button>
       <button class="btn-reset btn-save-now" id="btnMemoSave" type="button">메모 저장</button>
@@ -1207,7 +1381,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     </div>
     <div class="settings-head" style="margin-top:18px;">기기 변경 · 데이터 보관</div>
     <div class="settings-card">
-      <p class="record-export-note">데이터는 이 브라우저에 저장됩니다. 현재 프로필의 저장된 루틴·종목·운동기록·메모와 임시 루틴·기록 입력값을 파일로 보관하세요. 파일을 선택한 뒤 새 프로필로 복원하거나, 현재 프로필에는 기존 기록을 유지한 채 없는 운동기록만 추가할 수 있어요.</p>
+      <p class="record-export-note">데이터는 이 브라우저에 저장됩니다. 파일로 내보내면 현재 프로필의 루틴·종목·운동기록·메모와 임시 입력값을 보관할 수 있어요. 현재 프로필로 가져오면 루틴은 파일 내용으로 교체되고, 기존 종목은 유지한 채 파일에만 있는 종목과 없는 운동기록을 추가해요. 새 프로필로 가져오면 파일 내용을 그대로 복원해요.</p>
       <div class="transfer-actions">
         <button class="btn-reset" id="btnBackupFolder" type="button">백업 폴더 선택</button>
         <button class="btn-reset" id="btnDataExport" type="button">현재 프로필 파일 내보내기</button>
@@ -1216,7 +1390,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       </div>
       <div id="dataImportPreview" hidden>
         <p id="dataImportSummary" class="record-export-note"></p>
-        <button class="btn-reset btn-save-now" id="btnImportMergeCurrent" type="button">현재 프로필에 루틴 덮어쓰기 + 데이터 추가</button>
+        <button class="btn-reset btn-save-now" id="btnImportMergeCurrent" type="button">현재 프로필에 가져오기</button>
         <button class="btn-reset" id="btnImportConfirm" type="button">새 프로필로 가져오기</button>
         <button class="btn-reset" id="btnImportCancel" type="button">취소</button>
       </div>
@@ -2780,7 +2954,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     if (memoEditingProfile !== activeProfile) { loadMemoEditor();return; }
     if (memoDraft.some(function (m) { return !m.title.trim(); })) { hint.textContent = '각 항목의 제목을 입력해주세요.';showToast(hint.textContent,'error');return; }
     var ok = writeJSON(memoKey(), memoDraft);
-    hint.textContent = ok ? '메모 저장됨 · 오늘 탭에 반영했어요' : '저장하지 못했어요. 다시 시도해주세요.';
+    hint.textContent = ok ? '메모 저장됨 · 운동 탭에 반영했어요' : '저장하지 못했어요. 다시 시도해주세요.';
     showToast(ok?'메모 저장 완료':hint.textContent,ok?'success':'error');
     if (ok) renderPrinciples();
   });
@@ -3302,7 +3476,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     statsViewEl.innerHTML='<div class="stats-periods" role="group" aria-label="통계 조회 기간">'+periods+'</div><div class="stats-range-status"><p class="stats-note" role="status">'+(statsRangeAnchor?'직접 선택 · 종료일 선택 중<br>현재 조회: ':statsPeriod==='custom'?'직접 선택 · ':'')+data.from+' ~ '+data.to+'</p><button type="button" data-stats-reset>기간 초기화</button></div>'+
       statsCalendarHtml(statsCalendarMonth,data.allDates,asOf,{from:data.from,to:data.to},statsRangeAnchor)+
       '<section class="stats-card"><div class="stats-attendance"><h3>운동일수</h3><div class="stats-attendance-value"><span class="stats-attendance-context">'+statsEscape(attendanceDisplay.label)+'</span> <strong class="stats-attendance-actual">'+data.days+'</strong><span class="stats-attendance-total">'+(statsPeriod==='all'?'일':' / '+attendanceDisplay.total+'일')+'</span></div></div><p class="stats-note">선택 기간의 운동 기록일 수예요.</p></section>'+
-      (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 오늘 탭에서 운동기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
+      (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 운동 탭에서 기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
       '<section class="stats-card"><h3>부위별 기록 건수</h3>'+muscleBars+'<p class="stats-note">운동 비중이 아닌 기록 빈도이며, 기록 1건은 완료 1세트가 아니에요.</p></section>'+
       '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">기록된 종목을 검색하거나 부위와 종목을 차례로 펼쳐보세요. 선택 기간의 날짜별 최고 입력 무게이며, 1RM이나 근력 향상을 직접 뜻하지 않아요.</p>'+searchHtml+groups;
     statsViewEl.querySelectorAll('[data-stats-period]').forEach(function(button){button.addEventListener('click',function(){
@@ -4027,12 +4201,13 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   function openSettingsView(pushHistory) {
     mainViewsEl.hidden = true;
     settingsViewEl.hidden = false;
+    document.getElementById('bulkApp').classList.add('settings-open');
     backBtnInlineEl.hidden = false;
     if (currentModeBadgeEl) {
       currentModeBadgeEl.hidden = false;
       var settingsIconEl=document.getElementById('currentModeIcon');
       var settingsLabelEl=document.getElementById('currentModeLabel');
-      if(settingsIconEl) settingsIconEl.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"></path><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.12.37.18.76.18 1.15s-.06.78-.18 1.15z"></path></svg>';
+      if(settingsIconEl) settingsIconEl.innerHTML="<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"> <path d=\"M12 15a3 3 0 100-6 3 3 0 000 6z\"></path> <path d=\"M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z\"></path> </svg>";
       if(settingsLabelEl) settingsLabelEl.textContent='설정';
     }
     document.getElementById('btnSettings').hidden = true;
@@ -4049,6 +4224,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   function closeSettingsView() {
     settingsViewEl.hidden = true;
     mainViewsEl.hidden = false;
+    document.getElementById('bulkApp').classList.remove('settings-open');
     backBtnInlineEl.hidden = true;
     if (currentModeBadgeEl) {
       currentModeBadgeEl.hidden = false;
