@@ -713,16 +713,188 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   text-align:center;
 }
 
-.bulk-app .base-routine-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.48);}
-.bulk-app .base-routine-dialog{box-sizing:border-box;width:min(420px,100%);padding:20px;border-radius:18px;background:var(--surface,#fff);color:var(--ink);box-shadow:0 18px 50px rgba(0,0,0,.25);}
-.bulk-app .base-routine-dialog h3{margin:0 0 8px;font-size:21px;}
-.bulk-app .base-routine-dialog>p{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.55;}
-.bulk-app .base-routine-options{display:grid;gap:10px;}
-.bulk-app .base-routine-options button{display:flex;flex-direction:column;gap:3px;width:100%;padding:14px 15px;text-align:left;border:1px solid var(--line);border-radius:13px;background:var(--sunken);color:var(--ink);font:inherit;}
-.bulk-app .base-routine-options button strong{font-size:17px;}
-.bulk-app .base-routine-options button span{font-size:13px;color:var(--muted);}
-.bulk-app .base-routine-options button:active{transform:translateY(1px);}
-.bulk-app .base-routine-cancel{width:100%;min-height:44px;margin-top:12px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-weight:700;}
+
+
+.routine-reset-overlay{
+  position:fixed;inset:0;z-index:4000;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:0;
+  background:rgba(8,10,24,.68);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+  font-family:var(--ui);
+  box-sizing:border-box;
+}
+.routine-reset-sheet{
+  box-sizing:border-box;
+  width:min(460px,100%);
+  padding:10px 18px calc(18px + env(safe-area-inset-bottom,0px));
+  border:1px solid var(--line-strong);
+  border-bottom:0;
+  border-radius:24px 24px 0 0;
+  background:var(--panel);
+  color:var(--ink);
+  box-shadow:0 -18px 60px rgba(0,0,0,.36);
+}
+.routine-reset-handle{
+  width:42px;height:4px;margin:2px auto 18px;
+  border-radius:999px;background:var(--faint);opacity:.8;
+}
+.routine-reset-head{margin-bottom:15px;}
+.routine-reset-head h2{margin:0 0 6px;font-size:20px;line-height:1.3;font-weight:800;letter-spacing:-.02em;}
+.routine-reset-head p{margin:0;color:var(--muted);font-size:13px;line-height:1.6;}
+.routine-reset-options{display:grid;gap:9px;}
+.routine-reset-option{
+  display:grid;grid-template-columns:44px minmax(0,1fr) 18px;
+  align-items:center;gap:12px;
+  width:100%;min-height:72px;padding:12px 13px;
+  border:1px solid var(--line);border-radius:14px;
+  background:var(--sunken);color:var(--ink);
+  text-align:left;font-family:var(--ui);cursor:pointer;
+}
+.routine-reset-option:active{background:var(--raised);border-color:var(--line-strong);transform:translateY(1px);}
+.routine-reset-icon{
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(124,108,255,.14);
+  color:var(--primary);
+  font-family:var(--num);font-size:20px;font-weight:800;
+}
+.routine-reset-option.danger .routine-reset-icon{
+  background:rgba(251,113,133,.13);color:var(--drop);
+}
+.routine-reset-copy{min-width:0;}
+.routine-reset-copy strong{display:block;margin-bottom:3px;font-size:16px;font-weight:800;line-height:1.35;}
+.routine-reset-copy span{display:block;color:var(--muted);font-size:12.5px;line-height:1.45;}
+.routine-reset-chevron{
+  width:8px;height:8px;border-right:2px solid var(--faint);border-bottom:2px solid var(--faint);
+  transform:rotate(-45deg);justify-self:end;
+}
+.routine-reset-option.danger .routine-reset-copy strong{color:var(--drop);}
+.routine-reset-cancel{
+  width:100%;min-height:46px;margin-top:11px;
+  border:1px solid var(--line);border-radius:12px;
+  background:var(--raised);color:var(--ink);
+  font:700 14px var(--ui);cursor:pointer;
+}
+.routine-reset-cancel:active{transform:translateY(1px);}
+@media(min-width:700px){
+  .routine-reset-overlay{align-items:center;padding:24px;}
+  .routine-reset-sheet{
+    width:min(420px,100%);
+    border-bottom:1px solid var(--line-strong);
+    border-radius:22px;
+    padding-bottom:18px;
+  }
+  .routine-reset-handle{display:none;}
+}
+
+.base-routine-overlay{
+  position:fixed;inset:0;z-index:4000;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:0;
+  background:rgba(8,10,24,.68);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+  font-family:var(--ui);
+  box-sizing:border-box;
+}
+.base-routine-sheet{
+  box-sizing:border-box;
+  width:min(460px,100%);
+  max-height:min(78dvh,720px);
+  overflow:auto;
+  padding:10px 18px calc(18px + env(safe-area-inset-bottom,0px));
+  border:1px solid var(--line-strong);
+  border-bottom:0;
+  border-radius:24px 24px 0 0;
+  background:var(--panel);
+  color:var(--ink);
+  box-shadow:0 -18px 60px rgba(0,0,0,.36);
+}
+.base-routine-handle{
+  width:42px;height:4px;margin:2px auto 18px;
+  border-radius:999px;background:var(--faint);
+  opacity:.8;
+}
+.base-routine-head{margin-bottom:15px;}
+.base-routine-head h2{
+  margin:0 0 6px;
+  font-size:20px;line-height:1.3;font-weight:800;letter-spacing:-.02em;
+}
+.base-routine-head p{
+  margin:0;
+  color:var(--muted);
+  font-size:13px;line-height:1.6;
+}
+.base-routine-options{
+  display:grid;gap:9px;
+}
+.base-routine-option{
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr) 18px;
+  align-items:center;gap:12px;
+  width:100%;min-height:72px;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--sunken);
+  color:var(--ink);
+  text-align:left;
+  font-family:var(--ui);
+  cursor:pointer;
+}
+.base-routine-option:active{
+  background:var(--raised);
+  border-color:var(--line-strong);
+  transform:translateY(1px);
+}
+.base-routine-number{
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;
+  border-radius:12px;
+  background:rgba(124,108,255,.14);
+  color:var(--primary);
+  font-family:var(--num);
+  font-size:20px;font-weight:800;
+}
+.base-routine-copy{min-width:0;}
+.base-routine-copy strong{
+  display:block;margin-bottom:3px;
+  font-size:16px;font-weight:800;line-height:1.35;
+}
+.base-routine-copy span{
+  display:block;
+  color:var(--muted);
+  font-size:12.5px;line-height:1.45;
+}
+.base-routine-chevron{
+  width:8px;height:8px;
+  border-right:2px solid var(--faint);
+  border-bottom:2px solid var(--faint);
+  transform:rotate(-45deg);
+  justify-self:end;
+}
+.base-routine-cancel{
+  width:100%;min-height:46px;
+  margin-top:11px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--raised);
+  color:var(--ink);
+  font:700 14px var(--ui);
+  cursor:pointer;
+}
+.base-routine-cancel:active{transform:translateY(1px);}
+@media(min-width:700px){
+  .base-routine-overlay{align-items:center;padding:24px;}
+  .base-routine-sheet{
+    width:min(420px,100%);
+    border-bottom:1px solid var(--line-strong);
+    border-radius:22px;
+    padding-bottom:18px;
+  }
+  .base-routine-handle{display:none;}
+}
+
 .bulk-app .empty-routine-edit-btn{
   display:block;width:100%;margin:12px 0 6px;min-height:48px;
   font-size:16px;font-weight:800;
@@ -3021,18 +3193,133 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     });
   });
 
+  function openRoutineResetChooser(trigger) {
+    var old = document.getElementById('routineResetChooser');
+    if (old) old.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'routineResetChooser';
+    overlay.className = 'routine-reset-overlay';
+
+    var sheet = document.createElement('div');
+    sheet.className = 'routine-reset-sheet';
+    sheet.setAttribute('role','dialog');
+    sheet.setAttribute('aria-modal','true');
+    sheet.setAttribute('aria-labelledby','routineResetTitle');
+
+    var day = days[activeIndex];
+    var dayLabel = day ? day.letter + '요일' : '현재 요일';
+
+    sheet.innerHTML =
+      '<div class="routine-reset-handle" aria-hidden="true"></div>' +
+      '<div class="routine-reset-head">' +
+        '<h2 id="routineResetTitle">운동 초기화</h2>' +
+        '<p>초기화할 범위를 선택하세요.</p>' +
+      '</div>' +
+      '<div class="routine-reset-options">' +
+        '<button class="routine-reset-option" type="button" data-reset-scope="day">' +
+          '<span class="routine-reset-icon">1</span>' +
+          '<span class="routine-reset-copy"><strong>' + dayLabel + '만 초기화</strong><span>선택한 요일의 운동 루틴만 삭제합니다.</span></span>' +
+          '<span class="routine-reset-chevron" aria-hidden="true"></span>' +
+        '</button>' +
+        '<button class="routine-reset-option danger" type="button" data-reset-scope="all">' +
+          '<span class="routine-reset-icon">6</span>' +
+          '<span class="routine-reset-copy"><strong>전체 요일 초기화</strong><span>월~토의 모든 운동 루틴을 삭제합니다.</span></span>' +
+          '<span class="routine-reset-chevron" aria-hidden="true"></span>' +
+        '</button>' +
+      '</div>' +
+      '<button type="button" class="routine-reset-cancel">취소</button>';
+
+    overlay.appendChild(sheet);
+    document.body.appendChild(overlay);
+
+    var app = document.getElementById('bulkApp');
+    var previousInert = app ? app.inert : false;
+    var previousOverflow = document.body.style.overflow;
+    if (app) app.inert = true;
+    document.body.style.overflow = 'hidden';
+
+    function close() {
+      overlay.remove();
+      document.removeEventListener('keydown', keydown);
+      if (app) app.inert = previousInert;
+      document.body.style.overflow = previousOverflow;
+      if (trigger && trigger.isConnected) trigger.focus({preventScroll:true});
+    }
+
+    function keydown(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+        return;
+      }
+      if (e.key === 'Tab') {
+        var focusables = Array.from(sheet.querySelectorAll('button:not([disabled])'));
+        if (!focusables.length) return;
+        var first = focusables[0], last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
+    }
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) close();
+    });
+    sheet.querySelector('.routine-reset-cancel').addEventListener('click', close);
+    document.addEventListener('keydown', keydown);
+
+    sheet.querySelectorAll('[data-reset-scope]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var scope = btn.getAttribute('data-reset-scope');
+        close();
+
+        if (scope === 'day') {
+          var target = days[activeIndex];
+          var label = target ? target.letter + '요일' : '선택한 요일';
+          var accepted = window.confirm(
+            label + ' 운동 루틴을 초기화할까요?\\n\\n' +
+            label + '에 등록된 운동이 모두 삭제됩니다. 운동 관리의 종목과 기존 운동 기록은 삭제되지 않습니다.'
+          );
+          if (!accepted) return;
+
+          target.ex = [];
+          target.title = '';
+          target.cardio = false;
+          delete target.note;
+          save();
+          renderTabs();
+          renderPanel();
+          renderPrinciples();
+          showToast(label + ' 운동 루틴 초기화됨 · 루틴 저장 필요','pending');
+        } else {
+          var acceptedAll = window.confirm(
+            '전체 요일의 운동 루틴을 초기화할까요?\\n\\n' +
+            '월~토의 모든 운동 루틴이 삭제됩니다. 운동 관리의 종목과 기존 운동 기록은 삭제되지 않습니다.'
+          );
+          if (!acceptedAll) return;
+
+          days = defaults();
+          save();
+          renderTabs();
+          renderPanel();
+          renderPrinciples();
+          showToast('전체 운동 루틴 초기화됨 · 루틴 저장 필요','pending');
+        }
+
+        var saveButton = document.getElementById('btnSaveNow');
+        saveButton.hidden = false;
+      });
+    });
+
+    sheet.querySelector('[data-reset-scope="day"]').focus();
+  }
+
   document.getElementById('btnClearDay').addEventListener('click', function () {
     clearConfirmation();
-    var accepted = window.confirm('운동 루틴을 전부 초기화할까요?\n\n월~토의 모든 운동 루틴이 삭제됩니다. 운동 관리의 종목과 기존 운동 기록은 삭제되지 않습니다.');
-    if (!accepted) return;
-    days = defaults();
-    save();
-    renderTabs();
-    renderPanel();
-    renderPrinciples();
-    showToast('전체 운동 루틴 초기화됨 · 루틴 저장 필요','pending');
-    var saveButton=document.getElementById('btnSaveNow');
-    saveButton.hidden=false;
+    openRoutineResetChooser(this);
   });
 
 
@@ -3130,35 +3417,94 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var overlay = document.createElement('div');
     overlay.id = 'baseRoutineChooser';
     overlay.className = 'base-routine-overlay';
-    overlay.innerHTML =
-      '<div class="base-routine-dialog" role="dialog" aria-modal="true" aria-labelledby="baseRoutineTitle">' +
-        '<h3 id="baseRoutineTitle">기본 루틴 설정</h3>' +
-        '<p>원하는 분할을 선택하세요. 현재 루틴 전체가 선택한 기본 루틴으로 변경됩니다.</p>' +
-        '<div class="base-routine-options">' +
-          '<button type="button" data-split="2"><strong>2분할</strong><span>상체 / 하체 · 주 4회</span></button>' +
-          '<button type="button" data-split="3"><strong>3분할</strong><span>Push / Pull / Legs · 주 6회</span></button>' +
-          '<button type="button" data-split="4"><strong>4분할</strong><span>가슴·삼두 / 등·이두 / 하체 / 어깨 · 주 4회</span></button>' +
-        '</div>' +
-        '<button type="button" class="base-routine-cancel">취소</button>' +
-      '</div>';
 
+    var sheet = document.createElement('div');
+    sheet.className = 'base-routine-sheet';
+    sheet.setAttribute('role','dialog');
+    sheet.setAttribute('aria-modal','true');
+    sheet.setAttribute('aria-labelledby','baseRoutineTitle');
+    sheet.innerHTML =
+      '<div class="base-routine-handle" aria-hidden="true"></div>' +
+      '<div class="base-routine-head">' +
+        '<h2 id="baseRoutineTitle">기본 루틴 설정</h2>' +
+        '<p>분할을 선택하면 현재 운동 루틴 전체가 선택한 기본 루틴으로 변경됩니다.</p>' +
+      '</div>' +
+      '<div class="base-routine-options">' +
+        '<button class="base-routine-option" type="button" data-split="2">' +
+          '<span class="base-routine-number">2</span>' +
+          '<span class="base-routine-copy"><strong>2분할</strong><span>상체 / 하체 · 주 4회</span></span>' +
+          '<span class="base-routine-chevron" aria-hidden="true"></span>' +
+        '</button>' +
+        '<button class="base-routine-option" type="button" data-split="3">' +
+          '<span class="base-routine-number">3</span>' +
+          '<span class="base-routine-copy"><strong>3분할</strong><span>Push / Pull / Legs · 주 6회</span></span>' +
+          '<span class="base-routine-chevron" aria-hidden="true"></span>' +
+        '</button>' +
+        '<button class="base-routine-option" type="button" data-split="4">' +
+          '<span class="base-routine-number">4</span>' +
+          '<span class="base-routine-copy"><strong>4분할</strong><span>가슴·삼두 / 등·이두 / 하체 / 어깨 · 주 4회</span></span>' +
+          '<span class="base-routine-chevron" aria-hidden="true"></span>' +
+        '</button>' +
+      '</div>' +
+      '<button type="button" class="base-routine-cancel">취소</button>';
+
+    overlay.appendChild(sheet);
     document.body.appendChild(overlay);
-    function close(){ overlay.remove(); }
-    overlay.addEventListener('click', function(e){ if(e.target===overlay) close(); });
-    overlay.querySelector('.base-routine-cancel').addEventListener('click', close);
-    overlay.querySelectorAll('[data-split]').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var split = parseInt(btn.getAttribute('data-split'),10);
+
+    var app = document.getElementById('bulkApp');
+    var previousInert = app ? app.inert : false;
+    var previousOverflow = document.body.style.overflow;
+    if (app) app.inert = true;
+    document.body.style.overflow = 'hidden';
+
+    function close() {
+      overlay.remove();
+      document.removeEventListener('keydown', keydown);
+      if (app) app.inert = previousInert;
+      document.body.style.overflow = previousOverflow;
+      if (resetBtn && resetBtn.isConnected) resetBtn.focus({preventScroll:true});
+    }
+
+    function keydown(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+        return;
+      }
+      if (e.key === 'Tab') {
+        var focusables = Array.from(sheet.querySelectorAll('button:not([disabled])'));
+        if (!focusables.length) return;
+        var first = focusables[0], last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
+    }
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) close();
+    });
+    sheet.querySelector('.base-routine-cancel').addEventListener('click', close);
+    document.addEventListener('keydown', keydown);
+
+    sheet.querySelectorAll('[data-split]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var split = parseInt(btn.getAttribute('data-split'), 10);
         days = makeBaseSplitRoutine(split);
         save();
-        renderTabs(); renderPanel(); renderPrinciples();
+        renderTabs();
+        renderPanel();
+        renderPrinciples();
         close();
-        showToast(split+'분할 기본 루틴 적용됨 · 루틴 저장 필요','pending');
-        var saveButton=document.getElementById('btnSaveNow');
-        saveButton.hidden=false;
+        showToast(split + '분할 기본 루틴 적용됨 · 루틴 저장 필요', 'pending');
+        var saveButton = document.getElementById('btnSaveNow');
+        saveButton.hidden = false;
       });
     });
-    overlay.querySelector('[data-split="2"]').focus();
+
+    sheet.querySelector('[data-split="2"]').focus();
   }
 
   var resetBtn = document.getElementById('btnReset');
