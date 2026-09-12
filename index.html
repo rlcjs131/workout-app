@@ -3527,9 +3527,13 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     closeImportPreview();
 
     var resultMsg =
-      '루틴 덮어쓰기 완료, 운동종류 ' + catalogAdds.length +
-      '개, 기록 ' + analysis.addRecordCount + '세트를 추가했어요.';
-    setHint(resultMsg);
+      '적용 완료!\n\n' +
+      '운동 루틴: JSON 파일의 루틴으로 덮어쓰기 완료\n' +
+      '운동 관리: 신규 운동 ' + catalogAdds.length + '개 추가\n' +
+      '운동 기록: ' + analysis.addRecordCount + '건 추가' +
+      (analysis.duplicateRecordCount ? ' · 중복 ' + analysis.duplicateRecordCount + '건 제외' : '');
+    setHint(resultMsg.replace(/\n/g, ' · '));
+    window.alert(resultMsg);
     return true;
   }
 
@@ -3609,7 +3613,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       importCandidate=validateTransfer(data);var p=data.profile;
       var mergeInfo=analyzeCurrentRecordMerge(importCandidate);
       document.getElementById('dataImportSummary').textContent=
-        p.name+' · 파일 기록 '+mergeInfo.total+'건 · 현재 프로필에 추가 '+mergeInfo.add+'건 · 중복 '+mergeInfo.duplicates+'건 무시. 새 프로필로 가져오기도 선택할 수 있어요.';
+        p.name+' · 파일 기록 '+mergeInfo.total+'건 · 현재 프로필에 기록 추가 '+mergeInfo.add+'건 · 중복 '+mergeInfo.duplicates+'건 무시. 새 프로필로 가져오기도 선택할 수 있어요.';
       document.getElementById('dataImportPreview').hidden=false;hint.textContent='내용을 확인한 뒤 가져오기 방식을 선택해주세요.';
     }catch(e){hint.textContent=e.message;}
   });
@@ -3622,7 +3626,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var message='현재 프로필 ['+activeProfile+']에 운동기록을 추가할까요?\n\n'
         +'추가: '+info.add+'건\n'
         +'중복으로 무시: '+info.duplicates+'건\n\n'
-        +'현재 루틴·종목·메모는 덮어쓰지 않습니다. 운동기록만 병합합니다.';
+        +'운동 루틴은 JSON으로 덮어쓰고, 운동 관리는 신규 운동만 추가하며, 운동 기록은 중복을 제외해 추가합니다.';
       if(!window.confirm(message)){
         hint.textContent='가져오기를 취소했어요. 현재 데이터는 변경되지 않았습니다.';
         return;
