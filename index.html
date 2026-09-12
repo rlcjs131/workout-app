@@ -965,6 +965,45 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   .bulk-app .stats-metric-panel[hidden]{display:none !important;}
   .bulk-app .stats-metric-empty{margin:4px 0 0 !important;}
 
+
+  .bulk-app .record-compare-hint{
+    padding:8px 10px;
+    border-radius:10px;
+    background:var(--sunken);
+  }
+  .bulk-app .record-compare-hint .record-compare-change{
+    display:inline-block;
+    margin-top:2px;
+    font-weight:700;
+    color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .bulk-app .record-compare-hint.compare-up .record-compare-change{color:var(--gain);}
+  .bulk-app .record-compare-hint.compare-down .record-compare-change{color:var(--drop);}
+
+
+  .bulk-app .btn-direct-record{color:var(--primary);font-weight:700;}
+  .direct-record-overlay{
+    position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;
+    padding:18px;background:rgba(8,10,20,.72);backdrop-filter:blur(5px);
+  }
+  .direct-record-modal{
+    width:min(420px,100%);max-height:min(680px,88vh);overflow:auto;
+    background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;
+    box-shadow:0 24px 70px rgba(0,0,0,.38);
+  }
+  .direct-record-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+  .direct-record-head h2{margin:0;font-size:18px;}
+  .direct-record-close{min-width:34px;height:34px;padding:0;border-radius:10px;}
+  .direct-record-form{display:grid;gap:12px;}
+  .direct-record-form label{display:grid;gap:6px;color:var(--muted);font-size:11.5px;font-weight:600;}
+  .direct-record-form input,.direct-record-form select{width:100%;min-height:42px;}
+  .direct-record-values{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .direct-record-prev{margin:0!important;}
+  .direct-record-actions{display:flex;gap:8px;margin-top:2px;}
+  .direct-record-actions .btn-reset{flex:1;}
+  .direct-record-custom-note{margin:-4px 0 0;font-size:11px;color:var(--faint);line-height:1.45;}
+
 </style>
 <style>
 .bulk-app .routine-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;}
@@ -1464,7 +1503,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <p class="rest-note" id="restNote" hidden>오늘은 일요일 · 휴식일이에요</p>
 
       <div class="routine-mode-bar">
-        <p class="routine-mode-note" id="routineModeNote">목표를 확인하고 운동 기록을 추가하세요.</p>
+        <button class="btn-reset btn-direct-record" id="btnDirectRecord" type="button">+ 직접 기록</button>
         <button class="btn-reset" id="btnRoutineEdit" type="button" aria-pressed="false" aria-controls="dayPanel">루틴 편집</button>
       </div>
 
@@ -2153,14 +2192,47 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     }
     return group[key];
   }
-  function lastRecord(name) {
+  function lastRecord(name, onOrBeforeDate) {
     for (var i = logs.length - 1; i >= 0; i--) {
+      if (onOrBeforeDate && logs[i].date > onOrBeforeDate) continue;
       var entries = logs[i].entries || [];
       for (var j = entries.length - 1; j >= 0; j--) {
         if (entries[j].n === name) return { date: logs[i].date, w: entries[j].w, reps: entries[j].reps };
       }
     }
     return null;
+  }
+  function estimated1RM(weight,reps) {
+    var w=parseFloat(weight), r=parseFloat(reps);
+    if(!isFinite(w) || !isFinite(r) || w<0 || r<=0)return null;
+    return r===1 ? w : w*(1+r/30);
+  }
+  function formatSigned(value,suffix,decimals) {
+    if(value===null || value===undefined || !isFinite(value))return '';
+    var rounded=Number(value.toFixed(decimals==null?1:decimals));
+    return (rounded>0?'+':'')+rounded+suffix;
+  }
+  function updatePreviousComparison(el,prev,weight,reps) {
+    if(!el || !prev)return;
+    var prevW=parseFloat(prev.w), prevR=parseFloat(prev.reps);
+    var curW=parseFloat(weight), curR=parseFloat(reps);
+    var html='직전 <b>'+statsEscape(prev.w)+'kg × '+statsEscape(prev.reps)+'회</b> <span>('+statsEscape(prev.date)+')</span>';
+    var changes=[];
+    if(isFinite(curW) && isFinite(prevW)){
+      var wd=curW-prevW;
+      changes.push(wd===0?'무게 동일':'무게 '+formatSigned(wd,'kg',1));
+    }
+    var prev1=estimated1RM(prevW,prevR), cur1=estimated1RM(curW,curR);
+    if(prev1!==null && cur1!==null && prev1>0){
+      var pct=(cur1-prev1)/prev1*100;
+      changes.push('추정 1RM '+formatSigned(pct,'%',1));
+      if(pct>0.05)el.classList.add('compare-up');
+      else if(pct<-0.05)el.classList.add('compare-down');
+      else {el.classList.remove('compare-up');el.classList.remove('compare-down');}
+    } else {
+      el.classList.remove('compare-up');el.classList.remove('compare-down');
+    }
+    el.innerHTML=html+(changes.length?'<br><span class="record-compare-change">'+statsEscape(changes.join(' · '))+'</span>':'');
   }
   function historyFor(name) {
     var out = [];
@@ -2224,9 +2296,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var button = document.getElementById('btnRoutineEdit');
     button.textContent = routineEditing ? '편집 닫기' : '루틴 편집';
     button.setAttribute('aria-pressed', String(routineEditing));
-    document.getElementById('routineModeNote').textContent = routineEditing
-      ? '종목·목표·순서 변경은 루틴 저장을 눌러야 확정됩니다.'
-      : '목표를 확인하고 운동 기록을 추가하세요.';
+
     document.getElementById('btnSaveNow').hidden = !routineEditing && !routineOrderPending;
     document.getElementById('btnSaveNow').classList.toggle('pending-save',routineOrderPending);
     var hint=document.getElementById('routineSaveHint');
@@ -2236,6 +2306,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     routineEditing = !routineEditing;
     renderPanel();
   });
+  document.getElementById('btnDirectRecord').addEventListener('click', openDirectRecordModal);
   var TAB_ICONS = {
     day: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12"></line><rect x="4" y="8" width="3" height="8" rx="1"></rect><rect x="17" y="8" width="3" height="8" rx="1"></rect><line x1="9" y1="10" x2="9" y2="14"></line><line x1="15" y1="10" x2="15" y2="14"></line></svg>',
     catalog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line><line x1="9" y1="18" x2="20" y2="18"></line><circle cx="5" cy="6" r="1"></circle><circle cx="5" cy="12" r="1"></circle><circle cx="5" cy="18" r="1"></circle></svg>',
@@ -2667,7 +2738,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var logRow = document.createElement('div');
       logRow.className = 'log-fields';
       var dr = getDraft(d.key, ex.n, ex.uid);
-      var prev = lastRecord(ex.n);
+      var prev = lastRecord(ex.n, selectedRecordDate);
       // 새 세트를 입력할 때 최근 기록의 kg를 기본값으로 채워 횟수만 바로 입력할 수 있게 한다.
       if (!String(dr.w == null ? '' : dr.w).trim() && prev && prev.w !== '-' && !isNaN(parseFloat(prev.w))) {
         dr.w = String(prev.w);
@@ -2706,11 +2777,15 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
       if (prev) {
         var hint = document.createElement('p');
-        hint.className = 'prev-hint';
-        var up = '';
-        var curW = parseFloat(dr.w), prevW = parseFloat(prev.w);
-        if (!isNaN(curW) && !isNaN(prevW) && curW > prevW) up = ' <span class="up">↑ 증량</span>';
-        hint.innerHTML = '지난 기록 <b>' + statsEscape(prev.w) + 'kg × ' + statsEscape(prev.reps) + '회</b> <span>(' + statsEscape(prev.date) + ')</span>' + up;
+        hint.className = 'prev-hint record-compare-hint';
+        updatePreviousComparison(hint,prev,dr.w,dr.reps);
+        function refreshPreviousComparison(){
+          updatePreviousComparison(hint,prev,wIn.value,doneIn.value);
+        }
+        wIn.addEventListener('input',refreshPreviousComparison);
+        doneIn.addEventListener('input',refreshPreviousComparison);
+        wIn.addEventListener('change',refreshPreviousComparison);
+        doneIn.addEventListener('change',refreshPreviousComparison);
         li.appendChild(hint);
 
         var suggestion = suggestNext(ex, ex.n);
@@ -3036,6 +3111,119 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     if(reps && (!/^\d+$/.test(reps)||Number(reps)>100))throw new Error('횟수는 0~100 사이의 정수로 입력해주세요.');
     return {date:date,w:weight||'-',reps:reps||'-'};
   }
+
+  function catalogExerciseOptions() {
+    var out=[];
+    MUSCLES.forEach(function(m){
+      (catalog[m] || []).forEach(function(e){out.push({name:e.n,muscle:m});});
+    });
+    return out.sort(function(a,b){return a.name.localeCompare(b.name,'ko') || a.muscle.localeCompare(b.muscle,'ko');});
+  }
+  function weekdayKeyForDate(date) {
+    var keys=['sun','mon','tue','wed','thu','fri','sat'];
+    var day=new Date(date+'T12:00:00').getDay();
+    return keys[day] || 'mon';
+  }
+  function saveDirectRecord(name,muscle,date,weight,reps) {
+    var values=cleanRecordValues(date,weight,reps);
+    var entry={id:genId(),n:name,m:muscle,w:values.w,reps:values.reps};
+    var next=logs.map(function(rec){return {date:rec.date,dayKey:rec.dayKey,entries:(rec.entries||[]).map(function(e){return Object.assign({},e);})};});
+    var dayKey=weekdayKeyForDate(date);
+    var target=next.find(function(rec){return rec.date===date && rec.dayKey===dayKey;});
+    if(!target){target={date:date,dayKey:dayKey,entries:[]};next.push(target);}
+    target.entries.push(entry);
+    next.sort(function(a,b){return a.date.localeCompare(b.date);});
+    if(!writeJSON(LOG_KEY,next))throw new Error('기록을 저장하지 못했어요. 다시 시도해주세요.');
+    logs=next;
+    return entry;
+  }
+  function openDirectRecordModal() {
+    clearConfirmation();
+    var options=catalogExerciseOptions();
+    var overlay=document.createElement('div');overlay.className='direct-record-overlay';overlay.setAttribute('role','presentation');
+    var modal=document.createElement('section');modal.className='direct-record-modal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','directRecordTitle');
+    var head=document.createElement('div');head.className='direct-record-head';
+    var title=document.createElement('h2');title.id='directRecordTitle';title.textContent='운동 기록 추가';
+    var closeBtn=document.createElement('button');closeBtn.type='button';closeBtn.className='btn-reset direct-record-close';closeBtn.textContent='×';closeBtn.setAttribute('aria-label','닫기');
+    head.appendChild(title);head.appendChild(closeBtn);modal.appendChild(head);
+
+    var form=document.createElement('form');form.className='direct-record-form';
+    var nameLabel=document.createElement('label');nameLabel.textContent='운동 종목';
+    var name=document.createElement('input');name.type='search';name.autocomplete='off';name.placeholder='운동을 검색하거나 직접 입력';name.setAttribute('list','directRecordExerciseList');name.required=true;
+    var datalist=document.createElement('datalist');datalist.id='directRecordExerciseList';
+    options.forEach(function(item){var o=document.createElement('option');o.value=item.name;o.label=item.muscle;datalist.appendChild(o);});
+    nameLabel.appendChild(name);nameLabel.appendChild(datalist);form.appendChild(nameLabel);
+
+    var muscleLabel=document.createElement('label');muscleLabel.textContent='부위';
+    var muscle=document.createElement('select');
+    MUSCLES.concat(['기타']).forEach(function(m){var o=document.createElement('option');o.value=m;o.textContent=m;muscle.appendChild(o);});
+    muscleLabel.appendChild(muscle);form.appendChild(muscleLabel);
+
+    var dateLabel=document.createElement('label');dateLabel.textContent='기록 날짜';
+    var date=document.createElement('input');date.type='date';date.max=todayStr();date.value=selectedRecordDate;date.required=true;
+    dateLabel.appendChild(date);form.appendChild(dateLabel);
+
+    var values=document.createElement('div');values.className='direct-record-values';
+    var weightLabel=document.createElement('label');weightLabel.textContent='무게 (kg)';
+    var weight=document.createElement('input');weight.type='number';weight.min='0';weight.max='500';weight.step='any';weight.inputMode='decimal';weight.placeholder='kg';
+    weightLabel.appendChild(weight);
+    var repsLabel=document.createElement('label');repsLabel.textContent='횟수';
+    var reps=document.createElement('input');reps.type='number';reps.min='0';reps.max='100';reps.step='1';reps.inputMode='numeric';reps.placeholder='회';
+    repsLabel.appendChild(reps);values.appendChild(weightLabel);values.appendChild(repsLabel);form.appendChild(values);
+
+    var prevHint=document.createElement('p');prevHint.className='prev-hint record-compare-hint direct-record-prev';prevHint.hidden=true;form.appendChild(prevHint);
+    var customNote=document.createElement('p');customNote.className='direct-record-custom-note';customNote.textContent='운동 관리에 없는 이름도 기록할 수 있어요. 직접 입력한 종목은 운동 관리에 자동 추가되지 않아요.';form.appendChild(customNote);
+    var hint=document.createElement('p');hint.className='save-hint';hint.setAttribute('role','status');form.appendChild(hint);
+    var actions=document.createElement('div');actions.className='direct-record-actions';
+    var cancel=document.createElement('button');cancel.type='button';cancel.className='btn-reset';cancel.textContent='취소';
+    var save=document.createElement('button');save.type='submit';save.className='btn-reset btn-save-now';save.textContent='기록 저장';
+    actions.appendChild(cancel);actions.appendChild(save);form.appendChild(actions);
+    modal.appendChild(form);overlay.appendChild(modal);
+
+    var previous=null,previousName='';
+    function selectedCatalogItem(){
+      var q=name.value.trim().toLocaleLowerCase('ko-KR');
+      return options.find(function(item){return item.name.toLocaleLowerCase('ko-KR')===q;}) || null;
+    }
+    function refreshExercise(){
+      var item=selectedCatalogItem();
+      if(item)muscle.value=item.muscle;
+      var trimmed=name.value.trim();
+      if(!trimmed){previous=null;previousName='';prevHint.hidden=true;return;}
+      if(trimmed!==previousName){
+        previousName=trimmed;previous=lastRecord(trimmed,date.value);
+        if(previous && !weight.value && previous.w!=='-')weight.value=previous.w;
+      }
+      if(previous){prevHint.hidden=false;updatePreviousComparison(prevHint,previous,weight.value,reps.value);}
+      else prevHint.hidden=true;
+    }
+    name.addEventListener('input',refreshExercise);name.addEventListener('change',refreshExercise);
+    date.addEventListener('change',function(){previousName='';refreshExercise();});
+    weight.addEventListener('input',refreshExercise);reps.addEventListener('input',refreshExercise);
+
+    function close(){
+      document.removeEventListener('keydown',keydown);overlay.remove();document.body.style.overflow='';
+      var app=document.querySelector('.bulk-app');if(app)app.inert=false;
+      var trigger=document.getElementById('btnDirectRecord');if(trigger)trigger.focus({preventScroll:true});
+    }
+    function keydown(e){if(e.key==='Escape'){e.preventDefault();close();}}
+    closeBtn.addEventListener('click',close);cancel.addEventListener('click',close);
+    overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+    form.addEventListener('submit',function(e){
+      e.preventDefault();hint.textContent='';
+      var exerciseName=name.value.trim();
+      if(!exerciseName){hint.textContent='운동 종목을 입력해주세요.';showToast(hint.textContent,'error');name.focus();return;}
+      try{
+        saveDirectRecord(exerciseName,muscle.value,date.value,weight.value,reps.value);
+        close();renderPanel();renderPrinciples();
+        showToast(exerciseName+' 기록 저장 완료');
+      }catch(error){hint.textContent=error.message;hint.className='save-hint save-error';showToast(error.message,'error');}
+    });
+
+    var app=document.querySelector('.bulk-app');if(app)app.inert=true;
+    document.body.style.overflow='hidden';document.body.appendChild(overlay);document.addEventListener('keydown',keydown);name.focus();
+  }
+
   function editedRecords(source,id,values) {
     var sameDate=source.some(function(rec){return rec.date===values.date && rec.entries.some(function(e){return e.id===id;});});
     if(sameDate)return source.map(function(rec){return Object.assign({},rec,{entries:rec.entries.map(function(e){return e.id===id?Object.assign({},e,{w:values.w,reps:values.reps}):Object.assign({},e);})});});
@@ -3459,7 +3647,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
   function statsMetricMeta(metric) {
     if(metric==='weight')return {label:'최고 무게',unit:'kg',decimals:1,aria:'날짜별 최고 입력 무게'};
-    if(metric==='volume')return {label:'총 볼륨',unit:'kg',decimals:0,aria:'날짜별 총 볼륨'};
+    if(metric==='volume')return {label:'기록 볼륨',unit:'kg',decimals:0,aria:'날짜별 기록한 세트 기준 볼륨'};
     return {label:'추정 1RM',unit:'kg',decimals:1,aria:'날짜별 추정 1RM'};
   }
   function statsFormatMetric(value,metric) {
@@ -3513,7 +3701,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<title>'+statsEscape(exercise.name)+' · '+points[0].date+' ~ '+last.date+' · '+meta.label+' '+statsFormatMetric(summary.best,metric)+'</title><text x="37" y="20" text-anchor="end">'+meta.unit+'</text>'+grid+line+dots+ticks+'</svg>'+
       '<label class="stats-chart-select"><span>기록 날짜 선택</span><select data-metric-date aria-label="'+statsEscape(exercise.name)+' '+meta.label+' 기록 날짜 선택">'+options+'</select></label>'+
       '<figcaption><span data-metric-value role="status">'+last.date+' · '+statsFormatMetric(last.value,metric)+'</span><br>'+
-      (metric==='volume'?'해당 날짜에 무게와 횟수가 함께 있는 기록의 무게×횟수를 합산해요.':metric==='e1rm'?'Epley 공식으로 계산한 참고값이며, 고반복 기록일수록 오차가 커질 수 있어요.':'기록이 있는 날짜의 최고 입력 무게만 연결해요.')+
+      (metric==='volume'?'기록한 세트만 기준으로 무게×횟수를 합산해요. 실제 전체 운동량과 다를 수 있어요.':metric==='e1rm'?'Epley 공식으로 계산한 참고값이며, 고반복 기록일수록 오차가 커질 수 있어요.':'기록이 있는 날짜의 최고 입력 무게만 연결해요.')+
       '</figcaption></figure>';
   }
   function statsExerciseMetricsHtml(exercise) {
@@ -3612,7 +3800,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<section class="stats-card"><div class="stats-attendance"><h3>운동일수</h3><div class="stats-attendance-value"><span class="stats-attendance-context">'+statsEscape(attendanceDisplay.label)+'</span> <strong class="stats-attendance-actual">'+data.days+'</strong><span class="stats-attendance-total">'+(statsPeriod==='all'?'일':' / '+attendanceDisplay.total+'일')+'</span></div></div><p class="stats-note">선택 기간의 운동 기록일 수예요.</p></section>'+
       (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 운동 탭에서 기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
       '<section class="stats-card"><h3>부위별 기록 건수</h3>'+muscleBars+'<p class="stats-note">운동 비중이 아닌 기록 빈도이며, 기록 1건은 완료 1세트가 아니에요.</p></section>'+
-      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">기록된 종목을 검색하고 추정 1RM·최고 무게·총 볼륨으로 변화를 비교해보세요. 추정 1RM과 볼륨은 입력 기록을 바탕으로 한 참고값이에요.</p>'+searchHtml+groups;
+      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">기록된 종목을 검색하고 추정 1RM·최고 무게·기록 볼륨으로 변화를 비교해보세요. 추정 1RM과 볼륨은 입력 기록을 바탕으로 한 참고값이에요.</p>'+searchHtml+groups;
     statsViewEl.querySelectorAll('[data-stats-period]').forEach(function(button){button.addEventListener('click',function(){
       chooseStatsPeriod(button.dataset.statsPeriod);renderStats();
       var active=statsViewEl.querySelector('[data-stats-period="'+statsPeriod+'"]');if(active)active.focus({preventScroll:true});
