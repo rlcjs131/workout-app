@@ -1221,6 +1221,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div id="recordsView" hidden>
       <p class="save-hint" id="recordsActionHint" role="status" aria-live="polite"></p>
       <p class="record-export-note">기록의 무게·횟수 또는 날짜를 누르면 수정할 수 있어요.</p>
+      <div class="stats-exercise-search record-exercise-search">
+        <input type="search" id="recordExerciseSearch" list="recordExerciseSuggestions" autocomplete="off" placeholder="기록된 종목 검색" aria-label="운동기록 종목 검색">
+        <svg class="stats-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <datalist id="recordExerciseSuggestions"></datalist>
+      </div>
+      <p class="stats-search-empty" id="recordSearchEmpty" hidden>검색한 종목의 기록이 현재 조회 기간에 없어요.</p>
       <div class="rec-filter">
         <div class="rec-filter-row">
           <input type="date" id="recFilterFrom" aria-label="조회 시작일">
@@ -1901,6 +1907,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   var statsCalendarMonth = '';
   var statsCustomRange = null, statsRangeAnchor = '';
   var statsExerciseQuery = '';
+  var recordExerciseQuery = '';
+  var MODE_KEY = 'bulk-routine-active-mode-v1';
   var tabsEl = document.getElementById('dayTabs');
   var panelEl = document.getElementById('dayPanel');
   var restNoteEl = document.getElementById('restNote');
@@ -1924,7 +1932,15 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     renderTabs();
     renderPanel();
   });
-  var mode = 'day';
+  var savedMode = readJSON(MODE_KEY, 'day');
+  var mode = ['day','records','report','stats','catalog'].indexOf(savedMode) >= 0 ? savedMode : 'day';
+  function applyModeView() {
+    dayViewEl.hidden = mode !== 'day';
+    catalogViewEl.hidden = mode !== 'catalog';
+    recordsViewEl.hidden = mode !== 'records';
+    reportViewEl.hidden = mode !== 'report';
+    statsViewEl.hidden = mode !== 'stats';
+  }
   var routineEditing = false;
   function updateRoutineMode() {
     dayViewEl.classList.toggle('routine-editing', routineEditing);
@@ -1964,11 +1980,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       b.addEventListener('click', function () {
         if (mode === pair[0]) return;
         mode = pair[0];
-        dayViewEl.hidden = mode !== 'day';
-        catalogViewEl.hidden = mode !== 'catalog';
-        recordsViewEl.hidden = mode !== 'records';
-        reportViewEl.hidden = mode !== 'report';
-        statsViewEl.hidden = mode !== 'stats';
+        writeJSON(MODE_KEY, mode);
+        applyModeView();
         renderModeToggle();
         if (mode === 'catalog') renderCatalog();
         else if (mode === 'records') renderRecords();
@@ -2368,6 +2381,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var logRow = document.createElement('div');
       logRow.className = 'log-fields';
       var dr = getDraft(d.key, ex.n, ex.uid);
+      var prev = lastRecord(ex.n);
+      // 새 세트를 입력할 때 최근 기록의 kg를 기본값으로 채워 횟수만 바로 입력할 수 있게 한다.
+      if (!String(dr.w == null ? '' : dr.w).trim() && prev && prev.w !== '-' && !isNaN(parseFloat(prev.w))) {
+        dr.w = String(prev.w);
+        writeJSON(DRAFT_KEY, draft);
+      }
 
       var wIn = makeNumberInput('in-weight', dr.w, 0, 500, 0.5, function (v) { dr.w = v; writeJSON(DRAFT_KEY, draft); });
       wIn.setAttribute('aria-label', '무게 (kg)');
@@ -2399,7 +2418,6 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       li.appendChild(goal);
       li.appendChild(logRow);
 
-      var prev = lastRecord(ex.n);
       if (prev) {
         var hint = document.createElement('p');
         hint.className = 'prev-hint';
@@ -2780,6 +2798,25 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     var opened = {};
     recordsListEl.querySelectorAll('details[data-record-key]').forEach(function(el){opened[el.dataset.recordKey]=el.open;});
     recordsListEl.replaceChildren();
+    var recordSearchInput = document.getElementById('recordExerciseSearch');
+    var recordSearchList = document.getElementById('recordExerciseSuggestions');
+    var recordSearchEmpty = document.getElementById('recordSearchEmpty');
+    var recordedNames = [];
+    var recordedNameSeen = new Set();
+    logs.forEach(function(record){
+      (record.entries || []).forEach(function(entry){
+        var name=String(entry && entry.n || '').trim();
+        if(!name)return;
+        var k=name.toLocaleLowerCase('ko-KR');
+        if(recordedNameSeen.has(k))return;
+        recordedNameSeen.add(k);recordedNames.push(name);
+      });
+    });
+    recordedNames.sort(function(a,b){return a.localeCompare(b,'ko');});
+    if(recordSearchList)recordSearchList.innerHTML=recordedNames.map(function(name){return '<option value="'+statsEscape(name)+'"></option>';}).join('');
+    if(recordSearchInput && recordSearchInput.value !== recordExerciseQuery)recordSearchInput.value=recordExerciseQuery;
+    var recordQuery=String(recordExerciseQuery || '').trim().toLocaleLowerCase('ko-KR');
+    var matchedExerciseCount=0;
     function muscleFor(entry) {
       return entry.m || MUSCLES.find(function(m){return (catalog[m] || []).some(function(c){return c.n===entry.n;});}) || '기타';
     }
@@ -2813,11 +2850,13 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     }
     groups.forEach(function (all, key) {
       var pair=JSON.parse(key),muscle=pair[0],name=pair[1];
+      if(recordQuery && name.toLocaleLowerCase('ko-KR').indexOf(recordQuery) === -1)return;
       var visible = all.filter(function (entry) {
         return (!recFilterFrom || entry.date >= recFilterFrom) && (!recFilterTo || entry.date <= recFilterTo);
       }).sort(function (a,b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
       if (!visible.length) return;
-      var card = document.createElement('details');card.className = 'exercise-record-card';card.dataset.recordKey='exercise:'+key;card.open=!!opened[card.dataset.recordKey];
+      matchedExerciseCount++;
+      var card = document.createElement('details');card.className = 'exercise-record-card';card.dataset.recordKey='exercise:'+key;card.open=!!opened[card.dataset.recordKey] || (!!recordQuery && name.toLocaleLowerCase('ko-KR')===recordQuery);
       var head = document.createElement('summary');head.className = 'exercise-record-head';
       var title = document.createElement('h3');title.textContent = name;
       var del = document.createElement('button');del.type = 'button';del.className = 'btn-reset exercise-record-delete';del.textContent = '이 종목 기록 전체 삭제';del.setAttribute('aria-label',name + ' 전체 기록 삭제');
@@ -2855,13 +2894,16 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       (sections.get(muscle) || sections.get('기타')).body.appendChild(card);
     });
     sections.forEach(function(group,muscle){
-      var count=group.body.children.length;
+      var count=group.body.querySelectorAll('.exercise-record-card').length;
+      if(recordQuery && !count)return;
       if(muscle==='기타' && !count)return;
       group.count.textContent=count ? count+'개 종목' : '기록 없음';
+      if(recordQuery && count)group.section.open=true;
       if(!count){var empty=document.createElement('p');empty.className='rec-empty';empty.textContent='표시할 운동기록이 없어요.';group.body.appendChild(empty);}
       recordsListEl.appendChild(group.section);
     });
-    if (!recordsListEl.children.length) {var empty=document.createElement('p');empty.className='rec-empty';empty.textContent=recFilterFrom||recFilterTo?'선택한 기간에는 기록이 없어요.':'아직 저장된 운동기록이 없어요.';recordsListEl.appendChild(empty);}
+    if(recordSearchEmpty)recordSearchEmpty.hidden=!recordQuery || matchedExerciseCount>0;
+    if (!recordsListEl.children.length && !recordQuery) {var empty=document.createElement('p');empty.className='rec-empty';empty.textContent=recFilterFrom||recFilterTo?'선택한 기간에는 기록이 없어요.':'아직 저장된 운동기록이 없어요.';recordsListEl.appendChild(empty);}
   }
 
   var catPendingDel = null;
@@ -3182,7 +3224,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     }).join('');
     var recordedNames=statsRecordedExerciseNames();
     var searchList=recordedNames.map(function(name){return '<option value="'+statsEscape(name)+'"></option>';}).join('');
-    var searchHtml='<div class="stats-exercise-search"><input type="search" data-stats-exercise-search list="statsExerciseSuggestions" autocomplete="off" placeholder="기록된 종목 검색" aria-label="종목별 기록 검색" value="'+statsEscape(statsExerciseQuery)+'"><svg class="stats-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><datalist id="statsExerciseSuggestions">'+searchList+'</datalist></div><p class="stats-search-empty" data-stats-search-empty hidden>검색한 종목의 기록이 선택 기간에 없어요.</p>';
+    var searchHtml='<div class="stats-exercise-search"><input type="search" data-stats-exercise-search list="statsExerciseSuggestions" autocomplete="off" placeholder="통계 종목 검색" aria-label="통계 종목 검색" value="'+statsEscape(statsExerciseQuery)+'"><svg class="stats-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><datalist id="statsExerciseSuggestions">'+searchList+'</datalist></div><p class="stats-search-empty" data-stats-search-empty hidden>검색한 종목의 기록이 선택 기간에 없어요.</p>';
     statsViewEl.innerHTML='<h2 class="stats-heading">운동 통계</h2><p class="stats-note">'+statsEscape(activeProfile)+' · 저장된 운동기록 기준</p>'+
       '<div class="stats-periods" role="group" aria-label="통계 조회 기간">'+periods+'</div><div class="stats-range-status"><p class="stats-note" role="status">'+(statsRangeAnchor?'직접 선택 · 종료일 선택 중<br>현재 조회: ':statsPeriod==='custom'?'직접 선택 · ':'')+data.from+' ~ '+data.to+'</p><button type="button" data-stats-reset>기간 초기화</button></div>'+
       statsCalendarHtml(statsCalendarMonth,data.allDates,asOf,{from:data.from,to:data.to},statsRangeAnchor)+
@@ -3287,6 +3329,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   (function () {
     var fromInput = document.getElementById('recFilterFrom');
     var toInput = document.getElementById('recFilterTo');
+    var recordSearchInput = document.getElementById('recordExerciseSearch');
+    if(recordSearchInput){
+      recordSearchInput.addEventListener('input',function(){recordExerciseQuery=recordSearchInput.value;renderRecords();});
+      recordSearchInput.addEventListener('change',function(){recordExerciseQuery=recordSearchInput.value;renderRecords();});
+    }
     fromInput.addEventListener('change', function () { recFilterFrom = fromInput.value; renderRecords(); });
     toInput.addEventListener('change', function () { recFilterTo = toInput.value; renderRecords(); });
     document.querySelectorAll('.rec-preset-btn').forEach(function (btn) {
@@ -3871,6 +3918,9 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     loadMemoEditor();
     recFilterFrom = '';
     recFilterTo = '';
+    recordExerciseQuery = '';
+    var recordSearchInput = document.getElementById('recordExerciseSearch');
+    if(recordSearchInput)recordSearchInput.value='';
     var fromInput = document.getElementById('recFilterFrom');
     var toInput = document.getElementById('recFilterTo');
     if (fromInput) fromInput.value = '';
@@ -4528,10 +4578,14 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
   updateProfileLabel();
 
+  applyModeView();
   renderModeToggle();
   renderTabs();
-  renderPanel();
-  renderPrinciples();
+  if (mode === 'catalog') renderCatalog();
+  else if (mode === 'records') renderRecords();
+  else if (mode === 'report') renderReport();
+  else if (mode === 'stats') renderStats();
+  else { renderPanel(); renderPrinciples(); }
 
   showRecordDataStatus();
   if (memoryOnly) {
