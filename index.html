@@ -1042,6 +1042,15 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   .recent-history-date{font-family:var(--num);font-size:11.5px;color:var(--faint);}
   .recent-history-value{font-family:var(--num);font-size:14px;font-weight:650;color:var(--ink);}
   .recent-history-empty{font-size:12px;color:var(--faint);padding:18px 0 4px;}
+  .recent-history-pr{
+    margin:2px 0 14px;
+  }
+  .recent-history-pr .stats-pr-title{
+    margin-bottom:8px;
+  }
+  .recent-history-pr + .recent-history-list{
+    border-top:1px solid var(--line);
+  }
 
 
   .stats-pr-box{
@@ -2557,14 +2566,31 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
 
   function prSnapshotFor(name,source,asOfDate) {
-    var bestWeight=null,bestWeightDate='',bestE1rm=null,bestE1rmDate='';
+    var bestWeight=null,bestWeightReps=null,bestWeightDate='';
+    var bestSetVolume=null,bestSetVolumeWeight=null,bestSetVolumeReps=null,bestSetVolumeDate='';
+    var bestE1rm=null,bestE1rmDate='';
     (source || []).forEach(function(group){
       if(!group || (asOfDate && group.date>asOfDate))return;
       (group.entries || []).forEach(function(entry){
         if(!entry || entry.n!==name)return;
         var w=parseFloat(entry.w),r=parseFloat(entry.reps);
-        if(isFinite(w) && (bestWeight===null || w>bestWeight || (w===bestWeight && (!bestWeightDate || group.date<bestWeightDate)))){
-          bestWeight=w;bestWeightDate=group.date;
+        var hasReps=isFinite(r) && r>0;
+        if(isFinite(w)){
+          var betterWeight=bestWeight===null || w>bestWeight;
+          var sameWeightBetterReps=w===bestWeight && hasReps && (bestWeightReps===null || r>bestWeightReps);
+          var sameWeightSameReps=w===bestWeight && ((hasReps && r===bestWeightReps) || (!hasReps && bestWeightReps===null));
+          if(betterWeight || sameWeightBetterReps || (sameWeightSameReps && (!bestWeightDate || group.date<bestWeightDate))){
+            bestWeight=w;bestWeightReps=hasReps?r:null;bestWeightDate=group.date;
+          }
+          if(hasReps){
+            var setVolume=w*r;
+            var betterVolume=bestSetVolume===null || setVolume>bestSetVolume+1e-9;
+            var sameVolumeHigherWeight=bestSetVolume!==null && Math.abs(setVolume-bestSetVolume)<1e-9 && (bestSetVolumeWeight===null || w>bestSetVolumeWeight);
+            var sameVolumeSameWeight=bestSetVolume!==null && Math.abs(setVolume-bestSetVolume)<1e-9 && w===bestSetVolumeWeight;
+            if(betterVolume || sameVolumeHigherWeight || (sameVolumeSameWeight && (!bestSetVolumeDate || group.date<bestSetVolumeDate))){
+              bestSetVolume=setVolume;bestSetVolumeWeight=w;bestSetVolumeReps=r;bestSetVolumeDate=group.date;
+            }
+          }
         }
         var e=estimated1RM(w,r);
         if(e!==null && (bestE1rm===null || e>bestE1rm+1e-9 || (Math.abs(e-bestE1rm)<1e-9 && (!bestE1rmDate || group.date<bestE1rmDate)))){
@@ -2573,7 +2599,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       });
     });
     return {
-      weight:bestWeight===null?null:{value:bestWeight,date:bestWeightDate},
+      weight:bestWeight===null?null:{value:bestWeight,reps:bestWeightReps,date:bestWeightDate},
+      setVolume:bestSetVolume===null?null:{value:Number(bestSetVolume.toFixed(1)),weight:bestSetVolumeWeight,reps:bestSetVolumeReps,date:bestSetVolumeDate},
       e1rm:bestE1rm===null?null:{value:Number(bestE1rm.toFixed(1)),date:bestE1rmDate}
     };
   }
@@ -2695,6 +2722,22 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     closeBtn.setAttribute('aria-label','닫기');
     head.appendChild(title);head.appendChild(closeBtn);
     modal.appendChild(head);
+
+    var pr=prSnapshotFor(name,logs);
+    var bestWeightText=pr.weight
+      ? statsFormatMetric(pr.weight.value,'weight')+' × '+(pr.weight.reps==null?'–':statsEscape(pr.weight.reps))+'회'
+      : '-';
+    var bestSetVolumeText=pr.setVolume
+      ? statsFormatMetric(pr.setVolume.weight,'weight')+' × '+statsEscape(pr.setVolume.reps)+'회'
+      : '-';
+    var prBox=document.createElement('div');
+    prBox.className='stats-pr-box recent-history-pr';
+    prBox.innerHTML=
+      '<div class="stats-pr-title">역대 PR · 전체 기록 기준</div>'+
+      '<div class="stats-pr-row"><span>최고 무게</span><strong>'+bestWeightText+(pr.weight?'<small class="stats-pr-date">'+statsEscape(pr.weight.date)+'</small>':'')+'</strong></div>'+
+      '<div class="stats-pr-row"><span>최고 세트 볼륨</span><strong>'+bestSetVolumeText+(pr.setVolume?'<small class="stats-pr-date">'+statsEscape(pr.setVolume.date)+'</small>':'')+'</strong></div>'+
+      '<div class="stats-pr-row"><span>추정 1RM</span><strong>'+(pr.e1rm?statsFormatMetric(pr.e1rm.value,'e1rm')+'<small class="stats-pr-date">'+statsEscape(pr.e1rm.date)+'</small>':'-')+'</strong></div>';
+    modal.appendChild(prBox);
 
     var list=document.createElement('div');
     list.className='recent-history-list';
@@ -3410,7 +3453,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       renderPrinciples();
 
       hint = document.getElementById('saveHint');
-      hint.textContent = date+' · '+entries.length + '개 운동 기록 저장됨';
+      hint.textContent = date+' · '+entries.length + '세트 기록 저장됨';
       showToast(prToastMessage(prUpdates,'운동기록 '+entries.length+'세트 저장 완료'));
       hint.className = 'save-hint on';
       clearTimeout(hint._t);
@@ -4275,10 +4318,17 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   }
   function statsExerciseMetricsHtml(exercise) {
     var metrics=['e1rm','weight','volume'];
-    var pr=exercise.pr || {weight:null,e1rm:null};
-    var prHtml='<div class="stats-pr-box"><div class="stats-pr-title">역대 PR · 전체 기록 기준</div>'+
-      '<div class="stats-pr-row"><span>최고 무게</span><strong>'+(pr.weight?statsFormatMetric(pr.weight.value,'weight')+'<small class="stats-pr-date">'+statsEscape(pr.weight.date)+'</small>':'-')+'</strong></div>'+
-      '<div class="stats-pr-row"><span>추정 1RM</span><strong>'+(pr.e1rm?statsFormatMetric(pr.e1rm.value,'e1rm')+'<small class="stats-pr-date">'+statsEscape(pr.e1rm.date)+'</small>':'-')+'</strong></div>'+
+    var pr=exercise.pr || {weight:null,setVolume:null,e1rm:null};
+    var bestWeightText=pr.weight
+      ? statsFormatMetric(pr.weight.value,'weight')+' × '+(pr.weight.reps==null?'–':statsEscape(pr.weight.reps))+'회'
+      : '-';
+    var bestSetVolumeText=pr.setVolume
+      ? statsFormatMetric(pr.setVolume.weight,'weight')+' × '+statsEscape(pr.setVolume.reps)+'회'
+      : '-';
+    var prHtml='<div class="stats-pr-box"><div class="stats-pr-title">역대 PR · 전체 기록 기준</div>'+ 
+      '<div class="stats-pr-row"><span>최고 무게</span><strong>'+bestWeightText+(pr.weight?'<small class="stats-pr-date">'+statsEscape(pr.weight.date)+'</small>':'')+'</strong></div>'+ 
+      '<div class="stats-pr-row"><span>최고 세트 볼륨</span><strong>'+bestSetVolumeText+(pr.setVolume?'<small class="stats-pr-date">'+statsEscape(pr.setVolume.date)+'</small>':'')+'</strong></div>'+ 
+      '<div class="stats-pr-row"><span>추정 1RM</span><strong>'+(pr.e1rm?statsFormatMetric(pr.e1rm.value,'e1rm')+'<small class="stats-pr-date">'+statsEscape(pr.e1rm.date)+'</small>':'-')+'</strong></div>'+ 
       '</div>';
     var buttons=metrics.map(function(metric){
       return '<button type="button" data-stats-metric="'+metric+'" aria-pressed="'+(metric==='e1rm')+'">'+statsMetricMeta(metric).label+'</button>';
@@ -5456,6 +5506,8 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         target.entries.push(copy);
       });
     });
+    // 과거 날짜 기록을 병합해도 최근 기록/증량 안내가 날짜 순서를 유지하도록 정렬한다.
+    nextLogs.sort(function(a,b){return a.date.localeCompare(b.date);});
 
     var ok = storageTransaction([
       {key:STORAGE_KEY, value:nextRoutine},
@@ -5818,7 +5870,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       if(!result || !result.ok)return;
       showToast(
         result.added
-          ? result.added+'건의 운동기록을 추가했어요.'
+          ? result.added+'세트의 운동기록을 추가했어요.'
           : '루틴과 운동 관리 데이터를 적용했어요.'
       );
     }catch(e){
