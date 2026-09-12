@@ -1073,6 +1073,11 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .bulk-app .stats-chart-select{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted);}
 .bulk-app .stats-chart-select>span{flex-shrink:0;}
 .bulk-app .stats-chart-select select{min-width:0;max-width:100%;flex:1;font-size:13px;min-height:44px;}
+.bulk-app .stats-exercise-search{position:relative;margin:12px 0 14px;}
+.bulk-app .stats-exercise-search input{box-sizing:border-box;width:100%;min-height:48px;padding:12px 42px 12px 14px;border:1px solid var(--line-strong);border-radius:12px;background:var(--raised);color:var(--ink);font:16px var(--ui);outline:none;}
+.bulk-app .stats-exercise-search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(72,95,199,.12);}
+.bulk-app .stats-exercise-search .stats-search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted);pointer-events:none;}
+.bulk-app .stats-search-empty{margin:12px 0;padding:16px;border:1px dashed var(--line-strong);border-radius:14px;background:var(--sunken);color:var(--muted);font-size:13px;text-align:center;}
 .bulk-app .cardio-routine-card{list-style:none;margin:12px 0 0;padding:16px;border:1px solid var(--line);border-left:3px solid var(--gain);border-radius:16px;background:var(--raised);}
 .bulk-app .cardio-routine-head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .bulk-app .cardio-routine-head h3{margin:0;color:var(--ink);font-size:16px;}
@@ -1895,6 +1900,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   var statsPeriod = 'week';
   var statsCalendarMonth = '';
   var statsCustomRange = null, statsRangeAnchor = '';
+  var statsExerciseQuery = '';
   var tabsEl = document.getElementById('dayTabs');
   var panelEl = document.getElementById('dayPanel');
   var restNoteEl = document.getElementById('restNote');
@@ -3118,6 +3124,41 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       '<label class="stats-chart-select"><span>기록 날짜 선택</span><select data-weight-date aria-label="'+statsEscape(exercise.name)+' 기록 날짜 선택">'+options+'</select></label>'+
       '<figcaption><span data-weight-value role="status">'+last.date+' · '+last.weight+'kg</span><br>기록이 있는 날짜의 최고값만 연결해요. 기록 없는 날은 0kg으로 계산하지 않아요.</figcaption></figure>';
   }
+  function statsRecordedExerciseNames() {
+    var seen = new Set(), names = [];
+    logs.forEach(function(group) {
+      (group.entries || []).forEach(function(entry) {
+        var name = String(entry && entry.n || '').trim();
+        if (!name) return;
+        var key = name.toLocaleLowerCase('ko-KR');
+        if (seen.has(key)) return;
+        seen.add(key); names.push(name);
+      });
+    });
+    return names.sort(function(a,b){ return a.localeCompare(b,'ko'); });
+  }
+  function applyStatsExerciseSearch(query) {
+    statsExerciseQuery = String(query || '').trim();
+    var q = statsExerciseQuery.toLocaleLowerCase('ko-KR');
+    var visible = 0;
+    statsViewEl.querySelectorAll('.stats-muscle-group').forEach(function(group) {
+      var groupVisible = 0;
+      group.querySelectorAll('.stats-exercise[data-stats-exercise-name]').forEach(function(card) {
+        var name = String(card.dataset.statsExerciseName || '');
+        var match = !q || name.toLocaleLowerCase('ko-KR').indexOf(q) !== -1;
+        card.hidden = !match;
+        if (match) {
+          groupVisible++; visible++;
+          if (q && name.toLocaleLowerCase('ko-KR') === q) card.open = true;
+        }
+      });
+      group.hidden = !!q && groupVisible === 0;
+      if (q && groupVisible) group.open = true;
+    });
+    var empty = statsViewEl.querySelector('[data-stats-search-empty]');
+    if (empty) empty.hidden = !q || visible > 0;
+  }
+
   function renderStats() {
     var opened=new Set();statsViewEl.querySelectorAll('details[data-stats-key]').forEach(function(el){if(el.open)opened.add(el.dataset.statsKey);});
     var asOf=todayStr(),data=buildStats(logs,catalog,statsPeriod,asOf,statsCustomRange);
@@ -3133,19 +3174,22 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       var exercises=data.exercises.filter(function(g){return g.muscle===m;});
       var cards=exercises.map(function(g){
         var key='exercise:'+g.key;
-        return '<details class="stats-exercise" data-stats-key="'+statsEscape(key)+'"'+(opened.has(key)?' open':'')+'><summary><span class="stats-exercise-title">'+statsEscape(g.name)+'</span><span class="rec-count">'+g.count+'건</span></summary><div class="stats-exercise-body">'+
+        return '<details class="stats-exercise" data-stats-key="'+statsEscape(key)+'" data-stats-exercise-name="'+statsEscape(g.name)+'"'+(opened.has(key)?' open':'')+'><summary><span class="stats-exercise-title">'+statsEscape(g.name)+'</span><span class="rec-count">'+g.count+'건</span></summary><div class="stats-exercise-body">'+
           '<p class="stats-weight-peak">기간 내 최고<strong'+(g.maxWeight===null?' class="stats-weight-empty"':'')+'>'+(g.maxWeight===null?'무게 기록 없음':g.maxWeight+'kg')+'</strong></p>'+statsWeightGraph(g)+'</div></details>';
       }).join('');
       return '<details class="rec-group stats-muscle-group" data-stats-key="'+statsEscape(muscleKey)+'"'+(opened.has(muscleKey)?' open':'')+'><summary><span class="rec-title" style="color:'+(MUSCLE_COLOR[m] || 'var(--muted)')+'">'+m+'</span><span class="rec-count">'+(exercises.length?exercises.length+'개 종목':'기록 없음')+'</span><span class="rec-chev"></span></summary><div class="rec-body">'+
         (cards || '<p class="stats-note">선택한 기간에 기록된 운동이 없어요.</p>')+'</div></details>';
     }).join('');
+    var recordedNames=statsRecordedExerciseNames();
+    var searchList=recordedNames.map(function(name){return '<option value="'+statsEscape(name)+'"></option>';}).join('');
+    var searchHtml='<div class="stats-exercise-search"><input type="search" data-stats-exercise-search list="statsExerciseSuggestions" autocomplete="off" placeholder="기록된 종목 검색" aria-label="종목별 기록 검색" value="'+statsEscape(statsExerciseQuery)+'"><svg class="stats-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><datalist id="statsExerciseSuggestions">'+searchList+'</datalist></div><p class="stats-search-empty" data-stats-search-empty hidden>검색한 종목의 기록이 선택 기간에 없어요.</p>';
     statsViewEl.innerHTML='<h2 class="stats-heading">운동 통계</h2><p class="stats-note">'+statsEscape(activeProfile)+' · 저장된 운동기록 기준</p>'+
       '<div class="stats-periods" role="group" aria-label="통계 조회 기간">'+periods+'</div><div class="stats-range-status"><p class="stats-note" role="status">'+(statsRangeAnchor?'직접 선택 · 종료일 선택 중<br>현재 조회: ':statsPeriod==='custom'?'직접 선택 · ':'')+data.from+' ~ '+data.to+'</p><button type="button" data-stats-reset>기간 초기화</button></div>'+
       statsCalendarHtml(statsCalendarMonth,data.allDates,asOf,{from:data.from,to:data.to},statsRangeAnchor)+
       '<section class="stats-card"><div class="stats-attendance"><h3>운동일수</h3><strong>'+data.days+'<small>일</small></strong></div><p class="stats-note">선택 기간에 기록을 남긴 날짜 수예요. 같은 날 여러 번 기록해도 1일로 계산해요.</p></section>'+
       (!data.count?'<p class="stats-note">이 기간에는 기록이 없어요. 오늘 탭에서 운동기록을 추가하거나 조회 기간을 바꿔보세요.</p>':'')+
       '<section class="stats-card"><h3>부위별 기록 건수</h3>'+muscleBars+'<p class="stats-note">운동 비중이 아닌 기록 빈도예요. 기록 1건은 완료 1세트가 아니며, 유산소 켜짐 같은 계획은 집계하지 않아요.</p></section>'+
-      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">부위와 종목을 차례로 펼쳐보세요. 선택 기간의 날짜별 최고 입력 무게이며, 1RM이나 근력 향상을 직접 뜻하지 않아요.</p>'+groups;
+      '<h3 class="stats-heading">종목별 기록 변화</h3><p class="stats-note">기록된 종목을 검색하거나 부위와 종목을 차례로 펼쳐보세요. 선택 기간의 날짜별 최고 입력 무게이며, 1RM이나 근력 향상을 직접 뜻하지 않아요.</p>'+searchHtml+groups;
     statsViewEl.querySelectorAll('[data-stats-period]').forEach(function(button){button.addEventListener('click',function(){
       chooseStatsPeriod(button.dataset.statsPeriod);renderStats();
       var active=statsViewEl.querySelector('[data-stats-period="'+statsPeriod+'"]');if(active)active.focus({preventScroll:true});
@@ -3168,6 +3212,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     statsViewEl.querySelectorAll('[data-calendar-current]').forEach(function(button){button.addEventListener('click',function(){
       statsCalendarMonth=todayStr().slice(0,7);renderStats();var current=statsViewEl.querySelector('[data-calendar-current]');if(current)current.focus({preventScroll:true});
     });});
+    var statsSearchInput=statsViewEl.querySelector('[data-stats-exercise-search]');
+    if(statsSearchInput){
+      statsSearchInput.addEventListener('input',function(){applyStatsExerciseSearch(statsSearchInput.value);});
+      statsSearchInput.addEventListener('change',function(){applyStatsExerciseSearch(statsSearchInput.value);});
+      applyStatsExerciseSearch(statsSearchInput.value);
+    }
     statsViewEl.querySelectorAll('[data-weight-date]').forEach(function(select){select.addEventListener('change',function(){
       var figure=select.closest('figure');
       figure.querySelectorAll('[data-weight-point]').forEach(function(point){point.setAttribute('r',point.dataset.weightPoint===select.value?'4.5':point.dataset.weightRadius);});
@@ -3817,7 +3867,7 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     showRecordDataStatus();
     draft = readJSON(DRAFT_KEY, {});
     statsCalendarMonth = '';
-    statsPeriod = 'week';statsCustomRange = null;statsRangeAnchor = '';
+    statsPeriod = 'week';statsCustomRange = null;statsRangeAnchor = '';statsExerciseQuery = '';
     loadMemoEditor();
     recFilterFrom = '';
     recFilterTo = '';
