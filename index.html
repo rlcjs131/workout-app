@@ -911,6 +911,12 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <button class="btn-reset" id="btnRoutineEdit" type="button" aria-pressed="false" aria-controls="dayPanel">루틴 편집</button>
       </div>
 
+      <div class="reset-row">
+        <button class="btn-reset btn-save-now" id="btnSaveNow" type="button">루틴 저장</button>
+        <button class="btn-reset routine-edit-only" id="btnClearDay" type="button">운동 초기화</button>
+        <button class="btn-reset routine-edit-only" id="btnReset" type="button">기본 루틴 적용</button>
+      </div>
+
       <div class="record-date-row routine-read-only">
         <label>기록 날짜 <input type="date" id="recordDate" aria-label="운동 기록 날짜"></label>
         <button class="btn-reset" id="btnRecordToday" type="button">오늘</button>
@@ -920,12 +926,6 @@ html {height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <p class="save-hint" id="saveHint" role="status" aria-live="polite"></p>
 
       <div id="principles"></div>
-
-      <div class="reset-row">
-        <button class="btn-reset btn-save-now" id="btnSaveNow" type="button">루틴 저장</button>
-        <button class="btn-reset routine-edit-only" id="btnClearDay" type="button">운동 초기화</button>
-        <button class="btn-reset routine-edit-only" id="btnReset" type="button">기본 루틴 적용</button>
-      </div>
     </div>
 
     <div id="catalogView" hidden>
